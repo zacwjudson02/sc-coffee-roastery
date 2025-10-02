@@ -1,15 +1,6 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import {
   Select,
   SelectContent,
@@ -19,88 +10,112 @@ import {
 } from "@/components/ui/select";
 import { Plus, Search, Filter } from "lucide-react";
 import { BookingDialog } from "@/components/bookings/BookingDialog";
+import { BookingTable, BookingRow } from "@/components/shared/BookingTable";
+import { EntityModal } from "@/components/shared/EntityModal";
+import { AllocateDriverDialog } from "@/components/bookings/AllocateDriverDialog";
 
-interface Booking {
+type Booking = {
   id: string;
-  reference: string;
+  bookingId: string;
   customer: string;
   pickup: string;
-  delivery: string;
+  dropoff: string;
   date: string;
-  status: "new" | "allocated" | "dispatched" | "delivered";
+  status: "Draft" | "Confirmed" | "Allocated" | "Invoiced";
   driver?: string;
-}
+};
 
 const mockBookings: Booking[] = [
   {
     id: "1",
-    reference: "BK-2024-0150",
+    bookingId: "BK-2024-0150",
     customer: "ABC Logistics",
     pickup: "Melbourne Warehouse",
-    delivery: "Sydney CBD",
+    dropoff: "Sydney CBD",
     date: "2024-10-02",
-    status: "dispatched",
+    status: "Confirmed",
     driver: "John Smith",
   },
   {
     id: "2",
-    reference: "BK-2024-0149",
+    bookingId: "BK-2024-0149",
     customer: "XYZ Freight",
     pickup: "Brisbane Port",
-    delivery: "Gold Coast",
+    dropoff: "Gold Coast",
     date: "2024-10-02",
-    status: "delivered",
+    status: "Invoiced",
     driver: "Sarah Jones",
   },
   {
     id: "3",
-    reference: "BK-2024-0148",
+    bookingId: "BK-2024-0148",
     customer: "Global Shipping Co",
     pickup: "Adelaide Depot",
-    delivery: "Melbourne",
+    dropoff: "Melbourne",
     date: "2024-10-02",
-    status: "allocated",
+    status: "Allocated",
     driver: "Mike Brown",
   },
   {
     id: "4",
-    reference: "BK-2024-0147",
+    bookingId: "BK-2024-0147",
     customer: "Fast Track Transport",
     pickup: "Perth Hub",
-    delivery: "Fremantle",
+    dropoff: "Fremantle",
     date: "2024-10-03",
-    status: "new",
+    status: "Draft",
   },
 ];
 
 export default function Bookings() {
-  const [bookings] = useState<Booking[]>(mockBookings);
+  const [bookings, setBookings] = useState<Booking[]>(mockBookings);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [customerFilter, setCustomerFilter] = useState<string>("all");
+  const [fromDate, setFromDate] = useState<string>("");
+  const [toDate, setToDate] = useState<string>("");
+  const [allocateForId, setAllocateForId] = useState<string | null>(null);
 
-  const getStatusVariant = (status: string) => {
-    switch (status) {
-      case "new":
-        return "inactive";
-      case "allocated":
-        return "default";
-      case "dispatched":
-        return "progress";
-      case "delivered":
-        return "complete";
-      default:
-        return "default";
-    }
-  };
+  const customers = useMemo(() => Array.from(new Set(bookings.map((b) => b.customer))), [bookings]);
 
-  const filteredBookings = bookings.filter((booking) => {
+  const filtered = bookings.filter((booking) => {
     const matchesStatus = statusFilter === "all" || booking.status === statusFilter;
+    const matchesCustomer = customerFilter === "all" || booking.customer === customerFilter;
     const matchesSearch =
-      booking.reference.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      booking.bookingId.toLowerCase().includes(searchQuery.toLowerCase()) ||
       booking.customer.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesStatus && matchesSearch;
+    const matchesFrom = !fromDate || booking.date >= fromDate;
+    const matchesTo = !toDate || booking.date <= toDate;
+    return matchesStatus && matchesCustomer && matchesSearch && matchesFrom && matchesTo;
   });
+
+  const rows: BookingRow[] = filtered.map((b) => ({
+    id: b.id,
+    bookingId: b.bookingId,
+    customer: b.customer,
+    pickup: b.pickup,
+    dropoff: b.dropoff,
+    status: b.status,
+    driver: b.driver,
+    date: b.date,
+  }));
+
+  function handleCreateBooking(newBooking: Omit<Booking, "id">): string {
+    const newId = String(Date.now());
+    const created: Booking = { id: newId, ...newBooking };
+    setBookings((prev) => [created, ...prev]);
+    return newId;
+  }
+
+  function handleAllocate(row: BookingRow) {
+    setAllocateForId(row.id);
+  }
+
+  function setDriverForBooking(bookingId: string, driverName: string) {
+    setBookings((prev) => prev.map((b) => (b.id === bookingId ? { ...b, driver: driverName, status: "Allocated" } : b)));
+    setAllocateForId(null);
+  }
 
   return (
     <div className="space-y-6">
@@ -117,74 +132,75 @@ export default function Bookings() {
         </Button>
       </div>
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative flex-1 max-w-sm">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search by reference or customer..."
+            placeholder="Search by booking ID or customer..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9"
           />
         </div>
-
-        <div className="flex gap-2">
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[180px]">
-              <Filter className="mr-2 h-4 w-4" />
-              <SelectValue placeholder="Filter by status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
-              <SelectItem value="new">New</SelectItem>
-              <SelectItem value="allocated">Allocated</SelectItem>
-              <SelectItem value="dispatched">Dispatched</SelectItem>
-              <SelectItem value="delivered">Delivered</SelectItem>
-            </SelectContent>
-          </Select>
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger>
+            <Filter className="mr-2 h-4 w-4" />
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Statuses</SelectItem>
+            <SelectItem value="Draft">Draft</SelectItem>
+            <SelectItem value="Confirmed">Confirmed</SelectItem>
+            <SelectItem value="Allocated">Allocated</SelectItem>
+            <SelectItem value="Invoiced">Invoiced</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={customerFilter} onValueChange={setCustomerFilter}>
+          <SelectTrigger>
+            <SelectValue placeholder="Customer" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Customers</SelectItem>
+            {customers.map((c) => (
+              <SelectItem key={c} value={c}>{c}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <div className="grid grid-cols-2 gap-2">
+          <Input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} placeholder="From" />
+          <Input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} placeholder="To" />
         </div>
       </div>
 
-      <div className="rounded-lg border border-border bg-card">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Reference</TableHead>
-              <TableHead>Customer</TableHead>
-              <TableHead>Pickup</TableHead>
-              <TableHead>Delivery</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Driver</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredBookings.map((booking) => (
-              <TableRow key={booking.id}>
-                <TableCell className="font-medium">{booking.reference}</TableCell>
-                <TableCell>{booking.customer}</TableCell>
-                <TableCell>{booking.pickup}</TableCell>
-                <TableCell>{booking.delivery}</TableCell>
-                <TableCell>{booking.date}</TableCell>
-                <TableCell>{booking.driver || "-"}</TableCell>
-                <TableCell>
-                  <Badge variant={getStatusVariant(booking.status)}>
-                    {booking.status}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-right">
-                  <Button variant="ghost" size="sm">
-                    View
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <BookingTable
+        data={rows}
+        onAllocate={handleAllocate}
+        onView={() => {}}
+      />
 
-      <BookingDialog open={dialogOpen} onOpenChange={setDialogOpen} />
+      <BookingDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onCreate={(payload, allocate) => {
+          const base: Omit<Booking, "id"> = {
+            bookingId: payload.reference,
+            customer: payload.customer,
+            pickup: payload.pickup,
+            dropoff: payload.dropoff,
+            date: payload.date,
+            status: allocate ? "Allocated" : "Draft",
+            driver: allocate ? "Unassigned" : undefined,
+          };
+          const createdId = handleCreateBooking(base);
+          if (allocate) setAllocateForId(createdId);
+        }}
+      />
+
+      <AllocateDriverDialog
+        open={!!allocateForId}
+        onOpenChange={(o) => !o && setAllocateForId(null)}
+        onSelect={(driver) => allocateForId && setDriverForBooking(allocateForId, driver)}
+      />
     </div>
   );
 }

@@ -1,0 +1,85 @@
+---
+description: Frontend and UI/UX guidelines
+globs: 
+alwaysApply: false
+---
+
+Copyright (c) 2025 Adelaide Group - Jason Toevs
+Licensed under Adelaide Group Limited Commercial License
+
+## Frontend Development Rules
+
+> *"Great UIs are invisible - users should notice the experience, not the interface."*
+
+### UI/UX Standards
+
+- Follow consistent design patterns throughout the application
+- Implement responsive design for all screen sizes
+- Use a design system for consistent component styling
+- Ensure proper contrast and readability for all text
+- Make interactive elements obviously interactive
+- Provide visual feedback for all user actions
+- Aim for sub-100ms response to user interactions
+
+### Component Architecture
+
+- Follow a component-based architecture (e.g., React components)
+- Keep components small and focused on a single responsibility
+- Use composition over inheritance for component design
+- Maintain a clear component hierarchy
+- Separate business logic from presentation
+- Create reusable UI components for common patterns
+- Document component props with TypeScript or PropTypes
+
+### State Management
+
+- Choose appropriate state management based on complexity
+- Keep global state minimal - prefer local state when possible
+- Use immutable data patterns
+- Implement proper loading and error states
+- Handle form state consistently across the application
+- Avoid prop drilling by using context or state management
+- Cache API responses appropriately
+
+### Performance
+
+- Implement code-splitting for large applications
+- Optimize bundle size through tree-shaking
+- Lazy-load components and resources
+- Optimize images and media assets
+- Minimize DOM manipulations
+- Avoid blocking the main thread with heavy computations
+- Implement virtual scrolling for long lists
+
+### Accessibility
+
+- Ensure keyboard navigation works for all interactive elements
+- Use semantic HTML elements
+- Include proper ARIA attributes when needed
+- Ensure screen reader compatibility
+- Meet WCAG 2.1 AA standards at minimum
+- Test with accessibility tools regularly
+- Provide text alternatives for non-text content
+
+### Component Guidelines
+
+- Use functional components with hooks, not class components
+- Follow component naming convention: PascalCase for components, camelCase for hooks
+- Keep components small and focused on a single responsibility
+- Extract reusable logic into custom hooks
+- Use proper semantic HTML elements (not just divs everywhere)
+- Always add appropriate accessibility attributes (ARIA)
+
+### Styling Approach
+
+- Use CSS modules or styled-components for component styling
+- Follow a consistent naming convention for CSS classes
+- Design for mobile-first, then adapt for larger screens
+- Maintain a unified color palette and spacing system
+
+### Code Structure
+
+- Group related files together by feature, not by type
+- Keep view logic separate from business logic
+- Place shared utilities in a dedicated folder
+- Organize imports: React/libraries, then components, then styles 

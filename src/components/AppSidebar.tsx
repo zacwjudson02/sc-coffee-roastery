@@ -26,12 +26,11 @@ import {
 const menuItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Bookings", url: "/bookings", icon: FileText },
-  { title: "Manifests", url: "/manifests", icon: Calendar },
   { title: "Runsheets", url: "/runsheets", icon: Route },
   { title: "PODs", url: "/pods", icon: FileCheck },
   { title: "Staff & Resources", url: "/resources", icon: Users },
   { title: "Invoicing", url: "/invoicing", icon: Receipt },
-  { title: "Customers", url: "/customers", icon: Building2 },
+  { title: "Customers & Vendors", url: "/customers", icon: Building2 },
 ];
 
 export function AppSidebar() {

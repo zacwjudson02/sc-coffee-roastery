@@ -1,0 +1,82 @@
+---
+description: Document management and organization standards
+globs: 
+alwaysApply: false
+---
+## Document Management Rules
+
+Copyright (c) 2025 Adelaide Group - Jason Toevs
+Licensed under Adelaide Group Limited Commercial License
+
+> *"The best organization is the simplest one that works."*
+
+### Core Principles
+
+- Create folders only when you have content to put in them
+- Start with flat organization, add structure only when needed
+- Use clear, descriptive names that indicate content
+- Keep active documents at the root until patterns emerge
+- Move to folders when you have 3+ related documents
+- Archive old versions instead of deleting them
+
+### File Naming
+
+- Follow consistent naming: [Type]_[Topic]_[YYYYMMDD]
+- Use descriptive names that indicate content
+- Avoid special characters and spaces
+- Include version numbers for evolving documents
+- Keep names under 50 characters
+- Use hyphens for spaces: marketing-plan-2024.md
+
+### Common Folders
+
+Create these only when you need them:
+
+- `docs/` - For documentation (3+ guide documents)
+- `assets/` - For media files (5+ images/videos)
+- `templates/` - For reusable formats (2+ templates)
+- `archive/` - For old versions (any outdated files)
+
+### Version Management
+
+- Start simple: v1, v2, v3 in file names
+- Move to semantic versioning (v1.0.1) only if needed
+- Keep the latest version in the working directory
+- Move older versions to archive
+- Document major changes in file headers
+- Use comments to explain significant updates
+
+### Document Standards
+
+- Start with simple markdown files
+- Add formatting standards when patterns emerge
+- Create templates after writing 2+ similar documents
+- Keep templates minimal and focused
+- Include examples in templates
+- Document any required sections
+- Include license and copyright notice in all substantial documents
+
+### Licensing Requirements
+
+- All substantial documents must include the Adelaide Group copyright notice
+- Include reference to LICENSE.md in project root
+- Maintain clear attribution requirements in derivative works
+- Document any third-party licenses used
+- Track commercial usage and revenue limits
+
+### Security Basics
+
+- Back up important files regularly
+- Use standard sharing permissions
+- Mark sensitive content clearly
+- Keep access logs for important documents
+- Remove old permissions when archiving
+
+### Best Practices
+
+- Don't create folders until you need them
+- Keep similar files together
+- Use consistent naming within categories
+- Archive regularly to reduce clutter
+- Document decisions that affect organization
+- Review and clean up monthly

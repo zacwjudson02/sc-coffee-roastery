@@ -1,0 +1,102 @@
+---
+description: Backend development standards
+globs: 
+alwaysApply: false
+---
+
+Copyright (c) 2025 Adelaide Group - Jason Toevs
+Licensed under Adelaide Group Limited Commercial License
+
+## Backend Development Rules
+
+> *"The backend is where promises made by the frontend are kept."*
+
+### Server Architecture
+
+- Follow clean architecture principles (separate concerns)
+- Implement proper dependency injection
+- Use middleware for cross-cutting concerns
+- Consider microservices for complex domains
+- Design stateless services where possible
+- Implement proper health checks
+- Document architectural decisions
+
+### Request Handling
+
+- Validate all input at the boundaries
+- Implement proper request timeout handling
+- Use appropriate content types and serialization
+- Handle file uploads securely and efficiently
+- Implement proper error boundaries
+- Log all request information for debugging
+- Use appropriate HTTP methods and status codes
+
+### Authentication & Authorization
+
+- Implement OAuth2/OpenID Connect for authentication when appropriate
+- Use JWTs for stateless authentication
+- Implement proper role-based access control
+- Check permissions at all levels (API, service, data)
+- Secure all authentication tokens and secrets
+- Implement proper session management
+- Consider 2FA for sensitive operations
+
+### Middleware Implementation
+
+- Keep middleware focused on a single responsibility
+- Order middleware properly for optimal processing
+- Implement request logging and correlation IDs
+- Use middleware for common concerns (CORS, compression, etc.)
+- Implement proper error handling in middleware
+- Document middleware behavior and execution order
+- Test middleware in isolation
+
+### Performance Optimization
+
+- Implement caching for expensive operations
+- Use connection pooling for database connections
+- Optimize database queries for performance
+- Implement background processing for long-running tasks
+- Use streaming for large data transfers
+- Implement proper garbage collection strategies
+- Profile and optimize hotspots in the code
+
+### API Design
+
+- Follow RESTful principles for endpoint design
+- Use consistent URL patterns: `/api/v1/resource`
+- Implement proper HTTP status codes for all responses
+- Return detailed error messages in development, generic ones in production
+- Version your APIs to maintain backward compatibility
+
+### Data Management
+
+- Use ORMs or query builders rather than raw SQL when possible
+- Follow database normalization principles (avoid duplication)
+- Include database migrations for all schema changes
+- Implement proper indexing for frequently queried fields
+- Use transactions for operations affecting multiple records
+
+### Security Practices
+
+- NEVER store sensitive data in plain text (passwords, tokens, etc.)
+- Implement proper input validation on ALL user inputs
+- Use parameterized queries to prevent SQL injection
+- Set appropriate security headers for all responses
+- Rate limit endpoints to prevent abuse
+
+### Performance
+
+- Implement caching for expensive operations
+- Use pagination for endpoints returning large datasets
+- Optimize database queries (avoid N+1 problems)
+- Log performance metrics for critical operations
+- Consider background processing for time-consuming tasks
+
+### Error Handling
+
+- Implement global error handling middleware
+- Log all errors with appropriate context
+- Never expose stack traces in production
+- Use structured logging format
+- Implement retry logic for transient failures 
