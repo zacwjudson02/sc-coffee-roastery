@@ -50,9 +50,13 @@ export function SavedViewsDialog({ open, onOpenChange, current, onApply, storage
   function startNew() {
     const base = current?.base ?? "Admin";
     setBuilderBase(base);
-    const options = columnSets?.[base] ?? [];
+    // union of all columns across sets to ensure full demo schema visibility
+    const all: Record<string, { key: string; label: string }> = {};
+    if (columnSets) {
+      Object.values(columnSets).forEach((arr) => arr.forEach((c) => { if (!all[c.key]) all[c.key] = c; }));
+    }
     const next: Record<string, boolean> = {};
-    options.forEach((c) => { next[c.key] = selectedColumns.includes(c.key); });
+    Object.values(all).forEach((c) => { next[c.key] = selectedColumns.includes(c.key); });
     setBuilderCols(next);
     setBuilderName("");
     setMode("new");
@@ -61,10 +65,13 @@ export function SavedViewsDialog({ open, onOpenChange, current, onApply, storage
   function saveNew() {
     const id = String(Date.now());
     const name = builderName.trim() || `View ${views.length + 1}`;
+    // union of all columns
+    const all: Record<string, { key: string; label: string }> = {};
+    if (columnSets) Object.values(columnSets).forEach((arr) => arr.forEach((c) => { if (!all[c.key]) all[c.key] = c; }));
     const payload = {
       ...current,
       base: builderBase,
-      columns: (columnSets?.[builderBase] || []).filter((c) => builderCols[c.key]).map((c) => c.key),
+      columns: Object.values(all).filter((c) => builderCols[c.key]).map((c) => c.key),
     };
     persist([{ id, name, payload }, ...views]);
     setMode("list");
@@ -76,7 +83,9 @@ export function SavedViewsDialog({ open, onOpenChange, current, onApply, storage
     setSelectedId(viewId);
     const base = v.payload?.base ?? "Admin";
     setBuilderBase(base);
-    const options = columnSets?.[base] ?? [];
+    const all: Record<string, { key: string; label: string }> = {};
+    if (columnSets) Object.values(columnSets).forEach((arr) => arr.forEach((c) => { if (!all[c.key]) all[c.key] = c; }));
+    const options = Object.values(all);
     const next: Record<string, boolean> = {};
     options.forEach((c) => { next[c.key] = (v.payload?.columns || []).includes(c.key); });
     setBuilderCols(next);
@@ -115,7 +124,12 @@ export function SavedViewsDialog({ open, onOpenChange, current, onApply, storage
     if (selectedId === id) setSelectedId("");
   }
 
-  const builderColumns = (columnSets?.[builderBase || current?.base || "Admin"] || []);
+  // union columns for rendering
+  const builderColumns = useMemo(() => {
+    const all: Record<string, { key: string; label: string }> = {};
+    if (columnSets) Object.values(columnSets).forEach((arr) => arr.forEach((c) => { if (!all[c.key]) all[c.key] = c; }));
+    return Object.values(all);
+  }, [columnSets, builderBase, current]);
   const selectAll = () => {
     const next: Record<string, boolean> = {};
     builderColumns.forEach((c) => { next[c.key] = true; });
