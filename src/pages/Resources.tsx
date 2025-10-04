@@ -1,17 +1,17 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { EntityModal } from "@/components/shared/EntityModal";
 import { StatusChip } from "@/components/shared/StatusChip";
 import { Input } from "@/components/ui/input";
 
-type Staff = { name: string; role: string; phone: string; status: "Active" | "Inactive" | "License Expired"; licenseExpiry: string; startDate?: string };
+type Staff = { name: string; role: string; phone: string; status: "Active" | "Inactive" | "License Expired"; licenseExpiry: string; startDate?: string; color?: string };
 type Vehicle = { rego: string; type: string; capacity: string; status: "Available" | "In Service"; nextService: string };
 
 const STAFF: Staff[] = [
-  { name: "John Smith", role: "Driver", phone: "0400 111 222", status: "Active", licenseExpiry: "2025-12-01" },
+  { name: "John Smith", role: "Driver", phone: "0400 111 222", status: "Active", licenseExpiry: "2025-12-01", color: "#FF6B6B" },
   { name: "Sarah Jones", role: "Dispatcher", phone: "0400 333 444", status: "Active", licenseExpiry: "2026-03-15" },
-  { name: "Mike Brown", role: "Driver", phone: "0400 555 666", status: "License Expired", licenseExpiry: "2024-07-01" },
+  { name: "Mike Brown", role: "Driver", phone: "0400 555 666", status: "License Expired", licenseExpiry: "2024-07-01", color: "#4ECDC4" },
 ];
 
 const VEHICLES: Vehicle[] = [
@@ -31,6 +31,13 @@ export default function Resources() {
     const diff = (d.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
     return diff <= 7;
   }, []);
+
+  // Persist driver color map for other pages (e.g., Bookings allocation view)
+  useEffect(() => {
+    const map: Record<string, string> = {};
+    staff.forEach((s) => { if (s.role.toLowerCase() === "driver" && s.color) map[s.name] = s.color; });
+    try { localStorage.setItem("driverColors", JSON.stringify(map)); } catch {}
+  }, [staff]);
 
   return (
     <div className="space-y-6">
@@ -54,6 +61,7 @@ export default function Resources() {
                   <th className="px-4 py-2">Name</th>
                   <th className="px-4 py-2">Role</th>
                   <th className="px-4 py-2">Phone</th>
+                  <th className="px-4 py-2">Colour</th>
                   <th className="px-4 py-2">Status</th>
                   <th className="px-4 py-2">License Expiry</th>
                 </tr>
@@ -64,6 +72,20 @@ export default function Resources() {
                     <td className="px-4 py-2">{s.name}</td>
                     <td className="px-4 py-2">{s.role}</td>
                     <td className="px-4 py-2">{s.phone}</td>
+                    <td className="px-4 py-2">
+                      {s.role.toLowerCase() === "driver" ? (
+                        <div className="flex items-center gap-2">
+                          <span className="inline-block h-4 w-4 rounded" style={{ backgroundColor: s.color || "#e5e7eb" }} />
+                          <input
+                            type="color"
+                            value={s.color || "#000000"}
+                            onChange={(e) => setStaff((prev) => prev.map((p) => p.name === s.name ? { ...p, color: e.target.value } : p))}
+                          />
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground">-</span>
+                      )}
+                    </td>
                     <td className="px-4 py-2"><StatusChip status={s.status} /></td>
                     <td className={`${dueSoon(s.licenseExpiry) ? 'text-red-600' : ''} px-4 py-2`}>{s.licenseExpiry}</td>
                   </tr>
