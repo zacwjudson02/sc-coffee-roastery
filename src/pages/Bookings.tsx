@@ -603,6 +603,13 @@ export default function Bookings() {
               return next;
             });
           }}>Range</Button>
+          {(fromDate || toDate) && (
+            <Button size="sm" variant="outline" onClick={() => {
+              setFromDate("");
+              setToDate("");
+              setRangeMode(false);
+            }}>Clear</Button>
+          )}
         </div>
       </div>
 
