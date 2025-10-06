@@ -33,7 +33,48 @@ type PodRow = {
 };
 
 export default function PODs() {
-  const [rows, setRows] = useState<PodRow[]>([]);
+  const [rows, setRows] = useState<PodRow[]>([
+    {
+      id: "seed-1",
+      bookingId: "BK-2024-0150",
+      fileName: "POD-BK-2024-0150.pdf",
+      matchPercent: 96,
+      matchStatus: "Assigned",
+      uploadedAt: new Date().toISOString().slice(0, 16).replace("T", " "),
+      confirmed: true,
+      customer: "ABC Logistics",
+      driver: "John Smith",
+      runNumber: "RS-1001",
+      status: "Assigned",
+      // demo only: show invoice present
+      // @ts-expect-error demo field used by table
+      invoiceId: "INV-2025-0012",
+    },
+    {
+      id: "seed-2",
+      bookingId: "BK-2024-0149",
+      fileName: "POD-BK-2024-0149.jpg",
+      matchPercent: 78,
+      matchStatus: "Needs Review",
+      uploadedAt: new Date(Date.now() - 3600_000).toISOString().slice(0, 16).replace("T", " "),
+      confirmed: false,
+      customer: "XYZ Freight",
+      driver: "Sarah Jones",
+      runNumber: "RS-1002",
+      status: "Pending",
+    },
+    {
+      id: "seed-3",
+      bookingId: "BK-UNKNOWN",
+      fileName: "unknown-pod.pdf",
+      matchPercent: 42,
+      matchStatus: "Needs Review",
+      uploadedAt: new Date(Date.now() - 7200_000).toISOString().slice(0, 16).replace("T", " "),
+      confirmed: false,
+      customer: "Unmatched",
+      status: "Pending",
+    },
+  ]);
   const [preview, setPreview] = useState<PodRow | null>(null);
   const [assignFor, setAssignFor] = useState<PodRow | null>(null);
   const [searchQuery, setSearchQuery] = useState("");

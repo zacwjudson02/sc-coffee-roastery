@@ -9,6 +9,7 @@ import { PodViewer } from "@/components/pods/PodViewer";
 import { Dialog as BaseDialog, DialogContent as BaseContent, DialogHeader as BaseHeader, DialogTitle as BaseTitle } from "@/components/ui/dialog";
 import { Textarea as BaseTextarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 type CustomerRate = { id: string; description: string; basis: "per_pallet" | "per_space"; amount: number };
 
@@ -183,6 +184,7 @@ export function BookingViewDialog({ open, onOpenChange, booking, onSave, onInvoi
 
   const [form, setForm] = useState<any | null>(null);
   const current = useMemo(() => form ?? booking, [form, booking]);
+  const hasPod = Boolean(booking?.podFile) || Boolean(booking?.podReceived);
 
   if (!booking) return null;
 
@@ -192,10 +194,14 @@ export function BookingViewDialog({ open, onOpenChange, booking, onSave, onInvoi
     onOpenChange(false);
   }
 
-  function handleUpload() {
-    const file = fileRef.current?.files?.[0];
-    if (file) onUploadPod(booking.id, file);
-    setTab("pod");
+  function handleFilePicked(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.currentTarget.files?.[0];
+    if (file) {
+      onUploadPod(booking.id, file);
+      setTab("pod");
+      // clear value so the same file can be re-picked if needed
+      e.currentTarget.value = "";
+    }
   }
 
   return (
@@ -227,8 +233,14 @@ export function BookingViewDialog({ open, onOpenChange, booking, onSave, onInvoi
           <div className="flex items-center gap-2 text-sm">
             <Button variant={tab === "details" ? "default" : "outline"} size="sm" onClick={() => setTab("details")}>Details</Button>
             <Button variant={tab === "pod" ? "default" : "outline"} size="sm" onClick={() => setTab("pod")}>POD</Button>
-            <Button variant={tab === "invoice" ? "default" : "outline"} size="sm" onClick={() => setTab("invoice")}>Invoice</Button>
+            <Button variant={tab === "invoice" ? "default" : "outline"} size="sm" onClick={() => setTab("invoice")} disabled={!hasPod}>Invoice</Button>
           </div>
+          {!hasPod && (
+            <Alert>
+              <AlertTitle>POD required before invoicing</AlertTitle>
+              <AlertDescription>Upload or attach a POD to enable the Invoice tab.</AlertDescription>
+            </Alert>
+          )}
 
           {tab === "details" && (
             <div className="space-y-4">
@@ -336,13 +348,13 @@ export function BookingViewDialog({ open, onOpenChange, booking, onSave, onInvoi
             </div>
           )}
 
-           {tab === "pod" && (
+          {tab === "pod" && (
              <div className="space-y-3">
                <div className="flex items-center gap-2">
                  <div className="text-sm text-muted-foreground">Upload or view existing POD</div>
                  <div className="flex items-center gap-2 ml-auto">
-                   <Input ref={fileRef} type="file" accept="image/*,application/pdf" className="max-w-sm" />
-                   <Button size="sm" onClick={handleUpload}>Upload</Button>
+                  <input ref={fileRef} type="file" accept="image/*,application/pdf" className="hidden" onChange={handleFilePicked} />
+                  <Button size="sm" onClick={() => fileRef.current?.click()}>Upload POD</Button>
                    <Button size="sm" variant="outline" onClick={() => setEmailOpen(true)}>Email POD</Button>
                  </div>
                </div>
@@ -352,7 +364,7 @@ export function BookingViewDialog({ open, onOpenChange, booking, onSave, onInvoi
              </div>
            )}
 
-          {tab === "invoice" && (
+         {tab === "invoice" && hasPod && (
             <InvoiceTab booking={booking} onInvoice={(id: string) => onInvoice(id, {
               rateBasis: (booking.rateBasis ?? "per_pallet") as any,
               unitPrice: booking.unitPrice ?? 0,
