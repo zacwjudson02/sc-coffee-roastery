@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { useResources } from "@/hooks/use-resources";
 
 type SimpleBooking = {
   bookingId: string;
@@ -20,13 +21,6 @@ type CreateRunsheetDialogProps = {
   onCreate: (payload: { driver: string; bookings: SimpleBooking[] }) => void;
 };
 
-const MOCK_DRIVERS = [
-  { name: "John Smith" },
-  { name: "Sarah Jones" },
-  { name: "Mike Brown" },
-  { name: "Priya Patel" },
-];
-
 const MOCK_BOOKINGS: SimpleBooking[] = [
   { bookingId: "BK-2024-0151", customer: "ABC Logistics", pickup: "Melbourne Warehouse", dropoff: "Airport", date: "2024-09-22" },
   { bookingId: "BK-2024-0152", customer: "XYZ Freight", pickup: "Docklands", dropoff: "Geelong DC", date: "2024-09-22" },
@@ -40,6 +34,7 @@ export function CreateRunsheetDialog({ open, onOpenChange, onCreate }: CreateRun
   const [driver, setDriver] = useState<string>("");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<Record<string, boolean>>({});
+  const { drivers: storeDrivers } = useResources();
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -81,8 +76,8 @@ export function CreateRunsheetDialog({ open, onOpenChange, onCreate }: CreateRun
                   <SelectValue placeholder="Select driver" />
                 </SelectTrigger>
                 <SelectContent>
-                  {MOCK_DRIVERS.map((d) => (
-                    <SelectItem key={d.name} value={d.name}>{d.name}</SelectItem>
+                  {storeDrivers.map((d) => (
+                    <SelectItem key={d.id} value={d.name}>{d.name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>

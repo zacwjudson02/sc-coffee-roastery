@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { SimpleBooking } from "@/components/runsheets/CreateRunsheetDialog";
+import { useResources } from "@/hooks/use-resources";
 
 type AllocateBookingsDialogProps = {
   open: boolean;
@@ -25,6 +26,7 @@ export function AllocateBookingsDialog({ open, onOpenChange, drivers, onAllocate
   const [driver, setDriver] = useState<string>("");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<Record<string, boolean>>({});
+  const { drivers: storeDrivers } = useResources();
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -63,8 +65,8 @@ export function AllocateBookingsDialog({ open, onOpenChange, drivers, onAllocate
                   <SelectValue placeholder="Select driver" />
                 </SelectTrigger>
                 <SelectContent>
-                  {drivers.map((d) => (
-                    <SelectItem key={d} value={d}>{d}</SelectItem>
+                  {storeDrivers.map((d) => (
+                    <SelectItem key={d.id} value={d.name}>{d.name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>

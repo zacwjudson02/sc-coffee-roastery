@@ -9,6 +9,10 @@ import { ChevronDown, ChevronUp, GripVertical, Plus, Printer, Send } from "lucid
 import { CreateRunsheetDialog } from "@/components/runsheets/CreateRunsheetDialog";
 import { AllocateBookingsDialog } from "@/components/runsheets/AllocateBookingsDialog";
 import { BookingViewDialog } from "@/components/bookings/BookingViewDialog";
+import { ShiftViewDialog } from "@/components/shifts/ShiftViewDialog";
+import { useResources } from "@/hooks/use-resources";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { PreviewRunsheetDialog } from "@/components/runsheets/PreviewRunsheetDialog";
 
 type Job = {
   id: string;
@@ -62,10 +66,14 @@ const MOCK: DriverRunsheet[] = [
 export default function Runsheets() {
   const [date, setDate] = useState("");
   const [driverFilter, setDriverFilter] = useState("all");
+  const { drivers: storeDrivers, shifts, ensureShift, ensureRunsheet, addJobsToRunsheet, runsheets: storeRunsheets, deleteRunsheet, removeShift, getRunsheetBy } = useResources();
   const [runsheets, setRunsheets] = useState<DriverRunsheet[]>(MOCK);
   const [openCreate, setOpenCreate] = useState(false);
   const [openAllocate, setOpenAllocate] = useState(false);
   const [viewFor, setViewFor] = useState<any | null>(null);
+  const [viewShift, setViewShift] = useState<{ driver: string } | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<{ shiftId: string; driver: string } | null>(null);
+  const [preview, setPreview] = useState<{ driver: string } | null>(null);
   const drivers = useMemo(() => Array.from(new Set(MOCK.map((r) => r.driver))), []);
 
   function onDragStart(e: React.DragEvent<HTMLDivElement>, fromDriver: string, jobId: string) {
@@ -143,7 +151,7 @@ export default function Runsheets() {
                   <div className="font-medium">{r.driver}</div>
                 </div>
                 <div className="flex flex-wrap gap-2 sm:flex-nowrap">
-                  <Button variant="destructive" size="sm"><Printer className="h-4 w-4 mr-1" /> Print Runsheet</Button>
+                  <Button variant="outline" size="sm" onClick={() => setPreview({ driver: r.driver })}>Preview</Button>
                 </div>
               </div>
               <div className="px-2 py-2">
@@ -242,6 +250,27 @@ export default function Runsheets() {
             },
             ...prev,
           ]);
+          // Ensure underlying shift+runsheet in store for persistence and View Shift linkage
+          const d = storeDrivers.find((x) => x.name === driver);
+          if (d) {
+            const runDate = date || new Date().toISOString().slice(0,10);
+            const shiftId = ensureShift(runDate, d.id);
+            ensureRunsheet(shiftId);
+            const jobs = bookings.map((b, i) => ({
+              id: `${b.bookingId}-${Date.now()}-${i}`,
+              bookingId: b.bookingId,
+              pickup: b.pickup,
+              dropoff: b.dropoff,
+              pickupSuburb: b.pickup,
+              dropoffSuburb: b.dropoff,
+              pallets: 1,
+              spaces: 1,
+              palletType: "Standard",
+              transferMethod: "Fork",
+              suburb: b.dropoff,
+            }));
+            addJobsToRunsheet(shiftId, jobs);
+          }
         }}
       />
 
@@ -283,6 +312,27 @@ export default function Runsheets() {
             target.jobs.push(...toAppend);
             return next;
           });
+          // Also ensure underlying store-level shift+runsheet so View Shift works
+          const d = storeDrivers.find((x) => x.name === driver);
+          if (d && bookings.length > 0) {
+            const runDate = date || bookings[0].date || new Date().toISOString().slice(0,10);
+            const shiftId = ensureShift(runDate, d.id);
+            ensureRunsheet(shiftId);
+            const toJobs = bookings.map((b, i) => ({
+              id: `${b.bookingId}-${Date.now()}-${i}`,
+              bookingId: b.bookingId,
+              pickup: b.pickup,
+              dropoff: b.dropoff,
+              pickupSuburb: b.pickup,
+              dropoffSuburb: b.dropoff,
+              pallets: 1,
+              spaces: 1,
+              palletType: "Standard",
+              transferMethod: "Fork",
+              suburb: b.dropoff,
+            }));
+            addJobsToRunsheet(shiftId, toJobs);
+          }
         }}
       />
 
@@ -294,6 +344,92 @@ export default function Runsheets() {
         onInvoice={() => {}}
         onUploadPod={(id, file) => setViewFor((prev: any) => (prev && prev.id === id ? { ...prev, podFile: file, podReceived: true } : prev))}
       />
+
+      <ShiftViewDialog
+        open={!!viewShift}
+        onOpenChange={(o) => !o && setViewShift(null)}
+        shift={(() => {
+          if (!viewShift) return null;
+          const d = storeDrivers.find((x) => x.name === viewShift.driver);
+          if (!d) return null;
+          const s = shifts.find((x) => (!date || x.date === date) && x.driverId === d.id);
+          return s ?? null;
+        })()}
+        suggest={(() => {
+          if (!viewShift) return null;
+          const d = storeDrivers.find((x) => x.name === viewShift.driver);
+          if (!d) return null;
+          const s = shifts.find((x) => (!date || x.date === date) && x.driverId === d.id);
+          if (s) return null;
+          const runDate = date || new Date().toISOString().slice(0,10);
+          return { date: runDate, driverId: d.id };
+        })()}
+      />
+
+      <PreviewRunsheetDialog
+        open={!!preview}
+        onOpenChange={(o) => !o && setPreview(null)}
+        date={date || new Date().toISOString().slice(0,10)}
+        driverName={preview?.driver || ""}
+        jobs={(() => {
+          if (!preview) return [] as any[];
+          // Prefer the UI runsheet jobs for immediate preview
+          const ui = runsheets.find((r) => r.driver === preview.driver);
+          if (ui && ui.jobs && ui.jobs.length > 0) {
+            return ui.jobs.map((j) => ({ id: j.id, bookingId: j.bookingId, pickup: j.pickup, dropoff: j.dropoff, pallets: j.pallets, spaces: j.spaces, palletType: j.palletType, transferMethod: j.transferMethod }));
+          }
+          // Fallback to backing store runsheet if created via ensureRunsheet/addJobsToRunsheet
+          const d = storeDrivers.find((x) => x.name === preview.driver);
+          const s = d ? shifts.find((x) => (!date || x.date === date) && x.driverId === d.id) : null;
+          const rs = s ? storeRunsheets.find((r) => r.shiftId === s.id) : null;
+          if (rs && rs.jobs) {
+            return rs.jobs.map((j) => ({ id: j.id, bookingId: j.bookingId, pickup: j.pickup, dropoff: j.dropoff, pallets: j.pallets, spaces: j.spaces, palletType: j.palletType, transferMethod: j.transferMethod }));
+          }
+          return [] as any[];
+        })()}
+        onPrint={() => window.print()}
+        onDelete={() => {
+          if (!preview) return;
+          const d = storeDrivers.find((x) => x.name === preview.driver);
+          if (!d) return;
+          const s = shifts.find((x) => (!date || x.date === date) && x.driverId === d.id);
+          if (s) setConfirmDelete({ shiftId: s.id, driver: preview.driver });
+          setPreview(null);
+        }}
+      />
+
+      {/* Confirm delete run sheet dialog */}
+      <Dialog open={!!confirmDelete} onOpenChange={(o) => !o && setConfirmDelete(null)}>
+        <DialogContent className="sm:max-w-[520px]">
+          <DialogHeader>
+            <DialogTitle>Delete Run Sheet</DialogTitle>
+            <DialogDescription>All jobs on this run sheet will be unassigned. You can also delete the underlying shift.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 text-sm">
+            <div>Driver: {confirmDelete ? confirmDelete.driver : ""}</div>
+            <div className="text-muted-foreground">This action affects only today’s selection unless a date is set.</div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmDelete(null)}>Cancel</Button>
+            <Button variant="secondary" onClick={() => {
+              if (!confirmDelete) return;
+              const shiftId = confirmDelete.shiftId;
+              // Remove jobs from UI mock and delete underlying store runsheet
+              setRunsheets((prev) => prev.filter((r) => r.driver !== confirmDelete.driver));
+              deleteRunsheet(shiftId);
+              setConfirmDelete(null);
+            }}>Delete Run Sheet</Button>
+            <Button variant="destructive" onClick={() => {
+              if (!confirmDelete) return;
+              const shiftId = confirmDelete.shiftId;
+              setRunsheets((prev) => prev.filter((r) => r.driver !== confirmDelete.driver));
+              deleteRunsheet(shiftId);
+              removeShift(shiftId);
+              setConfirmDelete(null);
+            }}>Delete Run Sheet & Shift</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
