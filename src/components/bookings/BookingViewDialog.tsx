@@ -9,11 +9,13 @@ import { PodViewer } from "@/components/pods/PodViewer";
 import { Dialog as BaseDialog, DialogContent as BaseContent, DialogHeader as BaseHeader, DialogTitle as BaseTitle } from "@/components/ui/dialog";
 import { Textarea as BaseTextarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { formatDateAU, formatDateTimeAU } from "@/lib/utils";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useAppData } from "@/hooks/use-appdata";
 
 type CustomerRate = { id: string; description: string; basis: "per_pallet" | "per_space"; amount: number };
 
-function InvoiceTab({ booking, onInvoice }: { booking: any; onInvoice: (id: string) => void }) {
+function InvoiceTab({ booking, onInvoice }: { booking: any; onInvoice: (id: string, details: { rateBasis: "per_pallet" | "per_space"; unitPrice: number; pallets: number; spaces: number; chargeTo?: string; }) => void }) {
   const { toast } = useToast();
   const [invoiced, setInvoiced] = useState<boolean>(booking.status === "Invoiced");
   const [rateMode, setRateMode] = useState<"per_pallet" | "per_space">("per_pallet");
@@ -105,7 +107,7 @@ function InvoiceTab({ booking, onInvoice }: { booking: any; onInvoice: (id: stri
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={() => setRateSelectOpen(true)}>Select Rate</Button>
             <Button variant="outline" onClick={() => setNewRateOpen(true)}>New Rate</Button>
-            <Button onClick={() => { onInvoice(booking.id); setInvoiced(true); }}>Send to Invoice</Button>
+            <Button onClick={() => { onInvoice(booking.id, { rateBasis: rateMode, unitPrice, pallets, spaces, chargeTo: customer }); setInvoiced(true); }}>Send to Invoice</Button>
           </div>
         </div>
       )}
@@ -174,6 +176,7 @@ type BookingViewDialogProps = {
 };
 
 export function BookingViewDialog({ open, onOpenChange, booking, onSave, onInvoice, onUploadPod }: BookingViewDialogProps) {
+  const { customers } = useAppData();
   const [tab, setTab] = useState<"details" | "pod" | "invoice">("details");
   const [emailOpen, setEmailOpen] = useState(false);
   const [emailTo, setEmailTo] = useState("");
@@ -210,7 +213,7 @@ export function BookingViewDialog({ open, onOpenChange, booking, onSave, onInvoi
         <DialogHeader>
           <DialogTitle>Booking {booking.bookingId}</DialogTitle>
           <DialogDescription>
-            Consignment created {booking.createdAt ?? "-"} • Updated {booking.updatedAt ?? "-"}
+            Consignment created {booking.createdAt ? formatDateTimeAU(booking.createdAt) : "-"} • Updated {booking.updatedAt ? formatDateTimeAU(booking.updatedAt) : "-"}
           </DialogDescription>
         </DialogHeader>
 
@@ -247,7 +250,19 @@ export function BookingViewDialog({ open, onOpenChange, booking, onSave, onInvoi
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Customer</Label>
-                    <Input value={current.customer ?? ""} onChange={(e) => setForm({ ...(current || {}), customer: e.target.value })} />
+                    <Select value={(current.customerId as any) || ""} onValueChange={(v) => {
+                      const selected = customers.find((c) => c.id === v);
+                      setForm({ ...(current || {}), customerId: v, customer: selected?.company || current.customer });
+                    }}>
+                      <SelectTrigger>
+                        <SelectValue placeholder={current.customer || "Select customer"} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {customers.map((c) => (
+                          <SelectItem key={c.id} value={c.id}>{c.company}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="space-y-2">
                     <Label>Status</Label>
@@ -332,6 +347,17 @@ export function BookingViewDialog({ open, onOpenChange, booking, onSave, onInvoi
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
+                    <Label>Pallets</Label>
+                    <Input type="number" value={current.pallets ?? 0} onChange={(e) => setForm({ ...(current || {}), pallets: Number(e.target.value) })} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Spaces</Label>
+                    <Input type="number" value={current.spaces ?? 0} onChange={(e) => setForm({ ...(current || {}), spaces: Number(e.target.value) })} />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
                     <Label>Customer Reference</Label>
                     <Input value={current.customerRef ?? ""} onChange={(e) => setForm({ ...(current || {}), customerRef: e.target.value })} />
                   </div>
@@ -364,15 +390,9 @@ export function BookingViewDialog({ open, onOpenChange, booking, onSave, onInvoi
              </div>
            )}
 
-         {tab === "invoice" && hasPod && (
-            <InvoiceTab booking={booking} onInvoice={(id: string) => onInvoice(id, {
-              rateBasis: (booking.rateBasis ?? "per_pallet") as any,
-              unitPrice: booking.unitPrice ?? 0,
-              pallets: booking.pallets ?? 0,
-              spaces: booking.spaces ?? 0,
-              chargeTo: booking.chargeTo ?? booking.customer,
-            })} />
-          )}
+        {tab === "invoice" && hasPod && (
+           <InvoiceTab booking={booking} onInvoice={(id, details) => onInvoice(id, details)} />
+         )}
         </div>
 
         <DialogFooter>

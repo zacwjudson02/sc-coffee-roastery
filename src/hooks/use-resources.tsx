@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { uuid } from "@/lib/utils";
 
 export type Driver = {
   id: string;
@@ -83,14 +84,14 @@ const LS_KEY = "smh.resources";
 
 function seedDefaults() {
   const drivers: Driver[] = [
-    { id: "d1", name: "John Smith", phone: "0400 111 222", status: "Active", licenseExpiry: "2025-12-01", color: "#FF6B6B" },
-    { id: "d2", name: "Sarah Jones", phone: "0400 333 444", status: "Active", licenseExpiry: "2026-03-15", color: "#7C3AED" },
-    { id: "d3", name: "Mike Brown", phone: "0400 555 666", status: "License Expired", licenseExpiry: "2024-07-01", color: "#4ECDC4" },
-    { id: "d4", name: "Priya Patel", phone: "0400 777 888", status: "Active", licenseExpiry: "2026-08-20", color: "#3B82F6" },
+    { id: uuid(), name: "John Smith", phone: "0400 111 222", status: "Active", licenseExpiry: "2025-12-01", color: "#FF6B6B" },
+    { id: uuid(), name: "Sarah Jones", phone: "0400 333 444", status: "Active", licenseExpiry: "2026-03-15", color: "#7C3AED" },
+    { id: uuid(), name: "Mike Brown", phone: "0400 555 666", status: "License Expired", licenseExpiry: "2024-07-01", color: "#4ECDC4" },
+    { id: uuid(), name: "Priya Patel", phone: "0400 777 888", status: "Active", licenseExpiry: "2026-08-20", color: "#3B82F6" },
   ];
   const vehicles: Vehicle[] = [
-    { id: "v1", rego: "ABC-123", type: "Rigid", capacity: "6T", status: "Available", nextService: "2025-10-05" },
-    { id: "v2", rego: "XYZ-789", type: "Prime Mover", capacity: "24T", status: "In Service", nextService: "2025-10-10" },
+    { id: uuid(), rego: "ABC-123", type: "Rigid", capacity: "6T", status: "Available", nextService: "2025-10-05" },
+    { id: uuid(), rego: "XYZ-789", type: "Prime Mover", capacity: "24T", status: "In Service", nextService: "2025-10-10" },
   ];
   const shifts: Shift[] = [];
   const runsheets: RunSheet[] = [];
@@ -137,7 +138,7 @@ export function ResourceProvider({ children }: { children: React.ReactNode }) {
   }, [drivers]);
 
   const addDriver = useCallback((d: Omit<Driver, "id"> & { id?: string }) => {
-    const id = d.id ?? `d_${Date.now()}`;
+    const id = d.id ?? uuid();
     setDrivers((prev) => [{ id, ...d }, ...prev]);
     return id;
   }, []);
@@ -151,7 +152,7 @@ export function ResourceProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const addVehicle = useCallback((v: Omit<Vehicle, "id"> & { id?: string }) => {
-    const id = v.id ?? `v_${Date.now()}`;
+    const id = v.id ?? uuid();
     setVehicles((prev) => [{ id, ...v }, ...prev]);
     return id;
   }, []);
@@ -165,7 +166,7 @@ export function ResourceProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const addShift = useCallback((s: Omit<Shift, "id"> & { id?: string }) => {
-    const id = s.id ?? `s_${Date.now()}`;
+    const id = s.id ?? uuid();
     setShifts((prev) => [{ id, ...s }, ...prev]);
     return id;
   }, []);
@@ -182,7 +183,7 @@ export function ResourceProvider({ children }: { children: React.ReactNode }) {
   const ensureShift = useCallback((date: string, driverId: string) => {
     let found = shifts.find((s) => s.date === date && s.driverId === driverId);
     if (found) return found.id;
-    const id = `s_${Date.now()}`;
+    const id = uuid();
     const created: Shift = { id, date, driverId, status: "planned" };
     setShifts((prev) => [created, ...prev]);
     return id;
@@ -192,7 +193,7 @@ export function ResourceProvider({ children }: { children: React.ReactNode }) {
     const existing = runsheets.find((r) => r.shiftId === shiftId);
     if (existing) return existing.id;
     const shift = shifts.find((s) => s.id === shiftId);
-    const id = `rs_${Date.now()}`;
+    const id = uuid();
     const created: RunSheet = { id, shiftId, date: shift?.date || new Date().toISOString().slice(0,10), driverId: shift?.driverId || "", jobs: [] };
     setRunsheets((prev) => [created, ...prev]);
     return id;

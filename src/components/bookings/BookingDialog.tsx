@@ -18,10 +18,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useAppData } from "@/hooks/use-appdata";
 
 export type CreateBookingPayload = {
   consignmentNo: string;
   customer: string;
+  customerId?: string;
   pickupAddress: string;
   pickupSuburb: string;
   dropoffAddress: string;
@@ -33,6 +35,8 @@ export type CreateBookingPayload = {
   instructions?: string;
   customerRef?: string;
   secondRef?: string;
+  pallets?: number;
+  spaces?: number;
   files?: File[];
 };
 
@@ -43,12 +47,16 @@ interface BookingDialogProps {
 }
 
 export function BookingDialog({ open, onOpenChange, onCreate }: BookingDialogProps) {
+  const { customers } = useAppData();
   const [customer, setCustomer] = useState("");
+  const [customerId, setCustomerId] = useState<string | undefined>(undefined);
   const [date, setDate] = useState("");
   const [pickupAddress, setPickupAddress] = useState("");
   const [pickupSuburb, setPickupSuburb] = useState("");
   const [dropoffAddress, setDropoffAddress] = useState("");
   const [dropoffSuburb, setDropoffSuburb] = useState("");
+  const [pallets, setPallets] = useState<number>(0);
+  const [spaces, setSpaces] = useState<number>(0);
   const [palletType, setPalletType] = useState<"Standard" | "Chep" | "Loscam" | "Other" | "">("");
   const [transferType, setTransferType] = useState<"Metro" | "Regional" | "Linehaul" | "Other" | "">("");
   const [podMethod, setPodMethod] = useState<"Paper" | "Digital" | "Photo" | "Other" | "">("");
@@ -66,11 +74,14 @@ export function BookingDialog({ open, onOpenChange, onCreate }: BookingDialogPro
 
   function reset() {
     setCustomer("");
+    setCustomerId(undefined);
     setDate("");
     setPickupAddress("");
     setPickupSuburb("");
     setDropoffAddress("");
     setDropoffSuburb("");
+    setPallets(0);
+    setSpaces(0);
     setPalletType("");
     setTransferType("");
     setPodMethod("");
@@ -85,11 +96,14 @@ export function BookingDialog({ open, onOpenChange, onCreate }: BookingDialogPro
     onCreate?.({
       consignmentNo: reference,
       customer,
+      customerId,
       pickupAddress,
       pickupSuburb,
       dropoffAddress,
       dropoffSuburb,
       date,
+      pallets,
+      spaces,
       palletType: palletType as any,
       transferType: transferType as any,
       podMethod: podMethod as any,
@@ -116,14 +130,14 @@ export function BookingDialog({ open, onOpenChange, onCreate }: BookingDialogPro
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="customer">Customer</Label>
-              <Select value={customer} onValueChange={setCustomer}>
+            <Select value={customerId ?? ""} onValueChange={(v) => { setCustomerId(v); const c = customers.find((x) => x.id === v); setCustomer(c?.company || ""); }}>
                 <SelectTrigger id="customer">
-                  <SelectValue placeholder="Select customer" />
+                <SelectValue placeholder={customer || "Select customer"} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ABC Logistics">ABC Logistics</SelectItem>
-                  <SelectItem value="XYZ Freight">XYZ Freight</SelectItem>
-                  <SelectItem value="Global Shipping Co">Global Shipping Co</SelectItem>
+                {customers.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>{c.company}</SelectItem>
+                ))}
                 </SelectContent>
               </Select>
             </div>
@@ -135,6 +149,17 @@ export function BookingDialog({ open, onOpenChange, onCreate }: BookingDialogPro
           </div>
 
           <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="pallets">Pallets</Label>
+            <Input id="pallets" type="number" value={pallets} onChange={(e) => setPallets(Number(e.target.value))} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="spaces">Spaces</Label>
+            <Input id="spaces" type="number" value={spaces} onChange={(e) => setSpaces(Number(e.target.value))} />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="pickupAddress">Pickup Address</Label>
               <Input id="pickupAddress" placeholder="Full pickup address" value={pickupAddress} onChange={(e) => setPickupAddress(e.target.value)} />

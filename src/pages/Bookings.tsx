@@ -9,6 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Plus, Search, Filter, ClipboardList, CheckCircle2, Loader2, MapPin, FileCheck2, DollarSign } from "lucide-react";
+import { formatDateAU, formatDateTimeAU } from "@/lib/utils";
 import { BookingDialog } from "@/components/bookings/BookingDialog";
 import { BookingTable, BookingRow } from "@/components/shared/BookingTable";
 import { EntityModal } from "@/components/shared/EntityModal";
@@ -22,6 +23,10 @@ import { PodViewer } from "@/components/pods/PodViewer";
 import { SavedViewsDialog } from "@/components/shared/SavedViewsDialog";
 import { useToast } from "@/hooks/use-toast";
 import { BookingViewDialog } from "@/components/bookings/BookingViewDialog";
+import { useInvoices } from "@/hooks/use-invoices";
+import { useAppData } from "@/hooks/use-appdata";
+import { usePodStore } from "@/hooks/use-podstore";
+import { useEvents } from "@/hooks/use-events";
 
 type Booking = {
   id: string;
@@ -89,7 +94,7 @@ const mockBookings: Booking[] = [
     pickup: "Brisbane Port",
     dropoff: "Gold Coast",
     date: "2024-10-02",
-    status: "Invoiced",
+    status: "Confirmed",
     driver: "Sarah Jones",
     suburb: "Gold Coast",
     pickupSuburb: "Brisbane",
@@ -102,9 +107,9 @@ const mockBookings: Booking[] = [
     podMethod: "Digital",
     podReceived: true,
     specialInstructions: "Call on approach",
-    unitPrice: 45,
-    rateBasis: "per_pallet",
-    invoiceTotal: 450,
+    unitPrice: undefined,
+    rateBasis: undefined,
+    invoiceTotal: undefined,
     customerRef: "PO-2002",
     secondRef: "REF-B2",
     createdAt: "2024-10-01 08:30",
@@ -190,6 +195,47 @@ export default function Bookings() {
   const [customBase, setCustomBase] = useState<"Admin" | "Allocation" | "Customer Service" | null>(null);
   const [customColumns, setCustomColumns] = useState<string[] | null>(null);
   const { toast } = useToast();
+  const { invoices, createInvoice, addLine, updateInvoice, findOrCreateDraftByCustomer } = useInvoices();
+  const { bookings: storeBookings, setBookings: setStoreBookings, updateBooking, addBooking, customers: customerStore } = useAppData();
+  const { setFile, getFile } = usePodStore();
+  const events = useEvents();
+
+  useEffect(() => {
+    // Sync local demo state from central store once at mount; prefer store as source of truth
+    if (storeBookings.length > 0) {
+      // Map AppData booking into local Booking shape (compat for existing UI)
+      const mapped = storeBookings.map((b) => ({
+        id: b.id,
+        bookingId: b.bookingId,
+        customer: b.customerName,
+        pickup: b.pickup,
+        dropoff: b.dropoff,
+        date: b.date,
+        status: b.status,
+        driver: b.driver,
+        pickupSuburb: b.pickupSuburb,
+        dropoffSuburb: b.dropoffSuburb,
+        pallets: b.pallets,
+        spaces: b.spaces,
+        chargeTo: b.chargeTo as any,
+        palletType: b.palletType,
+        transferType: b.transferType,
+        podMethod: b.podMethod,
+        podReceived: b.podReceived,
+        customerRef: b.customerRef,
+        secondRef: b.secondRef,
+        unitPrice: b.unitPrice,
+        rateBasis: b.rateBasis,
+        invoiceTotal: b.invoiceTotal,
+        createdAt: b.createdAt,
+        updatedAt: b.updatedAt,
+        // podFile bridged from PodStore
+        podFile: getFile(`booking:${b.id}`),
+      }));
+      setBookings(mapped as any);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storeBookings, getFile]);
 
   const customers = useMemo(() => Array.from(new Set(bookings.map((b) => b.customer))), [bookings]);
   const drivers = useMemo(() => Array.from(new Set(bookings.map((b) => b.driver).filter(Boolean))) as string[], [bookings]);
@@ -257,6 +303,35 @@ export default function Bookings() {
     const now = new Date().toISOString().slice(0,16).replace("T"," ");
     const created: Booking = { id: newId, ...newBooking, createdAt: now, updatedAt: now };
     setBookings((prev) => [created, ...prev]);
+    // Persist into central store as well
+    setStoreBookings((prev) => [{
+      id: created.id,
+      bookingId: created.bookingId,
+      customerId: (customerStore.find((c) => c.company === created.customer)?.id) || (customerStore.find((c) => c.company.toLowerCase() === created.customer.toLowerCase())?.id) || "",
+      customerName: created.customer,
+      pickup: created.pickup,
+      dropoff: created.dropoff,
+      date: created.date!,
+      status: created.status as any,
+      driver: created.driver,
+      pickupSuburb: created.pickupSuburb,
+      dropoffSuburb: created.dropoffSuburb,
+      pallets: created.pallets,
+      spaces: created.spaces,
+      chargeTo: created.chargeTo as any,
+      palletType: created.palletType,
+      transferType: created.transferType,
+      podMethod: created.podMethod,
+      podReceived: created.podReceived,
+      customerRef: created.customerRef,
+      secondRef: created.secondRef,
+      unitPrice: created.unitPrice,
+      rateBasis: created.rateBasis,
+      invoiceTotal: created.invoiceTotal,
+      createdAt: created.createdAt!,
+      updatedAt: created.updatedAt!,
+    }, ...prev]);
+    events.publish({ type: "booking.created", payload: { id: created.id, bookingId: created.bookingId }, at: new Date().toISOString() });
     return newId;
   }
 
@@ -267,30 +342,54 @@ export default function Bookings() {
   function setDriverForBooking(bookingId: string, driverName: string) {
     const now = new Date().toISOString().slice(0,16).replace("T"," ");
     setBookings((prev) => prev.map((b) => (b.id === bookingId ? { ...b, driver: driverName, status: "Allocated", updatedAt: now } : b)));
+    updateBooking(bookingId, { driver: driverName, status: "Allocated" });
+    events.publish({ type: "booking.allocated", payload: { id: bookingId, driver: driverName }, at: new Date().toISOString() });
     setAllocateForId(null);
   }
 
   function generateInvoice(bookingId: string, details?: { rateBasis?: "per_pallet" | "per_space"; unitPrice?: number; pallets?: number; spaces?: number; chargeTo?: string; }) {
     const b = bookings.find((x) => x.id === bookingId);
     if (!b) return;
-    const rateBasis = details?.rateBasis ?? b.rateBasis;
-    const unitPrice = details?.unitPrice ?? b.unitPrice ?? 0;
-    const pallets = details?.pallets ?? b.pallets ?? 0;
-    const spaces = details?.spaces ?? b.spaces ?? 0;
+    const storeBk = storeBookings.find((x) => x.id === bookingId);
+    const rateBasis = (details?.rateBasis ?? b.rateBasis ?? "per_pallet") as "per_pallet" | "per_space";
+    const unitPrice = Number(details?.unitPrice ?? b.unitPrice ?? 0);
+    const pallets = Number(details?.pallets ?? b.pallets ?? 0);
+    const spaces = Number(details?.spaces ?? b.spaces ?? 0);
     const total = (rateBasis === "per_space" ? spaces : pallets) * unitPrice;
     const now = new Date().toISOString().slice(0,16).replace("T"," ");
     toast({ title: "Invoice generated (demo)", description: `Created draft invoice for ${b.bookingId}` });
-    setBookings((prev) => prev.map((x) => (x.id === bookingId ? { ...x, status: "Invoiced", rateBasis, unitPrice, pallets, spaces, chargeTo: (details?.chargeTo as any) ?? x.chargeTo, invoiceTotal: Number(total.toFixed(2)), updatedAt: now } : x)));
+    const chargeTo = (details?.chargeTo as any) ?? b.chargeTo;
+    setBookings((prev) => prev.map((x) => (x.id === bookingId ? { ...x, status: "Invoiced", rateBasis, unitPrice, pallets, spaces, chargeTo, invoiceTotal: Number(total.toFixed(2)), updatedAt: now } : x)));
+    updateBooking(bookingId, { status: "Invoiced", rateBasis, unitPrice, pallets, spaces, chargeTo, invoiceTotal: Number(total.toFixed(2)) });
+
+    // Pool into existing Draft invoice by customer (customerId preferred, fallback to name)
+    const quantity = rateBasis === "per_space" ? (spaces || 0) : (pallets || 0);
+    const lines = [
+      { description: `Transport ${b.pickup} → ${b.dropoff}`, quantity, unitPrice: unitPrice || 0 },
+    ];
+    const today = new Date().toISOString().slice(0,10);
+    const cid = storeBk?.customerId || (customerStore.find((c) => c.company.toLowerCase() === (chargeTo ?? b.customer).toLowerCase())?.id);
+    const { id: invoiceId, created } = findOrCreateDraftByCustomer(cid, (chargeTo ?? b.customer) as string, b.date || today);
+    addLine(invoiceId, { description: lines[0].description, quantity: lines[0].quantity, unitPrice: lines[0].unitPrice });
+    const existing = invoices.find((x) => x.id === invoiceId);
+    updateInvoice(invoiceId, { source: [ ...(existing?.source ?? []), { type: "booking", id: b.id, bookingId: b.bookingId } ] });
+    events.publish({ type: created ? "invoice.created" : "invoice.appended", payload: { bookingId: b.id, invoiceId }, at: new Date().toISOString() });
+    toast({ title: created ? "Invoice created" : "Added to existing invoice", description: created ? `Draft ${invoiceId.slice(0,8)}…` : undefined });
   }
 
   function handleSaveBooking(updated: Partial<Booking> & { id: string }) {
     const now = new Date().toISOString().slice(0,16).replace("T"," ");
     setBookings((prev) => prev.map((b) => (b.id === updated.id ? { ...b, ...updated, updatedAt: now } : b)));
     toast({ title: "Booking saved" });
+    updateBooking(updated.id, { ...updated, updatedAt: now } as any);
+    events.publish({ type: "booking.updated", payload: { id: updated.id }, at: new Date().toISOString() });
   }
 
   function handleUploadPod(bookingId: string, file: File) {
+    setFile(`booking:${bookingId}`, file);
     setBookings((prev) => prev.map((b) => (b.id === bookingId ? { ...b, podFile: file, podReceived: true } : b)));
+    updateBooking(bookingId, { podReceived: true });
+    events.publish({ type: "booking.pod_uploaded", payload: { id: bookingId, fileName: file.name }, at: new Date().toISOString() });
     toast({ title: "POD uploaded (demo)", description: `Attached ${file.name}` });
   }
 
@@ -492,7 +591,7 @@ export default function Bookings() {
                   <TableCell>{b.customer}</TableCell>
                   <TableCell>{b.pickup}</TableCell>
                   <TableCell>{b.dropoff}</TableCell>
-                  <TableCell>{b.date ?? "-"}</TableCell>
+                  <TableCell>{b.date ? formatDateAU(b.date) : "-"}</TableCell>
                   <TableCell>{b.customerRef ?? "-"}</TableCell>
                   <TableCell>{b.secondRef ?? "-"}</TableCell>
                   <TableCell>
@@ -687,6 +786,8 @@ export default function Bookings() {
             customerRef: payload.customerRef,
             secondRef: payload.secondRef,
             date: payload.date,
+            pallets: payload.pallets,
+            spaces: payload.spaces,
             status: allocate ? "Allocated" : "Draft",
             driver: allocate ? "Unassigned" : undefined,
           };
