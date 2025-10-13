@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -13,6 +13,8 @@ import { ShiftViewDialog } from "@/components/shifts/ShiftViewDialog";
 import { useResources } from "@/hooks/use-resources";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { PreviewRunsheetDialog } from "@/components/runsheets/PreviewRunsheetDialog";
+import { useEvents } from "@/hooks/use-events";
+import { useAppData } from "@/hooks/use-appdata";
 
 type Job = {
   id: string;
@@ -39,42 +41,180 @@ type DriverRunsheet = {
   open?: boolean;
 };
 
-const MOCK: DriverRunsheet[] = [
-  {
-    driver: "John Smith",
-    routeSummary: "Melbourne CBD ⇄ Airport",
-    start: "07:30",
-    finish: "14:45",
-    jobs: [
-      { id: "j1", bookingId: "BK-2024-0150", type: "Pickup", address: "Melbourne Warehouse", pickup: "Melbourne Warehouse", dropoff: "Sydney CBD", pickupSuburb: "Melbourne", dropoffSuburb: "Sydney", pallets: 2, spaces: 2, palletType: "CHEP", transferMethod: "Fork", suburb: "Melbourne" },
-      { id: "j2", bookingId: "BK-2024-0148", type: "Dropoff", address: "Melbourne", pickup: "Adelaide Depot", dropoff: "Melbourne", pickupSuburb: "Adelaide", dropoffSuburb: "Melbourne", pallets: 1, spaces: 1, palletType: "Standard", transferMethod: "Tailgate", suburb: "Melbourne" },
-    ],
-    open: true,
-  },
-  {
-    driver: "Sarah Jones",
-    routeSummary: "Brisbane South",
-    start: "08:00",
-    finish: "16:00",
-    jobs: [
-      { id: "j3", bookingId: "BK-2024-0149", type: "Pickup", address: "Brisbane Port", pickup: "Brisbane Port", dropoff: "Gold Coast", pickupSuburb: "Brisbane", dropoffSuburb: "Gold Coast", pallets: 3, spaces: 2, palletType: "Loscam", transferMethod: "Fork", suburb: "Brisbane" },
-      { id: "j4", bookingId: "BK-2024-0147", type: "Dropoff", address: "Fremantle", pickup: "Perth Hub", dropoff: "Fremantle", pickupSuburb: "Perth", dropoffSuburb: "Fremantle", pallets: 2, spaces: 2, palletType: "Standard", transferMethod: "Hand unload", suburb: "Gold Coast" },
-    ],
-  },
-];
+// No hardcoded demo runsheets; the page derives from the backing store
 
 export default function Runsheets() {
   const [date, setDate] = useState("");
   const [driverFilter, setDriverFilter] = useState("all");
   const { drivers: storeDrivers, shifts, ensureShift, ensureRunsheet, addJobsToRunsheet, runsheets: storeRunsheets, deleteRunsheet, removeShift, getRunsheetBy } = useResources();
-  const [runsheets, setRunsheets] = useState<DriverRunsheet[]>(MOCK);
+  const [runsheets, setRunsheets] = useState<DriverRunsheet[]>([]);
+  const events = useEvents();
+  const app = useAppData();
   const [openCreate, setOpenCreate] = useState(false);
   const [openAllocate, setOpenAllocate] = useState(false);
   const [viewFor, setViewFor] = useState<any | null>(null);
   const [viewShift, setViewShift] = useState<{ driver: string } | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<{ shiftId: string; driver: string } | null>(null);
   const [preview, setPreview] = useState<{ driver: string } | null>(null);
-  const drivers = useMemo(() => Array.from(new Set(MOCK.map((r) => r.driver))), []);
+  const drivers = useMemo(() => {
+    const fromStore = storeDrivers.map((d) => d.name);
+    const fromUi = Array.from(new Set(runsheets.map((r) => r.driver)));
+    return Array.from(new Set([...fromStore, ...fromUi]));
+  }, [storeDrivers, runsheets]);
+
+  // Helper to format/parse dates in local time to avoid timezone shifts
+  function formatLocalDate(d: Date): string {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const da = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${da}`;
+  }
+  function parseLocalDate(s: string): Date {
+    const [y, m, d] = s.split("-").map((n) => Number(n));
+    return new Date(y, (m || 1) - 1, d || 1);
+  }
+
+  // Derive what to display based on selected date. If a date is set, prefer runsheets from the store for that date.
+  const displayRunsheets = useMemo(() => {
+    if (!date) return runsheets;
+    const forDateShiftIds = shifts.filter((s) => s.date === date).map((s) => s.id);
+    if (forDateShiftIds.length === 0) return [] as DriverRunsheet[];
+    const rsForDate = storeRunsheets.filter((r) => forDateShiftIds.includes(r.shiftId));
+    const built: DriverRunsheet[] = rsForDate.map((r) => {
+      const drv = storeDrivers.find((d) => d.id === r.driverId)?.name || "";
+      return {
+        driver: drv,
+        routeSummary: r.jobs.length > 0 ? `${r.jobs[0].pickup ?? "Start"} → ${r.jobs[r.jobs.length - 1].dropoff ?? "End"}` : "",
+        start: "08:00",
+        finish: "16:00",
+        jobs: r.jobs.map((j) => ({
+          id: j.id,
+          bookingId: j.bookingId,
+          type: "Pickup" as const,
+          address: j.pickup,
+          pickup: j.pickup,
+          dropoff: j.dropoff,
+          pickupSuburb: j.pickupSuburb,
+          dropoffSuburb: j.dropoffSuburb,
+          pallets: j.pallets ?? 1,
+          spaces: j.spaces ?? 1,
+          palletType: j.palletType || "Standard",
+          transferMethod: j.transferMethod || "Fork",
+          suburb: j.suburb || j.dropoff,
+        })),
+        open: true,
+      };
+    }).filter((r) => r.driver);
+    return built;
+  }, [date, runsheets, storeRunsheets, shifts, storeDrivers]);
+
+  // Auto-generate runsheets for the selected date from allocated bookings if none exist yet (demo helper)
+  useEffect(() => {
+    if (!date) return;
+    const flag = `smh.autogen.runsheets.${date}`;
+    try { if (localStorage.getItem(flag)) return; } catch {}
+    const anyForDate = storeRunsheets.some((r) => {
+      const s = shifts.find((x) => x.id === r.shiftId);
+      return s?.date === date;
+    });
+    if (anyForDate) return;
+    // Build from bookings with a driver on this date
+    const byDriver: Record<string, typeof app.bookings> = {} as any;
+    app.bookings.forEach((b) => {
+      if (b.date !== date) return;
+      if (!b.driver) return;
+      if (!byDriver[b.driver]) byDriver[b.driver] = [] as any[];
+      byDriver[b.driver].push(b);
+    });
+    const driverNames = Object.keys(byDriver);
+    if (driverNames.length === 0) return;
+    driverNames.forEach((name) => {
+      const drv = storeDrivers.find((d) => d.name === name);
+      if (!drv) return;
+      const shiftId = ensureShift(date, drv.id);
+      ensureRunsheet(shiftId);
+      const jobs = byDriver[name].map((b, i) => ({
+        id: `${b.bookingId}-${Date.now()}-${i}`,
+        bookingId: b.bookingId,
+        pickup: b.pickup,
+        dropoff: b.dropoff,
+        pickupSuburb: b.pickupSuburb,
+        dropoffSuburb: b.dropoffSuburb,
+        pallets: b.pallets ?? 1,
+        spaces: b.spaces ?? 1,
+        palletType: b.palletType || "Standard",
+        transferMethod: "Fork",
+        suburb: b.dropoffSuburb || b.dropoff,
+      }));
+      addJobsToRunsheet(shiftId, jobs);
+    });
+    try { localStorage.setItem(flag, "1"); } catch {}
+  }, [date, app.bookings, storeDrivers, shifts, storeRunsheets, ensureShift, ensureRunsheet, addJobsToRunsheet]);
+
+  // Remove previous sync effect; displayRunsheets builds directly from store
+
+  // Listen for booking allocations from the Bookings page and reflect them here
+  useEffect(() => {
+    const unsubscribe = events.subscribe((evt) => {
+      if (evt.type !== "booking.allocated") return;
+      const bookingId = String(evt.payload?.id || "");
+      const driverName = String(evt.payload?.driver || "");
+      if (!bookingId || !driverName) return;
+      const b = app.bookings.find((x) => x.id === bookingId);
+      const d = storeDrivers.find((x) => x.name === driverName);
+      if (!b || !d) return;
+      const runDate = date || b.date || new Date().toISOString().slice(0,10);
+      const shiftId = ensureShift(runDate, d.id);
+      ensureRunsheet(shiftId);
+      const job = {
+        id: `${b.bookingId}-${Date.now()}`,
+        bookingId: b.bookingId,
+        pickup: b.pickup,
+        dropoff: b.dropoff,
+        pickupSuburb: b.pickupSuburb,
+        dropoffSuburb: b.dropoffSuburb,
+        pallets: b.pallets ?? 1,
+        spaces: b.spaces ?? 1,
+        palletType: b.palletType || "Standard",
+        transferMethod: "Fork",
+        suburb: b.dropoffSuburb || b.dropoff,
+      };
+      addJobsToRunsheet(shiftId, [job]);
+      // Update local UI panel so it appears instantly
+      setRunsheets((prev) => {
+        const next = prev.map((r) => ({ ...r, jobs: [...r.jobs] }));
+        let target = next.find((r) => r.driver === driverName);
+        if (!target) {
+          target = {
+            driver: driverName,
+            routeSummary: `${b.pickup} → ${b.dropoff}`,
+            start: "08:00",
+            finish: "16:00",
+            jobs: [],
+            open: true,
+          };
+          next.unshift(target);
+        }
+        target.jobs.push({
+          id: job.id,
+          bookingId: job.bookingId,
+          type: "Pickup",
+          address: b.pickup,
+          pickup: b.pickup,
+          dropoff: b.dropoff,
+          pickupSuburb: b.pickupSuburb,
+          dropoffSuburb: b.dropoffSuburb,
+          pallets: job.pallets!,
+          spaces: job.spaces!,
+          palletType: job.palletType!,
+          transferMethod: job.transferMethod!,
+          suburb: job.suburb!,
+        });
+        return next;
+      });
+    });
+    return unsubscribe;
+  }, [events, app.bookings, storeDrivers, date, ensureShift, ensureRunsheet, addJobsToRunsheet]);
 
   function onDragStart(e: React.DragEvent<HTMLDivElement>, fromDriver: string, jobId: string) {
     e.dataTransfer.setData("text/plain", JSON.stringify({ fromDriver, jobId }));
@@ -120,10 +260,10 @@ export default function Runsheets() {
               <Button variant="outline" className="justify-start"><CalendarIcon className="h-4 w-4 mr-2" /> {date || "Select date"}</Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-              <Calendar mode="single" selected={date ? new Date(date) : undefined} onSelect={(d) => setDate(d ? d.toISOString().slice(0,10) : "")} initialFocus />
+              <Calendar mode="single" selected={date ? parseLocalDate(date) : undefined} onSelect={(d) => setDate(d ? formatLocalDate(d) : "")} initialFocus />
             </PopoverContent>
           </Popover>
-          <Button variant="outline" size="sm" onClick={() => setDate(new Date().toISOString().slice(0,10))}>Today</Button>
+          <Button variant="outline" size="sm" onClick={() => setDate(formatLocalDate(new Date()))}>Today</Button>
 
           <Select value={driverFilter} onValueChange={setDriverFilter}>
             <SelectTrigger className="w-[200px]">
@@ -142,7 +282,7 @@ export default function Runsheets() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {runsheets
+        {displayRunsheets
           .filter((r) => driverFilter === "all" || r.driver === driverFilter)
           .map((r) => (
             <div key={r.driver} className="rounded-lg border bg-card">
@@ -374,7 +514,7 @@ export default function Runsheets() {
         jobs={(() => {
           if (!preview) return [] as any[];
           // Prefer the UI runsheet jobs for immediate preview
-          const ui = runsheets.find((r) => r.driver === preview.driver);
+          const ui = displayRunsheets.find((r) => r.driver === preview.driver);
           if (ui && ui.jobs && ui.jobs.length > 0) {
             return ui.jobs.map((j) => ({ id: j.id, bookingId: j.bookingId, pickup: j.pickup, dropoff: j.dropoff, pallets: j.pallets, spaces: j.spaces, palletType: j.palletType, transferMethod: j.transferMethod }));
           }

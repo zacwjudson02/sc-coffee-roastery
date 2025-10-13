@@ -36,3 +36,7 @@ export function SupabaseTable<T extends Record<string, any>>({ tableName, column
 
 
 
+
+
+
+

@@ -7,39 +7,44 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import type { SimpleBooking } from "@/components/runsheets/CreateRunsheetDialog";
 import { useResources } from "@/hooks/use-resources";
+import { useAppData } from "@/hooks/use-appdata";
 
 type AllocateBookingsDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   drivers: string[];
   onAllocate: (payload: { driver: string; bookings: SimpleBooking[] }) => void;
+  bookings?: SimpleBooking[]; // optional; if omitted derive from store
+  date?: string;
 };
 
-const MOCK_UNASSIGNED: SimpleBooking[] = [
-  { bookingId: "BK-2024-0160", customer: "ABC Logistics", pickup: "Melbourne Warehouse", dropoff: "Sydney CBD", date: "2024-10-06" },
-  { bookingId: "BK-2024-0161", customer: "XYZ Freight", pickup: "Brisbane Port", dropoff: "Gold Coast", date: "2024-10-06" },
-  { bookingId: "BK-2024-0162", customer: "Global Shipping Co", pickup: "Adelaide Depot", dropoff: "Melbourne", date: "2024-10-06" },
-  { bookingId: "BK-2024-0163", customer: "Fast Track Transport", pickup: "Perth Hub", dropoff: "Fremantle", date: "2024-10-06" },
-];
-
-export function AllocateBookingsDialog({ open, onOpenChange, drivers, onAllocate }: AllocateBookingsDialogProps) {
+export function AllocateBookingsDialog({ open, onOpenChange, drivers, onAllocate, bookings: provided, date }: AllocateBookingsDialogProps) {
   const [driver, setDriver] = useState<string>("");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<Record<string, boolean>>({});
   const { drivers: storeDrivers } = useResources();
+  const app = useAppData();
+
+  const source: SimpleBooking[] = useMemo(() => {
+    if (Array.isArray(provided)) return provided;
+    const list = app.bookings
+      .filter((b) => (!b.driver) && (!date || b.date === date))
+      .map((b) => ({ bookingId: b.bookingId, customer: b.customerName, pickup: b.pickup, dropoff: b.dropoff, date: b.date })) as SimpleBooking[];
+    return list;
+  }, [provided, app.bookings, date]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return MOCK_UNASSIGNED;
-    return MOCK_UNASSIGNED.filter((b) => [b.bookingId, b.customer, b.pickup, b.dropoff].some((v) => v.toLowerCase().includes(q)));
-  }, [query]);
+    if (!q) return source;
+    return source.filter((b) => [b.bookingId, b.customer, b.pickup, b.dropoff].some((v) => v.toLowerCase().includes(q)));
+  }, [query, source]);
 
   function toggle(bookingId: string, checked: boolean | string) {
     setSelected((prev) => ({ ...prev, [bookingId]: Boolean(checked) }));
   }
 
   function handleAllocate() {
-    const chosen = MOCK_UNASSIGNED.filter((b) => selected[b.bookingId]);
+    const chosen = source.filter((b) => selected[b.bookingId]);
     if (!driver || chosen.length === 0) return;
     onAllocate({ driver, bookings: chosen });
     setDriver("");

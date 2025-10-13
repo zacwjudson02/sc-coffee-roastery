@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -13,6 +14,7 @@ import { usePodStore } from "@/hooks/use-podstore";
 import { formatDateAU, formatCurrency } from "@/lib/utils";
 
 export default function Invoices() {
+  const location = useLocation();
   const { invoices, createInvoice, markStatus, addLine, removeInvoice, updateInvoice } = useInvoices();
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
@@ -31,6 +33,14 @@ export default function Invoices() {
   const { setFile } = usePodStore();
   const [viewBookingId, setViewBookingId] = useState<string | null>(null);
   const filtersDirty = (search.trim().length > 0) || status !== "all" || viewScope !== "active" || !!fromDate || !!toDate;
+
+  // Initialize search from ?customer param (for deep linking from customer dialog)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const qCustomer = params.get("customer");
+    if (qCustomer) setSearch(qCustomer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const rows = useMemo(() => invoices.map((inv) => ({
     id: inv.id,

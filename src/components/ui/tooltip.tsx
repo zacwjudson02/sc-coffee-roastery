@@ -3,7 +3,10 @@ import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 
 import { cn } from "@/lib/utils";
 
-const TooltipProvider = TooltipPrimitive.Provider;
+// Some environments have reported duplicate React instances causing invalid hook call
+// errors when using Radix's Provider at the app root. The provider is optional for
+// basic usage, so we export a no-op wrapper to avoid hook evaluation at the top level.
+const TooltipProvider = ({ children }: { children: React.ReactNode }) => <>{children}</>;
 
 const Tooltip = TooltipPrimitive.Root;
 

@@ -41,7 +41,7 @@ export function AppSidebar() {
   const { open } = useSidebar();
   const { addBooking, customers, updateBooking } = useAppData();
   const { setFile } = usePodStore();
-  const { createInvoice, addLine, markStatus, updateInvoice } = useInvoices();
+  const { invoices, createInvoice, addLine, markStatus, updateInvoice, findOrCreateDraftByCustomer } = useInvoices();
   function handleResetDemo() {
     const ok = window.confirm("Reset all demo data? This will clear local storage and reload the app.");
     if (!ok) return;
@@ -112,6 +112,63 @@ export function AppSidebar() {
     alert(`Injected ${count} booking(s) ready to invoice.`);
   }
 
+  async function handleInjectInvoicedHistory() {
+    if (!customers || customers.length === 0) { alert("No customers available"); return; }
+    const samplePairs = [
+      ["Melbourne Warehouse", "Sydney CBD"],
+      ["Brisbane Port", "Gold Coast"],
+      ["Adelaide Depot", "Melbourne"],
+      ["Perth Hub", "Fremantle"],
+      ["Canberra DC", "Newcastle"],
+    ];
+    const today = new Date();
+    let created = 0;
+    customers.forEach((customer, cIdx) => {
+      for (let i = 0; i < 15; i++) {
+        const pair = samplePairs[(cIdx + i) % samplePairs.length];
+        const date = new Date(today);
+        const back = (i * 3) + (cIdx % 5); // spread over ~45 days
+        date.setDate(today.getDate() - back);
+        const iso = date.toISOString().slice(0,10);
+        const pallets = ((i + 2) % 8) + 2;
+        const unitPrice = 40 + ((i % 5) * 5);
+        const total = pallets * unitPrice;
+        const bookingId = `BK-${today.getFullYear()}-${String(Math.floor(Math.random() * 9000) + 1000)}`;
+        const id = addBooking({
+          bookingId,
+          customerId: customer.id,
+          customerName: customer.company,
+          pickup: pair[0],
+          dropoff: pair[1],
+          date: iso,
+          status: "Invoiced",
+          driver: undefined,
+          pickupSuburb: pair[0].split(" ")[0],
+          dropoffSuburb: pair[1].split(" ")[0],
+          pallets,
+          spaces: pallets,
+          chargeTo: "Sender",
+          palletType: "Standard",
+          transferType: "Metro",
+          podMethod: "Photo",
+          podReceived: true,
+          customerRef: `PO-${Math.floor(Math.random()*9000)+1000}`,
+          secondRef: `REF-${Math.floor(Math.random()*900)+100}`,
+          unitPrice,
+          rateBasis: "per_pallet",
+          invoiceTotal: Number(total.toFixed(2)),
+        });
+        // Pool into per-customer draft invoice by date
+        const { id: invoiceId } = findOrCreateDraftByCustomer(customer.id, customer.company, iso);
+        addLine(invoiceId, { description: `Transport ${pair[0]} → ${pair[1]}`, quantity: pallets, unitPrice });
+        const existing = invoices.find((x) => x.id === invoiceId);
+        updateInvoice(invoiceId, { source: [ ...(existing?.source ?? []), { type: "booking", id, bookingId } ] });
+        created++;
+      }
+    });
+    alert(`Injected ${created} invoiced booking(s) across ${customers.length} customer(s).`);
+  }
+
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
       <SidebarHeader className="border-b border-sidebar-border p-4">
@@ -168,6 +225,14 @@ export function AppSidebar() {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
+                  <button onClick={handleInjectInvoicedHistory}>
+                    <FileText className="h-4 w-4" />
+                    <span>Inject 15 Invoiced/Customer</span>
+                  </button>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
                   <button onClick={async () => {
                     const countStr = prompt("How many demo invoices? Enter a date (YYYY-MM-DD) then count, e.g. 2025-09-01,3", "2025-09-01,1");
                     if (!countStr) return;
@@ -213,6 +278,14 @@ export function AppSidebar() {
                   <button onClick={() => handleInject(5)}>
                     <FileText className="h-4 w-4" />
                     <span>Inject 5 Bookings</span>
+                  </button>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <button onClick={() => handleInject(15)}>
+                    <FileText className="h-4 w-4" />
+                    <span>Inject 15 Allocated (today)</span>
                   </button>
                 </SidebarMenuButton>
               </SidebarMenuItem>

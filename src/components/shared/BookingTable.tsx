@@ -119,3 +119,7 @@ export function BookingTable({ data, onView, onAllocate, pageSize = 10 }: Bookin
 
 
 
+
+
+
+

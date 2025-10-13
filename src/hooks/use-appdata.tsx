@@ -8,6 +8,12 @@ export type Customer = {
   company: string;
   contact: string;
   email?: string;
+  emails?: string[];
+  phone?: string;
+  address?: string; // legacy single-line address
+  addresses?: { id: string; label?: string; street?: string; suburb?: string; city?: string; postcode?: string }[];
+  archivedAt?: string;
+  extras?: Record<string, string>;
   createdAt: string;
   updatedAt: string;
 };
@@ -17,6 +23,8 @@ export type Vendor = {
   name: string;
   type?: string;
   contact?: string;
+  email?: string;
+  emails?: string[];
   lastPayment?: string;
   createdAt: string;
   updatedAt: string;
@@ -62,8 +70,10 @@ type AppDataState = AppData & {
   setBookings: (u: (prev: Booking[]) => Booking[]) => void;
   addCustomer: (input: Omit<Customer, "id" | "createdAt" | "updatedAt">) => UUID;
   updateCustomer: (id: UUID, patch: Partial<Customer>) => void;
+  removeCustomer: (id: UUID) => void;
   addVendor: (input: Omit<Vendor, "id" | "createdAt" | "updatedAt">) => UUID;
   updateVendor: (id: UUID, patch: Partial<Vendor>) => void;
+  removeVendor: (id: UUID) => void;
   addBooking: (input: Omit<Booking, "id" | "createdAt" | "updatedAt">) => UUID;
   updateBooking: (id: UUID, patch: Partial<Booking>) => void;
 };
@@ -112,6 +122,18 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const [vendors, setVendors] = useState<Vendor[]>(initial.current.vendors);
   const [bookings, setBookings] = useState<Booking[]>(initial.current.bookings);
 
+  // One-time dev helper: coerce all booking dates to 2025-10-11 for Runsheets testing
+  useEffect(() => {
+    const FLAG = "smh.dateCoerced.2025-10-11";
+    try {
+      if (localStorage.getItem(FLAG)) return;
+      const target = "2025-10-11";
+      setBookings((prev) => prev.map((b) => ({ ...b, date: target })));
+      localStorage.setItem(FLAG, "1");
+    } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     try {
       localStorage.setItem(LS_KEY, JSON.stringify({ customers, vendors, bookings }));
@@ -142,6 +164,10 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     setVendors((prev) => prev.map((v) => (v.id === id ? { ...v, ...patch, updatedAt: now } : v)));
   }, []);
 
+  const removeVendor: AppDataState["removeVendor"] = useCallback((id) => {
+    setVendors((prev) => prev.filter((v) => v.id !== id));
+  }, []);
+
   const addBooking: AppDataState["addBooking"] = useCallback((input) => {
     const now = new Date().toISOString();
     const id = uuid();
@@ -154,6 +180,12 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     setBookings((prev) => prev.map((b) => (b.id === id ? { ...b, ...patch, updatedAt: now } : b)));
   }, []);
 
+  const removeCustomer: AppDataState["removeCustomer"] = useCallback((id) => {
+    // Remove the customer, and orphan any linked bookings by clearing customerId while preserving customerName
+    setCustomers((prev) => prev.filter((c) => c.id !== id));
+    setBookings((prev) => prev.map((b) => (b.customerId === id ? { ...b, customerId: "" } : b)));
+  }, []);
+
   const value: AppDataState = useMemo(() => ({
     customers,
     vendors,
@@ -163,11 +195,13 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     setBookings: (u) => setBookings((prev) => u(prev)),
     addCustomer,
     updateCustomer,
+    removeCustomer,
     addVendor,
     updateVendor,
+    removeVendor,
     addBooking,
     updateBooking,
-  }), [customers, vendors, bookings, addCustomer, updateCustomer, addVendor, updateVendor, addBooking, updateBooking]);
+  }), [customers, vendors, bookings, addCustomer, updateCustomer, removeCustomer, addVendor, updateVendor, removeVendor, addBooking, updateBooking]);
 
   return (
     <AppDataContext.Provider value={value}>{children}</AppDataContext.Provider>

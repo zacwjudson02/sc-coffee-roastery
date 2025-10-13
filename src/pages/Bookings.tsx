@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -174,6 +175,7 @@ const mockBookings: Booking[] = [
 ];
 
 export default function Bookings() {
+  const location = useLocation();
   const [bookings, setBookings] = useState<Booking[]>(mockBookings);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -199,6 +201,16 @@ export default function Bookings() {
   const { bookings: storeBookings, setBookings: setStoreBookings, updateBooking, addBooking, customers: customerStore } = useAppData();
   const { setFile, getFile } = usePodStore();
   const events = useEvents();
+
+  // Apply query params (?customer=Name&search=term) to initialize filters
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const qCustomer = params.get("customer");
+    const qSearch = params.get("search");
+    if (qCustomer) setCustomerFilter(qCustomer);
+    if (qSearch) setSearchQuery(qSearch);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     // Sync local demo state from central store once at mount; prefer store as source of truth

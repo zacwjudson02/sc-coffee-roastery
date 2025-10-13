@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { useResources } from "@/hooks/use-resources";
+import { useAppData } from "@/hooks/use-appdata";
 
 type SimpleBooking = {
   bookingId: string;
@@ -19,37 +20,40 @@ type CreateRunsheetDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCreate: (payload: { driver: string; bookings: SimpleBooking[] }) => void;
+  bookings?: SimpleBooking[]; // optional; if omitted we derive from store
+  date?: string; // optional hint to filter when deriving from store
 };
 
-const MOCK_BOOKINGS: SimpleBooking[] = [
-  { bookingId: "BK-2024-0151", customer: "ABC Logistics", pickup: "Melbourne Warehouse", dropoff: "Airport", date: "2024-09-22" },
-  { bookingId: "BK-2024-0152", customer: "XYZ Freight", pickup: "Docklands", dropoff: "Geelong DC", date: "2024-09-22" },
-  { bookingId: "BK-2024-0153", customer: "Global Shipping Co", pickup: "Brunswick", dropoff: "Airport", date: "2024-09-22" },
-  { bookingId: "BK-2024-0154", customer: "Fast Movers", pickup: "Richmond", dropoff: "St Kilda", date: "2024-09-22" },
-  { bookingId: "BK-2024-0155", customer: "Prime Logistics", pickup: "Southbank", dropoff: "Dandenong", date: "2024-09-22" },
-  { bookingId: "BK-2024-0156", customer: "Metro Freight", pickup: "Footscray", dropoff: "Sunshine", date: "2024-09-22" },
-];
-
-export function CreateRunsheetDialog({ open, onOpenChange, onCreate }: CreateRunsheetDialogProps) {
+export function CreateRunsheetDialog({ open, onOpenChange, onCreate, bookings: provided, date }: CreateRunsheetDialogProps) {
   const [driver, setDriver] = useState<string>("");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<Record<string, boolean>>({});
   const { drivers: storeDrivers } = useResources();
+  const app = useAppData();
+
+  const source: SimpleBooking[] = useMemo(() => {
+    if (Array.isArray(provided)) return provided;
+    // Derive from central store
+    const list = app.bookings
+      .filter((b) => (!date || b.date === date))
+      .map((b) => ({ bookingId: b.bookingId, customer: b.customerName, pickup: b.pickup, dropoff: b.dropoff, date: b.date })) as SimpleBooking[];
+    return list;
+  }, [provided, app.bookings, date]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return MOCK_BOOKINGS;
-    return MOCK_BOOKINGS.filter((b) =>
+    if (!q) return source;
+    return source.filter((b) =>
       [b.bookingId, b.customer, b.pickup, b.dropoff].some((v) => v.toLowerCase().includes(q))
     );
-  }, [query]);
+  }, [query, source]);
 
   function toggle(bookingId: string, checked: boolean | string) {
     setSelected((prev) => ({ ...prev, [bookingId]: Boolean(checked) }));
   }
 
   function handleCreate() {
-    const chosen = MOCK_BOOKINGS.filter((b) => selected[b.bookingId]);
+    const chosen = source.filter((b) => selected[b.bookingId]);
     if (!driver || chosen.length === 0) return;
     onCreate({ driver, bookings: chosen });
     // reset

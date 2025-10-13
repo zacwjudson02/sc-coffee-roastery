@@ -130,6 +130,19 @@ export function ResourceProvider({ children }: { children: React.ReactNode }) {
     } catch {}
   }, [drivers, vehicles, shifts, runsheets]);
 
+  // One-time dev helper: coerce all shift and runsheet dates to 2025-10-11 for Runsheets testing
+  useEffect(() => {
+    const FLAG = "smh.resources.dateCoerced.2025-10-11";
+    try {
+      if (localStorage.getItem(FLAG)) return;
+      const target = "2025-10-11";
+      setShifts((prev) => prev.map((s) => ({ ...s, date: target })));
+      setRunsheets((prev) => prev.map((r) => ({ ...r, date: target })));
+      localStorage.setItem(FLAG, "1");
+    } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Maintain legacy driverColors map for other pages (e.g., Bookings allocation tint)
   useEffect(() => {
     const map: Record<string, string> = {};
