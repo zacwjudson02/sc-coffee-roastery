@@ -121,29 +121,12 @@ const slides = [
     id: "reality",
     label: "Current Reality",
     title: "How Operations Run Today",
+    image: "/Current Reality Web Diagram.png",
     content: (
       <motion.div variants={containerVariants} initial="hidden" animate="visible">
         <motion.p variants={itemFadeIn} className="text-xl md:text-2xl text-white/80 mb-8 font-light leading-relaxed">
           Based on our experience in transport operations, most businesses at this scale face similar pressure points that don't show up as one big failure — they show up as constant friction.
         </motion.p>
-        <div className="grid gap-4 md:grid-cols-2 text-left">
-           {[
-             "Bookings finalised under time pressure",
-             "Last-minute changes missing updates",
-             "PODs scattered across channels",
-             "Invoicing delayed by paperwork verification",
-             "End-of-period invoicing scrambles"
-           ].map((item, i) => (
-             <motion.div 
-               key={i} 
-               variants={itemSlideIn}
-               className="bg-white/5 p-4 rounded-lg border border-white/10 flex items-center gap-3"
-             >
-                <span className="text-red-400 text-lg">⚠️</span>
-                <span className="text-white/80">{item}</span>
-             </motion.div>
-           ))}
-        </div>
       </motion.div>
     )
   },
