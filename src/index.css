@@ -8,107 +8,223 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Industrial Transport Design System */
-    --background: 0 0% 98%;
-    --foreground: 215 25% 15%;
+    /* Industrial Transport Theme - Professional Menz Transport */
+    
+    /* Cool Light Gray Background */
+    --background: 210 20% 98%;
+    /* Deep Slate for text */
+    --foreground: 215 25% 20%;
 
+    /* White Cards with subtle shadow */
     --card: 0 0% 100%;
-    --card-foreground: 215 25% 15%;
+    --card-foreground: 215 25% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 15%;
+    --popover-foreground: 215 25% 20%;
 
-    /* Navy primary for headers and navigation */
-    --primary: 215 45% 20%;
-    --primary-foreground: 0 0% 98%;
+    /* Industrial Forest Green - Main Brand Color */
+    --primary: 156 40% 35%;
+    --primary-foreground: 0 0% 100%;
 
-    /* Light grey secondary */
-    --secondary: 210 20% 96%;
-    --secondary-foreground: 215 25% 15%;
+    /* Steel Gray Secondary */
+    --secondary: 210 15% 94%;
+    --secondary-foreground: 215 25% 20%;
 
-    --muted: 210 20% 94%;
-    --muted-foreground: 215 15% 45%;
+    --muted: 210 15% 95%;
+    --muted-foreground: 215 15% 50%;
 
-    /* Red accent for CTAs */
-    --accent: 0 75% 48%;
-    --accent-foreground: 0 0% 98%;
+    /* Muted Sage Accent */
+    --accent: 150 25% 45%;
+    --accent-foreground: 0 0% 100%;
 
-    /* Status colors */
-    --destructive: 0 75% 48%;
-    --destructive-foreground: 0 0% 98%;
+    /* Status Colors - Professional and Clear */
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
 
-    --success: 145 60% 45%;
-    --success-foreground: 0 0% 98%;
+    --success: 156 40% 35%;
+    --success-foreground: 0 0% 100%;
 
-    --warning: 30 95% 55%;
-    --warning-foreground: 215 25% 15%;
+    --warning: 35 85% 55%;
+    --warning-foreground: 0 0% 100%;
 
-    --info: 210 95% 50%;
-    --info-foreground: 0 0% 98%;
+    --info: 210 80% 50%;
+    --info-foreground: 0 0% 100%;
 
-    --border: 215 20% 88%;
-    --input: 215 20% 88%;
-    --ring: 215 45% 20%;
+    /* Industrial gray borders */
+    --border: 215 15% 88%;
+    --input: 215 15% 88%;
+    --ring: 156 40% 35%;
 
-    --radius: 0.375rem;
+    /* Subtle rounded corners */
+    --radius: 0.5rem;
 
-    /* Sidebar in navy */
-    --sidebar-background: 215 45% 20%;
-    --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 0 75% 48%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 215 45% 25%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 215 35% 30%;
-    --sidebar-ring: 0 75% 48%;
+    /* Industrial Sidebar - Light Gray & Green */
+    --sidebar-background: 210 20% 98%;
+    --sidebar-foreground: 215 25% 20%;
+    --sidebar-primary: 156 40% 35%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 15% 94%;
+    --sidebar-accent-foreground: 215 25% 20%;
+    --sidebar-border: 215 15% 88%;
+    --sidebar-ring: 156 40% 35%;
+
+    /* Proposal specific tokens (mapped to new system where possible) */
+    --section-divider: 140 25% 88%;
+    --highlight-bar: 142 76% 36%;
+    --placeholder-bg: 140 30% 95%;
+    --placeholder-border: 140 25% 85%;
+    --text-subtle: 210 10% 46%;
   }
 
   .dark {
-    --background: 215 30% 12%;
-    --foreground: 0 0% 95%;
+    /* Dark Mode with Green Accents */
+    --background: 210 25% 8%;
+    --foreground: 140 20% 96%;
 
-    --card: 215 30% 15%;
-    --card-foreground: 0 0% 95%;
+    --card: 210 25% 10%;
+    --card-foreground: 140 20% 96%;
 
-    --popover: 215 30% 15%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 210 25% 10%;
+    --popover-foreground: 140 20% 96%;
 
-    --primary: 0 0% 95%;
-    --primary-foreground: 215 45% 20%;
+    /* Lighter Green for dark mode visibility */
+    --primary: 142 70% 45%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 215 30% 20%;
-    --secondary-foreground: 0 0% 95%;
+    --secondary: 210 20% 15%;
+    --secondary-foreground: 140 20% 96%;
 
-    --muted: 215 30% 20%;
-    --muted-foreground: 215 15% 65%;
+    --muted: 210 20% 15%;
+    --muted-foreground: 210 15% 65%;
 
-    --accent: 0 75% 55%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 84 75% 50%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 75% 55%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --success: 145 60% 50%;
-    --success-foreground: 0 0% 98%;
+    --success: 142 70% 45%;
+    --success-foreground: 0 0% 100%;
 
-    --warning: 30 95% 60%;
-    --warning-foreground: 215 25% 15%;
+    --warning: 38 92% 55%;
+    --warning-foreground: 0 0% 100%;
 
-    --info: 210 95% 55%;
-    --info-foreground: 0 0% 98%;
+    --info: 199 89% 55%;
+    --info-foreground: 0 0% 100%;
 
-    --border: 215 30% 25%;
-    --input: 215 30% 25%;
-    --ring: 0 75% 55%;
+    --border: 210 20% 18%;
+    --input: 210 20% 18%;
+    --ring: 142 70% 45%;
 
-    --sidebar-background: 215 35% 18%;
-    --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 0 75% 55%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 215 30% 25%;
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 215 30% 30%;
-    --sidebar-ring: 0 75% 55%;
+    --sidebar-background: 210 25% 10%;
+    --sidebar-foreground: 140 20% 96%;
+    --sidebar-primary: 142 70% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 20% 15%;
+    --sidebar-accent-foreground: 140 20% 96%;
+    --sidebar-border: 210 20% 18%;
+    --sidebar-ring: 142 70% 45%;
+
+    --section-divider: 217 33% 20%;
+    --highlight-bar: 250 84% 65%;
+    --placeholder-bg: 217 33% 16%;
+    --placeholder-border: 217 33% 24%;
+    --text-subtle: 215 20% 65%;
+  }
+
+  /* Proposal Theme - Preserved but updated to match quality */
+  .proposal-theme {
+    /* Core palette - warm neutrals with muted green accent */
+    --background: 40 20% 97%;           /* Warm off-white */
+    --foreground: 0 0% 18%;             /* Deep charcoal */
+
+    --card: 40 15% 95%;
+    --card-foreground: 0 0% 18%;
+
+    --popover: 40 20% 97%;
+    --popover-foreground: 0 0% 18%;
+
+    /* Muted sage green - functional, not decorative */
+    --primary: 150 18% 35%;
+    --primary-foreground: 40 20% 97%;
+
+    --secondary: 40 10% 92%;
+    --secondary-foreground: 0 0% 25%;
+
+    --muted: 40 10% 90%;
+    --muted-foreground: 0 0% 45%;
+
+    --accent: 150 12% 88%;
+    --accent-foreground: 150 18% 25%;
+
+    --destructive: 0 65% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 40 10% 88%;
+    --input: 40 10% 88%;
+    --ring: 150 18% 35%;
+
+    /* Proposal-specific tokens */
+    --section-divider: 40 8% 85%;
+    --highlight-bar: 150 18% 35%;
+    --placeholder-bg: 40 8% 92%;
+    --placeholder-border: 40 8% 82%;
+    --text-subtle: 0 0% 55%;
+
+    /* Sidebar defaults for proposal */
+    --sidebar-background: 40 15% 95%;
+    --sidebar-foreground: 0 0% 25%;
+    --sidebar-primary: 150 18% 35%;
+    --sidebar-primary-foreground: 40 20% 97%;
+    --sidebar-accent: 40 10% 90%;
+    --sidebar-accent-foreground: 0 0% 25%;
+    --sidebar-border: 40 10% 88%;
+    --sidebar-ring: 150 18% 35%;
+  }
+
+  .proposal-theme.dark {
+    --background: 0 0% 10%;
+    --foreground: 40 15% 92%;
+
+    --card: 0 0% 12%;
+    --card-foreground: 40 15% 92%;
+
+    --popover: 0 0% 10%;
+    --popover-foreground: 40 15% 92%;
+
+    --primary: 150 20% 45%;
+    --primary-foreground: 0 0% 10%;
+
+    --secondary: 0 0% 16%;
+    --secondary-foreground: 40 15% 88%;
+
+    --muted: 0 0% 18%;
+    --muted-foreground: 40 10% 60%;
+
+    --accent: 0 0% 18%;
+    --accent-foreground: 150 20% 55%;
+
+    --destructive: 0 55% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 150 20% 45%;
+
+    --section-divider: 0 0% 18%;
+    --highlight-bar: 150 20% 45%;
+    --placeholder-bg: 0 0% 14%;
+    --placeholder-border: 0 0% 22%;
+    --text-subtle: 40 10% 50%;
+
+    --sidebar-background: 0 0% 12%;
+    --sidebar-foreground: 40 15% 88%;
+    --sidebar-primary: 150 20% 45%;
+    --sidebar-primary-foreground: 0 0% 10%;
+    --sidebar-accent: 0 0% 16%;
+    --sidebar-accent-foreground: 40 15% 88%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 150 20% 45%;
   }
 }
 
@@ -119,6 +235,90 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
+  }
+}
+
+@layer base {
+  /* Proposal-specific typography overrides when in proposal-theme */
+  .proposal-theme html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 100px;
+  }
+
+  .proposal-theme body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    overflow-x: hidden;
+  }
+
+  .proposal-theme img {
+    @apply transition-all duration-500;
+  }
+
+  .proposal-theme img:hover {
+    @apply scale-[1.02];
+  }
+
+  .proposal-theme h1 {
+    @apply text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight leading-tight;
+  }
+
+  .proposal-theme h2 {
+    @apply text-2xl md:text-3xl lg:text-4xl font-semibold tracking-tight leading-snug;
+  }
+
+  .proposal-theme h3 {
+    @apply text-xl md:text-2xl font-medium tracking-tight;
+  }
+
+  .proposal-theme h4 {
+    @apply text-lg font-medium;
+  }
+
+  .proposal-theme p {
+    @apply text-base md:text-lg leading-relaxed;
+  }
+}
+
+@layer components {
+  /* Proposal-specific components */
+  .proposal-section {
+    @apply w-full flex flex-col justify-center px-6 md:px-12 lg:px-24 py-20 md:py-32;
+    min-height: max(600px, 60vh);
+  }
+
+  .section-accent {
+    @apply border-l-4 pl-6 md:pl-8;
+    border-color: hsl(var(--highlight-bar));
+  }
+
+  .visual-placeholder {
+    @apply bg-[hsl(var(--placeholder-bg))] border-2 border-dashed rounded-lg p-8 md:p-12;
+    border-color: hsl(var(--placeholder-border));
+  }
+
+  .section-divider {
+    @apply w-16 h-px mx-auto my-8;
+    background-color: hsl(var(--section-divider));
+  }
+
+  .proposal-button {
+    @apply inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-medium rounded-md transition-all duration-200;
+  }
+
+  .proposal-button:hover {
+    @apply opacity-90;
+  }
+
+  .text-subtle {
+    color: hsl(var(--text-subtle));
+  }
+
+  .progress-dot {
+    @apply w-2 h-2 rounded-full bg-muted transition-all duration-300;
+  }
+
+  .progress-dot.active {
+    @apply bg-primary w-6;
   }
 }
 
@@ -137,5 +337,163 @@ All colors MUST be HSL.
   
   .status-inactive {
     @apply bg-muted text-muted-foreground border-border;
+  }
+
+  /* Proposal-specific utilities */
+  .animate-reveal {
+    animation: reveal 0.6s ease-out forwards;
+  }
+
+  .animate-reveal-delayed {
+    animation: reveal 0.6s ease-out 0.15s forwards;
+    opacity: 0;
+  }
+
+  .animate-reveal-delayed-2 {
+    animation: reveal 0.6s ease-out 0.3s forwards;
+    opacity: 0;
+  }
+
+  .animate-slide-left {
+    animation: slideLeft 0.5s ease-out forwards;
+  }
+
+  @keyframes slideLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .animate-fade-scale {
+    animation: fadeScale 0.8s ease-out forwards;
+  }
+
+  @keyframes fadeScale {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .hover-lift {
+    @apply transition-all duration-300 ease-out;
+  }
+
+  .hover-lift:hover {
+    @apply -translate-y-1 shadow-xl;
+  }
+
+  .scroll-snap-section {
+    scroll-snap-align: start;
+    scroll-snap-stop: normal;
+  }
+
+  .glass-effect {
+    @apply bg-background/80 backdrop-blur-md border border-white/20 shadow-lg;
+  }
+
+  .glow-on-hover {
+    @apply transition-shadow duration-300;
+  }
+
+  .glow-on-hover:hover {
+    box-shadow: 0 0 20px rgba(var(--primary) / 0.3);
+  }
+}
+
+/* Proposal Guide - Micro-animations */
+.pg-highlight {
+  position: absolute;
+  background: radial-gradient(circle, rgba(150, 180, 160, 0.15) 0%, rgba(150, 180, 160, 0.05) 60%, transparent 100%);
+  border-radius: 20px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.4s ease, top 0.4s ease, left 0.4s ease, width 0.4s ease, height 0.4s ease;
+  mix-blend-mode: multiply;
+}
+
+[data-read] {
+  position: relative;
+  z-index: 1;
+}
+
+.pg-highlight.active {
+  opacity: 1;
+}
+
+@keyframes pg-shimmer {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(2px, 1px); }
+  50% { transform: translate(0, 2px); }
+  75% { transform: translate(-2px, 1px); }
+  100% { transform: translate(0, 0); }
+}
+
+.pg-arrow {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 50;
+  color: #555;
+  transition: opacity 0.4s, transform 0.3s;
+}
+
+.pg-arrow:hover {
+  background: #f9f9f9;
+  transform: translateX(-50%) scale(1.05);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.pg-arrow.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pg-arrow.faded {
+  opacity: 0.2;
+  pointer-events: auto;
+}
+
+.pg-arrow.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.pg-arrow.bounce {
+  animation: pg-bounce 1s ease-in-out;
+}
+
+@keyframes pg-bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(8px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pg-highlight {
+    transition: none;
+  }
+  .pg-arrow.bounce {
+    animation: none;
   }
 }

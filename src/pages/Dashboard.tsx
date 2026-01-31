@@ -101,9 +101,11 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Overview of your transport operations
+        <h1 className="text-3xl font-bold tracking-tight text-slate-800 uppercase">
+          Menz Transport Operations
+        </h1>
+        <p className="text-slate-600 font-semibold text-sm uppercase tracking-wide">
+          Real-time overview of logistics operations
         </p>
       </div>
 

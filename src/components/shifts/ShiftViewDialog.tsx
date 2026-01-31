@@ -110,7 +110,7 @@ export function ShiftViewDialog({ open, onOpenChange, shift, suggest }: ShiftVie
                   const id = ensureShift(suggest.date, suggest.driverId);
                   ensureRunsheet(id);
                   onOpenChange(false);
-                  navigate(`/runsheets?date=${encodeURIComponent(suggest.date)}&driverId=${encodeURIComponent(suggest.driverId)}`);
+                  navigate(`/demo/runsheets?date=${encodeURIComponent(suggest.date)}&driverId=${encodeURIComponent(suggest.driverId)}`);
                 }}>Create Shift</Button>
               </div>
             ) : (
@@ -134,7 +134,7 @@ export function ShiftViewDialog({ open, onOpenChange, shift, suggest }: ShiftVie
             disabled={!shift}
             onClick={() => {
               if (!shift) return;
-              navigate(`/runsheets?date=${encodeURIComponent(shift.date)}&driverId=${encodeURIComponent(shift.driverId)}`);
+              navigate(`/demo/runsheets?date=${encodeURIComponent(shift.date)}&driverId=${encodeURIComponent(shift.driverId)}`);
               onOpenChange(false);
             }}
           >Open Runsheet</Button>

@@ -17,6 +17,7 @@ import PODs from "./pages/PODs";
 import Resources from "./pages/Resources";
 import CustomersVendors from "./pages/CustomersVendors";
 import Invoices from "./pages/Invoices";
+import Proposal from "./pages/Proposal";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,19 +34,30 @@ const App = () => (
               <EventsProvider>
                 <SidebarProvider>
                   <BrowserRouter>
-                    <Layout>
-                      <Routes>
-                        <Route path="/" element={<Dashboard />} />
-                        <Route path="/bookings" element={<Bookings />} />
-                        <Route path="/runsheets" element={<Runsheets />} />
-                        <Route path="/pods" element={<PODs />} />
-                        <Route path="/resources" element={<Resources />} />
-                        <Route path="/customers" element={<CustomersVendors />} />
-                        <Route path="/invoicing" element={<Invoices />} />
-                        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                        <Route path="*" element={<NotFound />} />
-                      </Routes>
-                    </Layout>
+                    <Routes>
+                      {/* Proposal page - Homepage */}
+                      <Route path="/" element={<Proposal />} />
+                      
+                      {/* Main app routes nested under /demo */}
+                      <Route path="/demo/*" element={
+                        <Layout>
+                          <Routes>
+                            <Route path="/" element={<Dashboard />} />
+                            <Route path="/bookings" element={<Bookings />} />
+                            <Route path="/runsheets" element={<Runsheets />} />
+                            <Route path="/pods" element={<PODs />} />
+                            <Route path="/resources" element={<Resources />} />
+                            <Route path="/customers" element={<CustomersVendors />} />
+                            <Route path="/invoicing" element={<Invoices />} />
+                            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                            <Route path="*" element={<NotFound />} />
+                          </Routes>
+                        </Layout>
+                      } />
+                      
+                      {/* Catch-all for non-demo routes redirects to Proposal or 404 */}
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
                   </BrowserRouter>
                 </SidebarProvider>
               </EventsProvider>

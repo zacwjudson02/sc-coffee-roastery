@@ -18,11 +18,11 @@ interface StatusWidgetProps {
 
 export function StatusWidget({ title, items, onViewAll }: StatusWidgetProps) {
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-        <CardTitle className="text-base font-semibold">{title}</CardTitle>
+    <Card className="border-2 border-slate-300 shadow-md">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 bg-slate-50 border-b-2 border-slate-300">
+        <CardTitle className="text-base font-bold text-slate-800 uppercase tracking-wide">{title}</CardTitle>
         {onViewAll && (
-          <Button variant="ghost" size="sm" onClick={onViewAll}>
+          <Button variant="ghost" size="sm" onClick={onViewAll} className="text-emerald-700 hover:text-emerald-800 hover:bg-white text-xs font-bold uppercase">
             View All
             <ChevronRight className="ml-1 h-4 w-4" />
           </Button>
@@ -30,20 +30,20 @@ export function StatusWidget({ title, items, onViewAll }: StatusWidgetProps) {
       </CardHeader>
       <CardContent className="space-y-2">
         {items.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No items to display</p>
+          <p className="text-sm text-slate-500">No items to display</p>
         ) : (
           items.map((item) => (
             <div
               key={item.id}
-              className="flex items-center justify-between rounded-lg border border-border p-3 hover:bg-muted/50 transition-colors"
+              className="flex items-center justify-between rounded-md border-2 border-slate-200 p-3 hover:border-slate-400 hover:bg-slate-50 transition-all duration-200"
             >
               <div className="flex-1">
-                <p className="text-sm font-medium">{item.label}</p>
+                <p className="text-sm font-bold text-slate-800">{item.label}</p>
                 {item.detail && (
-                  <p className="text-xs text-muted-foreground">{item.detail}</p>
+                  <p className="text-xs text-slate-600 font-medium">{item.detail}</p>
                 )}
               </div>
-              <Badge variant={item.status}>
+              <Badge variant={item.status} className="font-bold text-xs">
                 {item.status === "urgent" && "Action Required"}
                 {item.status === "progress" && "In Progress"}
                 {item.status === "complete" && "Complete"}

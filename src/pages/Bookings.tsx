@@ -412,20 +412,16 @@ export default function Bookings() {
       const colSet = new Set(customColumns ?? []);
       type Def = { key: string; label: string; render: (b: Booking) => JSX.Element };
       const adminDefs: Def[] = [
-        { key: "bookingId", label: "Booking", render: (b) => <TableCell key="bookingId" className="font-medium">{b.bookingId}</TableCell> },
-        { key: "customer", label: "Customer", render: (b) => <TableCell key="customer">{b.customer}</TableCell> },
-        { key: "date", label: "Date", render: (b) => <TableCell key="date">{b.date ?? "-"}</TableCell> },
-        { key: "pickup", label: "Pickup", render: (b) => <TableCell key="pickup">{b.pickup}</TableCell> },
-        { key: "dropoff", label: "Dropoff", render: (b) => <TableCell key="dropoff">{b.dropoff}</TableCell> },
+        { key: "date", label: "Date", render: (b) => <TableCell key="date" className="font-medium">{b.date ? formatDateAU(b.date) : "-"}</TableCell> },
+        { key: "customer", label: "Customer", render: (b) => <TableCell key="customer"><Badge variant="outline" className="font-normal">{b.customer}</Badge></TableCell> },
+        { key: "pickup", label: "Pickup", render: (b) => <TableCell key="pickup"><div className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-blue-500" /><span className="text-sm">{b.pickup}</span></div></TableCell> },
+        { key: "dropoff", label: "Dropoff", render: (b) => <TableCell key="dropoff"><div className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-green-500" /><span className="text-sm">{b.dropoff}</span></div></TableCell> },
         { key: "chargeTo", label: "Charge To", render: (b) => <TableCell key="chargeTo">{b.chargeTo ?? "-"}</TableCell> },
-        { key: "palletType", label: "Pallet Type", render: (b) => <TableCell key="palletType">{b.palletType ?? "-"}</TableCell> },
-        { key: "transferType", label: "Transfer Type", render: (b) => <TableCell key="transferType">{b.transferType ?? "-"}</TableCell> },
-        { key: "podMethod", label: "POD Method", render: (b) => <TableCell key="podMethod">{b.podMethod ?? "-"}</TableCell> },
+        { key: "pallets", label: "Pallets", render: (b) => <TableCell key="pallets">{b.pallets ?? "-"}</TableCell> },
         { key: "customerRef", label: "Customer Ref", render: (b) => <TableCell key="customerRef">{b.customerRef ?? "-"}</TableCell> },
         { key: "secondRef", label: "Second Ref", render: (b) => <TableCell key="secondRef">{b.secondRef ?? "-"}</TableCell> },
         { key: "podLink", label: "POD Link", render: (b) => <TableCell key="podLink">{b.podReceived ? (<Button size="sm" variant="outline" onClick={() => setPodPreviewForId(b.id)}>Preview</Button>) : "-"}</TableCell> },
         { key: "unitPrice", label: "Unit Price", render: (b) => <TableCell key="unitPrice">{typeof b.unitPrice === "number" ? `$${b.unitPrice.toFixed(2)}` : "-"}</TableCell> },
-        { key: "rateBasis", label: "Rate Basis", render: (b) => <TableCell key="rateBasis">{b.rateBasis ? (<Badge variant={b.rateBasis === "per_pallet" ? "secondary" : "inactive"} className="rounded-full px-2 py-0.5">{b.rateBasis === "per_pallet" ? "Per Pallet" : "Per Space"}</Badge>) : "-"}</TableCell> },
         { key: "invoiceTotal", label: "Invoice Total", render: (b) => <TableCell key="invoiceTotal">{typeof b.invoiceTotal === "number" ? `$${b.invoiceTotal.toFixed(2)}` : "-"}</TableCell> },
         { key: "status", label: "Status", render: (b) => <TableCell key="status">{b.status}</TableCell> },
         { key: "actions", label: "Actions", render: (b) => <TableCell key="actions" className="text-right space-x-2"><Button size="sm" variant="outline" onClick={() => setViewForId(b.id)}>View Booking</Button></TableCell> },
@@ -487,16 +483,13 @@ export default function Bookings() {
           <Table>
             <TableHeader className="sticky top-0 z-10 bg-gradient-to-b from-muted/70 to-muted/40 backdrop-blur supports-[backdrop-filter]:bg-muted/40 shadow-sm">
               <TableRow>
-                <TableHead className="text-[11px] uppercase tracking-wide text-muted-foreground">Booking</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wide text-muted-foreground">Date</TableHead>
                 <TableHead className="text-[11px] uppercase tracking-wide text-muted-foreground">Customer</TableHead>
                 <TableHead className="text-[11px] uppercase tracking-wide text-muted-foreground">Pickup</TableHead>
                 <TableHead className="text-[11px] uppercase tracking-wide text-muted-foreground">Dropoff</TableHead>
                 <TableHead className="text-[11px] uppercase tracking-wide text-muted-foreground">Charge To</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wide text-muted-foreground">Pallet Type</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wide text-muted-foreground">Transfer Type</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wide text-muted-foreground">POD Method</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wide text-muted-foreground">Pallets</TableHead>
                 <TableHead className="text-[11px] uppercase tracking-wide text-muted-foreground">Unit Price</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wide text-muted-foreground">Rate Basis</TableHead>
                 <TableHead className="text-[11px] uppercase tracking-wide text-muted-foreground">Invoice Total</TableHead>
                 <TableHead className="text-[11px] uppercase tracking-wide text-muted-foreground">Status</TableHead>
                 <TableHead className="text-right text-[11px] uppercase tracking-wide text-muted-foreground">Actions</TableHead>
@@ -505,22 +498,25 @@ export default function Bookings() {
             <TableBody>
               {filtered.map((b) => (
                 <TableRow key={b.id}>
-                  <TableCell className="font-medium">{b.bookingId}</TableCell>
-                  <TableCell>{b.customer}</TableCell>
-                  <TableCell>{b.pickup}</TableCell>
-                  <TableCell>{b.dropoff}</TableCell>
-                  <TableCell>{b.chargeTo ?? "-"}</TableCell>
-                  <TableCell>{b.palletType ?? "-"}</TableCell>
-                  <TableCell>{b.transferType ?? "-"}</TableCell>
-                  <TableCell>{b.podMethod ?? "-"}</TableCell>
-                  <TableCell>{typeof b.unitPrice === "number" ? `$${b.unitPrice.toFixed(2)}` : "-"}</TableCell>
+                  <TableCell className="font-medium">{b.date ? formatDateAU(b.date) : "-"}</TableCell>
                   <TableCell>
-                    {b.rateBasis ? (
-                      <Badge variant={b.rateBasis === "per_pallet" ? "secondary" : "inactive"} className="rounded-full px-2 py-0.5">
-                        {b.rateBasis === "per_pallet" ? "Per Pallet" : "Per Space"}
-                      </Badge>
-                    ) : "-"}
+                    <Badge variant="outline" className="font-normal">{b.customer}</Badge>
                   </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1.5">
+                      <MapPin className="h-3.5 w-3.5 text-blue-500" />
+                      <span className="text-sm">{b.pickup}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1.5">
+                      <MapPin className="h-3.5 w-3.5 text-green-500" />
+                      <span className="text-sm">{b.dropoff}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>{b.chargeTo ?? "-"}</TableCell>
+                  <TableCell>{b.pallets ?? "-"}</TableCell>
+                  <TableCell>{typeof b.unitPrice === "number" ? `$${b.unitPrice.toFixed(2)}` : "-"}</TableCell>
                   <TableCell>{typeof b.invoiceTotal === "number" ? `$${b.invoiceTotal.toFixed(2)}` : "-"}</TableCell>
                   <TableCell>{b.status}</TableCell>
                   <TableCell className="text-right space-x-2">
@@ -861,20 +857,16 @@ export default function Bookings() {
         }}
         columnSets={{
           Admin: [
-            { key: "bookingId", label: "Booking" },
-            { key: "customer", label: "Customer" },
             { key: "date", label: "Date" },
+            { key: "customer", label: "Customer" },
             { key: "pickup", label: "Pickup" },
             { key: "dropoff", label: "Dropoff" },
             { key: "chargeTo", label: "Charge To" },
-            { key: "palletType", label: "Pallet Type" },
-            { key: "transferType", label: "Transfer Type" },
-            { key: "podMethod", label: "POD Method" },
+            { key: "pallets", label: "Pallets" },
             { key: "customerRef", label: "Customer Ref" },
             { key: "secondRef", label: "Second Ref" },
             { key: "podLink", label: "POD Link" },
             { key: "unitPrice", label: "Unit Price" },
-            { key: "rateBasis", label: "Rate Basis" },
             { key: "invoiceTotal", label: "Invoice Total" },
             { key: "status", label: "Status" },
             { key: "actions", label: "Actions" },

@@ -352,7 +352,7 @@ export default function CustomersVendors() {
                     <div className="flex items-center justify-between">
                       <div className="font-medium">Recent Bookings</div>
                       <div className="space-x-2">
-                        <Button size="sm" onClick={() => navigate(`/bookings?customer=${encodeURIComponent(c.company)}`)}>Open in Bookings</Button>
+                        <Button size="sm" onClick={() => navigate(`/demo/bookings?customer=${encodeURIComponent(c.company)}`)}>Open in Bookings</Button>
                         {c.archivedAt && (
                           <Button size="sm" variant="outline" onClick={() => setReassignForId(c.id)}>Reassign Records</Button>
                         )}
@@ -396,7 +396,7 @@ export default function CustomersVendors() {
                     <div className="flex items-center justify-between">
                       <div className="font-medium">Recent Invoices</div>
                       <div className="space-x-2">
-                        <Button size="sm" variant="outline" onClick={() => navigate(`/invoicing?customer=${encodeURIComponent(c.company)}`)}>Open in Invoices</Button>
+                        <Button size="sm" variant="outline" onClick={() => navigate(`/demo/invoicing?customer=${encodeURIComponent(c.company)}`)}>Open in Invoices</Button>
                       </div>
                     </div>
                     {(() => {
