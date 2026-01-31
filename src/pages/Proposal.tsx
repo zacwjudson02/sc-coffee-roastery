@@ -70,24 +70,24 @@ const Proposal = () => {
           </motion.p>
 
           <motion.div variants={itemVariants} className="mt-10 flex flex-col sm:flex-row gap-4">
-            <Link to="/demo">
-              <Button 
-                size="lg" 
-                className="bg-red-600 hover:bg-red-700 text-white font-bold text-lg px-8 py-7 shadow-lg hover:shadow-xl transition-all rounded-full hover:scale-105 transform duration-200 w-full sm:w-auto"
-              >
-                See Clickthrough Demo
-              </Button>
-            </Link>
-            
             <Button 
-                variant="outline"
                 size="lg"
                 onClick={() => setShowStory(true)}
-                className="border-2 font-semibold text-lg px-8 py-7 rounded-full hover:bg-accent/10 transition-all hover:scale-105 transform duration-200 w-full sm:w-auto gap-2"
+                className="bg-red-600 hover:bg-red-700 text-white font-bold text-lg px-8 py-7 shadow-lg hover:shadow-xl transition-all rounded-full hover:scale-105 transform duration-200 w-full sm:w-auto gap-2"
             >
                 <Play className="w-5 h-5 fill-current" />
                 Walk Through the Strategy
             </Button>
+            
+            <Link to="/demo">
+              <Button 
+                variant="outline"
+                size="lg" 
+                className="border-2 font-semibold text-lg px-8 py-7 rounded-full hover:bg-accent/10 transition-all hover:scale-105 transform duration-200 w-full sm:w-auto"
+              >
+                See Clickthrough Demo
+              </Button>
+            </Link>
           </motion.div>
         </div>
       </ProposalSection>
