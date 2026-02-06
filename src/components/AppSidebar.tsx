@@ -178,7 +178,7 @@ export function AppSidebar() {
   }
 
   return (
-    <Sidebar collapsible="icon" className="border-r-2 border-slate-300 bg-slate-50 shadow-md">
+    <Sidebar collapsible="icon" className="border-r-2 border-slate-300 bg-slate-50 shadow-md top-12">
       <SidebarHeader className="border-b-2 border-slate-300 p-4 bg-white">
         <div className="flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-700 to-emerald-800 shadow-md">

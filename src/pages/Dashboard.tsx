@@ -6,10 +6,18 @@ import {
   AlertCircle, 
   Receipt, 
   Users,
-  CalendarCheck
+  CalendarCheck,
+  PlayCircle,
+  FileText
 } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { PingingButton } from "@/components/pods/PingingButton";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
+  
   const kpiData = [
     {
       title: "Today's Bookings",
@@ -117,17 +125,53 @@ export default function Dashboard() {
       </div>
 
       {/* Status Widgets Grid */}
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <StatusWidget
           title="Urgent PODs Missing"
           items={urgentPods}
-          onViewAll={() => console.log("View all PODs")}
+          onViewAll={() => navigate("/pods")}
         />
         <StatusWidget
           title="Today's Bookings"
           items={todayBookings}
-          onViewAll={() => console.log("View all bookings")}
+          onViewAll={() => navigate("/bookings")}
         />
+        
+        {/* Quick Actions Card */}
+        <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <PlayCircle className="h-5 w-5 text-blue-600" />
+              Demo Features
+            </CardTitle>
+            <CardDescription>
+              Try our interactive demos
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="space-y-2">
+              <div className="flex items-start gap-2 text-sm">
+                <FileText className="h-4 w-4 text-muted-foreground mt-0.5" />
+                <div className="flex-1">
+                  <div className="font-medium">POD Workflow</div>
+                  <div className="text-xs text-muted-foreground">See automatic OCR matching in action</div>
+                </div>
+              </div>
+              <PingingButton
+                onClick={() => navigate("/pods")}
+                icon={PlayCircle}
+                isPinging={true}
+                className="w-full"
+              >
+                Try POD Demo
+              </PingingButton>
+            </div>
+            
+            <div className="pt-2 border-t text-xs text-muted-foreground">
+              Navigate to the PODs page to experience the full interactive workflow
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

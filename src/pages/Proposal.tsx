@@ -9,7 +9,7 @@ import WelcomeOverlay from "@/components/proposal/WelcomeOverlay";
 import ProposalStoryOverlay from "@/components/proposal/ProposalStoryOverlay";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Play } from "lucide-react";
+import { Play, Globe } from "lucide-react";
 
 const sections = [
   { id: "executive", label: "Executive Summary" },
@@ -86,6 +86,17 @@ const Proposal = () => {
                 className="border-2 font-semibold text-lg px-8 py-7 rounded-full hover:bg-accent/10 transition-all hover:scale-105 transform duration-200 w-full sm:w-auto"
               >
                 See Clickthrough Demo
+              </Button>
+            </Link>
+
+            <Link to="/landing">
+              <Button 
+                variant="outline"
+                size="lg" 
+                className="border-2 font-semibold text-lg px-8 py-7 rounded-full hover:bg-accent/10 transition-all hover:scale-105 transform duration-200 w-full sm:w-auto gap-2"
+              >
+                <Globe className="w-5 h-5" />
+                See Public Landing Page
               </Button>
             </Link>
           </motion.div>

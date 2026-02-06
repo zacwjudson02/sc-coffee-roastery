@@ -5,7 +5,7 @@ import { Search, Bell, User } from "lucide-react";
 
 export function TopBar() {
   return (
-    <header className="sticky top-0 z-10 border-b-2 border-slate-300 bg-white shadow-md">
+    <header className="sticky top-12 z-10 border-b-2 border-slate-300 bg-white shadow-md">
       <div className="flex h-16 items-center gap-4 px-6">
         <SidebarTrigger className="text-slate-700 hover:text-emerald-700 hover:bg-slate-100 rounded-md" />
         

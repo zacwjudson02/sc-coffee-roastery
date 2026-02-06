@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { AssignPodDialog, AssignChoice } from "@/components/pods/AssignPodDialog";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Download, Filter, Layers, Scissors, Search, Upload, XCircle, Mail, Undo2, CalendarDays, Users } from "lucide-react";
+import { Download, Filter, Layers, Scissors, Search, Upload, XCircle, Mail, Undo2, CalendarDays, Users, PlayCircle } from "lucide-react";
 import { PodViewer } from "@/components/pods/PodViewer";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -15,6 +15,8 @@ import { KpiCard } from "@/components/dashboard/KpiCard";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { PingingButton } from "@/components/pods/PingingButton";
+import { PodDemoWorkflow } from "@/components/pods/PodDemoWorkflow";
 
 type PodRow = {
   id?: string;
@@ -83,6 +85,8 @@ export default function PODs() {
   const [fromDate, setFromDate] = useState<string>("");
   const [toDate, setToDate] = useState<string>("");
   const [uploadOpen, setUploadOpen] = useState(false);
+  const [demoWorkflowOpen, setDemoWorkflowOpen] = useState(false);
+  const [showDemoPing, setShowDemoPing] = useState(true);
   const [selected, setSelected] = useState<Record<string, boolean>>({});
   const [noteFor, setNoteFor] = useState<PodRow | null>(null);
   const [noteText, setNoteText] = useState("");
@@ -125,6 +129,59 @@ export default function PODs() {
     }));
     setRows((prev) => [...mapped, ...prev]);
     setUploadOpen(false);
+  }
+
+  function handleDemoWorkflowComplete(demoPods: Array<{
+    bookingId: string;
+    fileName: string;
+    matchPercent: number;
+    file: File;
+    status: string;
+  }>) {
+    const now = new Date().toISOString().slice(0, 16).replace("T", " ");
+    const mapped: PodRow[] = demoPods.map((p) => ({
+      id: `${p.file.name}-${p.file.size}-${p.file.lastModified}`,
+      bookingId: p.bookingId,
+      fileName: p.fileName,
+      matchPercent: p.matchPercent,
+      matchStatus: p.status === "Assigned" ? "Assigned" : "Needs Review",
+      uploadedAt: now,
+      confirmed: p.status === "Assigned",
+      file: p.file,
+      customer: getCustomerForBooking(p.bookingId),
+      driver: getDriverForBooking(p.bookingId),
+      runNumber: getRunNumberForBooking(p.bookingId),
+      status: p.status as any,
+    }));
+    setRows((prev) => [...mapped, ...prev]);
+    setShowDemoPing(false);
+  }
+
+  function getCustomerForBooking(bookingId: string): string {
+    const map: Record<string, string> = {
+      "BK-2024-0150": "ABC Logistics",
+      "BK-2024-0149": "XYZ Freight",
+      "BK-2024-0148": "Global Shipping Co",
+    };
+    return map[bookingId] || "Unknown Customer";
+  }
+
+  function getDriverForBooking(bookingId: string): string {
+    const map: Record<string, string> = {
+      "BK-2024-0150": "John Smith",
+      "BK-2024-0149": "Sarah Jones",
+      "BK-2024-0148": "Mike Wilson",
+    };
+    return map[bookingId] || undefined as any;
+  }
+
+  function getRunNumberForBooking(bookingId: string): string {
+    const map: Record<string, string> = {
+      "BK-2024-0150": "RS-1001",
+      "BK-2024-0149": "RS-1002",
+      "BK-2024-0148": "RS-1003",
+    };
+    return map[bookingId] || undefined as any;
   }
 
   const customers = useMemo(() => Array.from(new Set(rows.map((r) => r.customer).filter(Boolean))) as string[], [rows]);
@@ -354,6 +411,24 @@ export default function PODs() {
             setRangeMode(false);
             setStatusFilter("Pending");
           }}>Unmatched Today</Button>
+          
+          {showDemoPing ? (
+            <PingingButton 
+              onClick={() => setDemoWorkflowOpen(true)}
+              icon={PlayCircle}
+              isPinging={true}
+              className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+            >
+              Demo POD Workflow
+            </PingingButton>
+          ) : (
+            <Button 
+              variant="outline"
+              onClick={() => setDemoWorkflowOpen(true)}
+            >
+              <PlayCircle className="h-4 w-4 mr-2" /> Demo POD Workflow
+            </Button>
+          )}
           
           <Button onClick={() => setUploadOpen(true)}>
             <Upload className="h-4 w-4 mr-2" /> Upload PODs
@@ -632,6 +707,13 @@ export default function PODs() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Demo Workflow */}
+      <PodDemoWorkflow
+        open={demoWorkflowOpen}
+        onOpenChange={setDemoWorkflowOpen}
+        onComplete={handleDemoWorkflowComplete}
+      />
 
       {/* Upload Dialog */}
       <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>

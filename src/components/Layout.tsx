@@ -9,7 +9,7 @@ export function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen flex w-full bg-slate-100">
       <AppSidebar />
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col mt-12">
         <TopBar />
         <main className="flex-1 p-6">
           {children}

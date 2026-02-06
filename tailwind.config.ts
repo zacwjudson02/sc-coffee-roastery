@@ -75,9 +75,25 @@ export default {
         "placeholder-bg": "hsl(var(--placeholder-bg))",
         "placeholder-border": "hsl(var(--placeholder-border))",
         "text-subtle": "hsl(var(--text-subtle))",
+        /* Landing page brand colors from cold-chain-command */
+        navy: {
+          DEFAULT: "hsl(var(--navy))",
+          light: "hsl(var(--navy-light))",
+        },
+        ice: {
+          DEFAULT: "hsl(var(--ice-blue))",
+          glow: "hsl(var(--ice-blue-glow))",
+        },
+        steel: {
+          DEFAULT: "hsl(var(--steel))",
+          light: "hsl(var(--steel-light))",
+        },
+        frost: "hsl(var(--frost))",
+        charcoal: "hsl(var(--charcoal))",
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Space Grotesk', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -115,6 +131,30 @@ export default {
         "accordion-up": "accordion-up 0.2s ease-out",
         reveal: "reveal 0.6s ease-out forwards",
         "slide-left": "slide-left 0.5s ease-out forwards",
+        /* Landing page animations from cold-chain-command */
+        "fade-in": "fade-in 0.6s ease-out forwards",
+        "fade-in-up": "fade-in-up 0.8s ease-out forwards",
+        "slide-in-right": "slide-in-right 0.6s ease-out forwards",
+        "scale-in": "scale-in 0.5s ease-out forwards",
+        "frost-drift": "frost-drift 8s ease-in-out infinite",
+        "glow-pulse": "glow-pulse 3s ease-in-out infinite",
+        "route-draw": "route-draw 2s ease-out forwards",
+        shimmer: "shimmer 2s linear infinite",
+        float: "float 3s ease-in-out infinite",
+        "count-up": "count-up 0.5s ease-out forwards",
+      },
+      backgroundImage: {
+        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
+        "gradient-hero": "var(--gradient-hero)",
+        "gradient-frost": "var(--gradient-frost)",
+        "gradient-ice": "var(--gradient-ice)",
+        "gradient-steel": "var(--gradient-steel)",
+      },
+      boxShadow: {
+        card: "var(--shadow-card)",
+        "card-hover": "var(--shadow-card-hover)",
+        ice: "var(--shadow-ice)",
+        frost: "var(--shadow-frost)",
       },
     },
   },

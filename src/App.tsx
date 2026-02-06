@@ -2,8 +2,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { Layout } from "./components/Layout";
+import { GlobalNav } from "./components/GlobalNav";
 import { ResourceProvider } from "@/hooks/use-resources";
 import { InvoicesProvider } from "@/hooks/use-invoices";
 import { AppDataProvider } from "@/hooks/use-appdata";
@@ -18,9 +19,59 @@ import Resources from "./pages/Resources";
 import CustomersVendors from "./pages/CustomersVendors";
 import Invoices from "./pages/Invoices";
 import Proposal from "./pages/Proposal";
+import Landing from "./pages/Landing";
+import Login from "./pages/Login";
+import BookingPortal from "./pages/BookingPortal";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
+
+// Conditional nav wrapper
+const AppRoutes = () => {
+  const location = useLocation();
+  const showGlobalNav = location.pathname !== "/" && !location.pathname.startsWith("/login");
+
+  return (
+    <>
+      {showGlobalNav && <GlobalNav />}
+      <div className={showGlobalNav ? "pt-12" : ""}>
+        <Routes>
+          {/* Proposal page - Homepage */}
+          <Route path="/" element={<Proposal />} />
+          
+          {/* Landing page - Public-facing clone from cold-chain-command */}
+          <Route path="/landing" element={<Landing />} />
+          
+          {/* Login page - Exact clone from cold-chain-command */}
+          <Route path="/login" element={<Login />} />
+          
+          {/* Booking Portal - Client access demo */}
+          <Route path="/booking-portal" element={<BookingPortal />} />
+          
+          {/* Main app routes nested under /demo */}
+          <Route path="/demo/*" element={
+            <Layout>
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/bookings" element={<Bookings />} />
+                <Route path="/runsheets" element={<Runsheets />} />
+                <Route path="/pods" element={<PODs />} />
+                <Route path="/resources" element={<Resources />} />
+                <Route path="/customers" element={<CustomersVendors />} />
+                <Route path="/invoicing" element={<Invoices />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Layout>
+          } />
+          
+          {/* Catch-all for non-demo routes redirects to Proposal or 404 */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </div>
+    </>
+  );
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -34,30 +85,7 @@ const App = () => (
               <EventsProvider>
                 <SidebarProvider>
                   <BrowserRouter>
-                    <Routes>
-                      {/* Proposal page - Homepage */}
-                      <Route path="/" element={<Proposal />} />
-                      
-                      {/* Main app routes nested under /demo */}
-                      <Route path="/demo/*" element={
-                        <Layout>
-                          <Routes>
-                            <Route path="/" element={<Dashboard />} />
-                            <Route path="/bookings" element={<Bookings />} />
-                            <Route path="/runsheets" element={<Runsheets />} />
-                            <Route path="/pods" element={<PODs />} />
-                            <Route path="/resources" element={<Resources />} />
-                            <Route path="/customers" element={<CustomersVendors />} />
-                            <Route path="/invoicing" element={<Invoices />} />
-                            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                            <Route path="*" element={<NotFound />} />
-                          </Routes>
-                        </Layout>
-                      } />
-                      
-                      {/* Catch-all for non-demo routes redirects to Proposal or 404 */}
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
+                    <AppRoutes />
                   </BrowserRouter>
                 </SidebarProvider>
               </EventsProvider>

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -22,38 +24,28 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 215 25% 20%;
 
-    /* Industrial Forest Green - Main Brand Color */
-    --primary: 156 40% 35%;
+    /* Professional Green Primary - MATCHED TO COLD-CHAIN-COMMAND */
+    --primary: 142 70% 25%;
     --primary-foreground: 0 0% 100%;
 
-    /* Steel Gray Secondary */
-    --secondary: 210 15% 94%;
-    --secondary-foreground: 215 25% 20%;
+    /* Light Grey Secondary */
+    --secondary: 0 0% 95%;
+    --secondary-foreground: 142 70% 20%;
 
-    --muted: 210 15% 95%;
-    --muted-foreground: 215 15% 50%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
 
-    /* Muted Sage Accent */
-    --accent: 150 25% 45%;
+    /* Professional Green Accent - MATCHED TO COLD-CHAIN-COMMAND */
+    --accent: 142 70% 35%;
     --accent-foreground: 0 0% 100%;
 
     /* Status Colors - Professional and Clear */
-    --destructive: 0 70% 50%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 156 40% 35%;
-    --success-foreground: 0 0% 100%;
-
-    --warning: 35 85% 55%;
-    --warning-foreground: 0 0% 100%;
-
-    --info: 210 80% 50%;
-    --info-foreground: 0 0% 100%;
-
-    /* Industrial gray borders */
-    --border: 215 15% 88%;
-    --input: 215 15% 88%;
-    --ring: 156 40% 35%;
+    --border: 215 25% 88%;
+    --input: 215 25% 88%;
+    --ring: 199 89% 48%;
 
     /* Subtle rounded corners */
     --radius: 0.5rem;
@@ -61,12 +53,12 @@ All colors MUST be HSL.
     /* Industrial Sidebar - Light Gray & Green */
     --sidebar-background: 210 20% 98%;
     --sidebar-foreground: 215 25% 20%;
-    --sidebar-primary: 156 40% 35%;
+    --sidebar-primary: 142 70% 25%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 15% 94%;
-    --sidebar-accent-foreground: 215 25% 20%;
-    --sidebar-border: 215 15% 88%;
-    --sidebar-ring: 156 40% 35%;
+    --sidebar-accent: 0 0% 95%;
+    --sidebar-accent-foreground: 142 70% 20%;
+    --sidebar-border: 215 25% 88%;
+    --sidebar-ring: 142 70% 35%;
 
     /* Proposal specific tokens (mapped to new system where possible) */
     --section-divider: 140 25% 88%;
@@ -74,62 +66,60 @@ All colors MUST be HSL.
     --placeholder-bg: 140 30% 95%;
     --placeholder-border: 140 25% 85%;
     --text-subtle: 210 10% 46%;
+
+    /* Landing page specific tokens from cold-chain-command */
+    --navy: 142 70% 20%;
+    --navy-light: 142 60% 30%;
+    --ice-blue: 142 70% 35%;
+    --ice-blue-glow: 142 80% 45%;
+    --steel: 0 0% 45%;
+    --steel-light: 0 0% 75%;
+    --frost: 0 0% 98%;
+    --charcoal: 0 0% 15%;
+
+    /* Gradients for landing page */
+    --gradient-hero: linear-gradient(135deg, hsl(142 70% 15%) 0%, hsl(142 60% 22%) 50%, hsl(142 50% 28%) 100%);
+    --gradient-frost: linear-gradient(180deg, hsl(0 0% 95% / 0.8) 0%, hsl(0 0% 98% / 0.4) 100%);
+    --gradient-ice: linear-gradient(135deg, hsl(142 70% 35%) 0%, hsl(142 80% 45%) 100%);
+    --gradient-steel: linear-gradient(180deg, hsl(0 0% 92%) 0%, hsl(0 0% 85%) 100%);
+    
+    /* Shadows for landing page */
+    --shadow-card: 0 4px 24px -4px hsl(0 0% 10% / 0.08);
+    --shadow-card-hover: 0 12px 40px -8px hsl(0 0% 10% / 0.15);
+    --shadow-ice: 0 0 40px -10px hsl(142 70% 35% / 0.4);
+    --shadow-frost: 0 8px 32px -8px hsl(142 70% 35% / 0.2);
   }
 
   .dark {
     /* Dark Mode with Green Accents */
-    --background: 210 25% 8%;
-    --foreground: 140 20% 96%;
+    --background: 0 0% 10%;
+    --foreground: 0 0% 98%;
 
-    --card: 210 25% 10%;
-    --card-foreground: 140 20% 96%;
+    --card: 0 0% 15%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 210 25% 10%;
-    --popover-foreground: 140 20% 96%;
+    --popover: 0 0% 15%;
+    --popover-foreground: 0 0% 98%;
 
     /* Lighter Green for dark mode visibility */
-    --primary: 142 70% 45%;
+    --primary: 142 70% 35%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 20% 15%;
-    --secondary-foreground: 140 20% 96%;
+    --secondary: 0 0% 20%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 210 20% 15%;
-    --muted-foreground: 210 15% 65%;
+    --muted: 0 0% 22%;
+    --muted-foreground: 0 0% 65%;
 
-    --accent: 84 75% 50%;
+    --accent: 142 70% 45%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 62% 30%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 142 70% 45%;
-    --success-foreground: 0 0% 100%;
-
-    --warning: 38 92% 55%;
-    --warning-foreground: 0 0% 100%;
-
-    --info: 199 89% 55%;
-    --info-foreground: 0 0% 100%;
-
-    --border: 210 20% 18%;
-    --input: 210 20% 18%;
-    --ring: 142 70% 45%;
-
-    --sidebar-background: 210 25% 10%;
-    --sidebar-foreground: 140 20% 96%;
-    --sidebar-primary: 142 70% 45%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 20% 15%;
-    --sidebar-accent-foreground: 140 20% 96%;
-    --sidebar-border: 210 20% 18%;
-    --sidebar-ring: 142 70% 45%;
-
-    --section-divider: 217 33% 20%;
-    --highlight-bar: 250 84% 65%;
-    --placeholder-bg: 217 33% 16%;
-    --placeholder-border: 217 33% 24%;
-    --text-subtle: 215 20% 65%;
+    --border: 0 0% 25%;
+    --input: 0 0% 25%;
+    --ring: 142 70% 35%;
   }
 
   /* Proposal Theme - Preserved but updated to match quality */
@@ -407,6 +397,102 @@ All colors MUST be HSL.
 
   .glow-on-hover:hover {
     box-shadow: 0 0 20px rgba(var(--primary) / 0.3);
+  }
+
+  /* Landing page color overrides - force cold-chain-command colors */
+  .landing-page {
+    /* Override root colors with exact cold-chain-command colors */
+    --background: 210 25% 97%;
+    --foreground: 220 50% 10%;
+    --primary: 142 70% 25%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 95%;
+    --secondary-foreground: 142 70% 20%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 142 70% 35%;
+    --accent-foreground: 0 0% 100%;
+    --border: 215 25% 88%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 50% 10%;
+  }
+
+  /* Landing page specific utilities from cold-chain-command */
+  
+  /* Industrial Grid Overlay */
+  .grid-overlay {
+    background-image: 
+      linear-gradient(hsl(var(--steel-light) / 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--steel-light) / 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* Frost Glass Effect */
+  .frost-glass {
+    background: hsl(var(--frost) / 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid hsl(var(--border) / 0.5);
+  }
+
+  /* Ice Glow Effect */
+  .ice-glow {
+    box-shadow: var(--shadow-ice);
+  }
+
+  /* Industrial Card */
+  .industrial-card {
+    @apply bg-card rounded-lg border border-border/50;
+    box-shadow: var(--shadow-card);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .industrial-card:hover {
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-4px);
+  }
+
+  /* Gradient Text */
+  .gradient-text-ice {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-ice);
+  }
+
+  /* Animated Frost Border */
+  .frost-border {
+    position: relative;
+  }
+
+  .frost-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, hsl(var(--ice-blue) / 0.5), transparent, hsl(var(--ice-blue) / 0.3));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+
+  /* Section Styling */
+  .section-dark {
+    background: var(--gradient-hero);
+  }
+
+  .section-light {
+    @apply bg-background;
+  }
+
+  /* Floating Action Button */
+  .floating-cta {
+    @apply fixed bottom-6 right-6 z-50;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
   }
 }
 
