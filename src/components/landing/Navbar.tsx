@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Phone, Snowflake, LogIn } from "lucide-react";
+import { Menu, X, Phone, Coffee, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -45,15 +45,15 @@ export const Navbar = () => {
            {/* Logo */}
            <Link to="/landing" className="flex items-center gap-3">
               <div className="relative">
-                <Snowflake className="h-10 w-10 text-accent" />
+                <Coffee className="h-10 w-10 text-accent" />
                 <div className="absolute inset-0 blur-lg bg-accent/30 animate-glow-pulse" />
               </div>
               <div className="flex flex-col">
                 <span className="text-xl font-display font-bold text-primary-foreground tracking-tight">
-                  MENZ
+                  SC COFFEE
                 </span>
                 <span className="text-[10px] font-medium text-accent uppercase tracking-[0.2em]">
-                  Refrigerated Transport
+                  Roastery
                 </span>
              </div>
            </Link>
@@ -79,7 +79,7 @@ export const Navbar = () => {
                className="flex items-center gap-2 text-sm font-medium text-primary-foreground/80 hover:text-accent transition-colors"
              >
                <Phone className="h-4 w-4" />
-               1300 MENZ
+               1300 COFFEE
              </a>
              <Button
                variant="ghost"
@@ -145,7 +145,7 @@ export const Navbar = () => {
                >
                  <a href="tel:1300000000">
                    <Phone className="h-5 w-5 mr-2" />
-                   Call 1300 MENZ
+                   Call 1300 COFFEE
                  </a>
                </Button>
                <Button

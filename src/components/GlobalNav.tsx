@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { FileText, Cog, Globe, User } from "lucide-react";
+import { FileText, Cog, User, Smartphone } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -14,9 +14,9 @@ const navItems = [
     icon: Cog,
   },
   {
-    label: "Public Landing",
-    path: "/landing",
-    icon: Globe,
+    label: "Driver App",
+    path: "/driver-app",
+    icon: Smartphone,
   },
   {
     label: "Client Portal",

@@ -38,36 +38,36 @@ export default function PODs() {
   const [rows, setRows] = useState<PodRow[]>([
     {
       id: "seed-1",
-      bookingId: "BK-2024-0150",
-      fileName: "POD-BK-2024-0150.pdf",
+      bookingId: "ORD-2026-0201",
+      fileName: "POD-ORD-2026-0201.pdf",
       matchPercent: 96,
       matchStatus: "Assigned",
       uploadedAt: new Date().toISOString().slice(0, 16).replace("T", " "),
       confirmed: true,
-      customer: "ABC Logistics",
-      driver: "John Smith",
+      customer: "Noosa Heads Cafe",
+      driver: "Jake Brennan",
       runNumber: "RS-1001",
       status: "Assigned",
       // demo only: show invoice present
       // @ts-expect-error demo field used by table
-      invoiceId: "INV-2025-0012",
+      invoiceId: "INV-2026-0001",
     },
     {
       id: "seed-2",
-      bookingId: "BK-2024-0149",
-      fileName: "POD-BK-2024-0149.jpg",
+      bookingId: "ORD-2026-0202",
+      fileName: "POD-ORD-2026-0202.jpg",
       matchPercent: 78,
       matchStatus: "Needs Review",
       uploadedAt: new Date(Date.now() - 3600_000).toISOString().slice(0, 16).replace("T", " "),
       confirmed: false,
-      customer: "XYZ Freight",
-      driver: "Sarah Jones",
+      customer: "Mooloolaba Espresso Bar",
+      driver: "Lily Tran",
       runNumber: "RS-1002",
       status: "Pending",
     },
     {
       id: "seed-3",
-      bookingId: "BK-UNKNOWN",
+      bookingId: "ORD-UNKNOWN",
       fileName: "unknown-pod.pdf",
       matchPercent: 42,
       matchStatus: "Needs Review",
@@ -116,7 +116,7 @@ export default function PODs() {
     const now = new Date().toISOString().slice(0, 16).replace("T", " ");
     const mapped: PodRow[] = results.map((r) => ({
       id: `${r.file.name}-${r.file.size}-${r.file.lastModified}`,
-      bookingId: r.extractedBookingId ?? "BK-UNKNOWN",
+      bookingId: r.extractedBookingId ?? "ORD-UNKNOWN",
       fileName: r.file.name,
       matchPercent: r.matchPercent,
       matchStatus: r.matchStatus === "Matched" ? "Assigned" : r.matchStatus,
@@ -159,27 +159,40 @@ export default function PODs() {
 
   function getCustomerForBooking(bookingId: string): string {
     const map: Record<string, string> = {
-      "BK-2024-0150": "ABC Logistics",
-      "BK-2024-0149": "XYZ Freight",
-      "BK-2024-0148": "Global Shipping Co",
+      "ORD-2026-0201": "Noosa Heads Cafe",
+      "ORD-2026-0202": "Mooloolaba Espresso Bar",
+      "ORD-2026-0203": "Caloundra Bakehouse",
+      "ORD-2026-0204": "Coolum Beach Cafe",
+      "ORD-2026-0205": "Peregian Beach Kiosk",
+      "ORD-2026-0206": "Alexandra Headland Brew",
+      "ORD-2026-0207": "Kawana Coffee Co",
+      "ORD-2026-0208": "Buderim Village Roast",
     };
     return map[bookingId] || "Unknown Customer";
   }
 
   function getDriverForBooking(bookingId: string): string {
     const map: Record<string, string> = {
-      "BK-2024-0150": "John Smith",
-      "BK-2024-0149": "Sarah Jones",
-      "BK-2024-0148": "Mike Wilson",
+      "ORD-2026-0201": "Jake Brennan",
+      "ORD-2026-0202": "Lily Tran",
+      "ORD-2026-0203": "Sam Keogh",
+      "ORD-2026-0204": "Reece Murray",
+      "ORD-2026-0205": "Jake Brennan",
+      "ORD-2026-0206": "Lily Tran",
+      "ORD-2026-0207": "Sam Keogh",
     };
     return map[bookingId] || undefined as any;
   }
 
   function getRunNumberForBooking(bookingId: string): string {
     const map: Record<string, string> = {
-      "BK-2024-0150": "RS-1001",
-      "BK-2024-0149": "RS-1002",
-      "BK-2024-0148": "RS-1003",
+      "ORD-2026-0201": "RS-1001",
+      "ORD-2026-0202": "RS-1002",
+      "ORD-2026-0203": "RS-1003",
+      "ORD-2026-0204": "RS-1004",
+      "ORD-2026-0205": "RS-1001",
+      "ORD-2026-0206": "RS-1002",
+      "ORD-2026-0207": "RS-1003",
     };
     return map[bookingId] || undefined as any;
   }
@@ -246,13 +259,13 @@ export default function PODs() {
   // KPI metrics (demo)
   const todayStr = new Date().toISOString().slice(0, 10);
   const todayRows = rows.filter((r) => r.uploadedAt.slice(0, 10) === todayStr);
-  const assignedPODs = rows.filter((r) => (r.bookingId && r.bookingId !== "BK-UNKNOWN") || String(r.status ?? r.matchStatus) === "Assigned").length;
+  const assignedPODs = rows.filter((r) => (r.bookingId && r.bookingId !== "ORD-UNKNOWN") || String(r.status ?? r.matchStatus) === "Assigned").length;
   const unassignedPODs = Math.max(0, rows.length - assignedPODs);
   const uniqueBookingsToday = new Set(
-    todayRows.filter((r) => r.bookingId && r.bookingId.startsWith("BK-")).map((r) => r.bookingId)
+    todayRows.filter((r) => r.bookingId && r.bookingId.startsWith("ORD-")).map((r) => r.bookingId)
   ).size;
   const assignedBookingsToday = new Set(
-    todayRows.filter((r) => r.bookingId && r.bookingId !== "BK-UNKNOWN").map((r) => r.bookingId)
+    todayRows.filter((r) => r.bookingId && r.bookingId !== "ORD-UNKNOWN").map((r) => r.bookingId)
   ).size;
   const percentAssignedToday = uniqueBookingsToday > 0 ? Math.round((assignedBookingsToday / uniqueBookingsToday) * 100) : 0;
   const ocrAvgToday = todayRows.length > 0 ? Math.round(todayRows.reduce((a, b) => a + (b.matchPercent ?? 0), 0) / todayRows.length) : 0;
@@ -318,7 +331,7 @@ export default function PODs() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">PODs</h1>
-        <p className="text-muted-foreground">Upload proof of delivery and match to bookings</p>
+        <p className="text-muted-foreground">Upload proof of delivery and match to orders</p>
       </div>
 
       {/* KPIs */}
@@ -468,7 +481,7 @@ export default function PODs() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div className="space-y-1">
                     <div className="text-sm font-medium">Booking ID contains</div>
-                    <Input placeholder="BK-..." value={adv.bookingIdLike} onChange={(e) => setAdv((v) => ({ ...v, bookingIdLike: e.target.value }))} />
+                    <Input placeholder="ORD-..." value={adv.bookingIdLike} onChange={(e) => setAdv((v) => ({ ...v, bookingIdLike: e.target.value }))} />
                   </div>
                   <div className="space-y-1">
                     <div className="text-sm font-medium">File name contains</div>
@@ -666,7 +679,7 @@ export default function PODs() {
                     <div>Booking Details</div>
                     <div className="flex items-center gap-2">
                       <Button size="sm" variant="outline" onClick={() => {
-                        setRows((prev) => prev.map((r) => (r.fileName === preview.fileName ? { ...r, bookingId: "BK-UNKNOWN", confirmed: false, status: "Pending", matchStatus: "Needs Review" } : r)));
+                        setRows((prev) => prev.map((r) => (r.fileName === preview.fileName ? { ...r, bookingId: "ORD-UNKNOWN", confirmed: false, status: "Pending", matchStatus: "Needs Review" } : r)));
                       }}><Undo2 className="h-4 w-4 mr-1" /> Unassign</Button>
                       <Button size="sm" variant="outline" onClick={() => {
                         const day = preview.uploadedAt.slice(0,10);
@@ -827,10 +840,12 @@ export default function PODs() {
         file={assignFor?.file}
         choices={(
           [
-            { bookingId: "BK-2024-0150", customer: "ABC Logistics", pickup: "Melbourne Warehouse", dropoff: "Sydney CBD", date: "2024-10-02" },
-            { bookingId: "BK-2024-0149", customer: "XYZ Freight", pickup: "Brisbane Port", dropoff: "Gold Coast", date: "2024-10-02" },
-            { bookingId: "BK-2024-0148", customer: "Global Shipping Co", pickup: "Adelaide Depot", dropoff: "Melbourne", date: "2024-10-02" },
-            { bookingId: "BK-2024-0147", customer: "Fast Track Transport", pickup: "Perth Hub", dropoff: "Fremantle", date: "2024-10-03" },
+            { bookingId: "ORD-2026-0201", customer: "Noosa Heads Cafe", pickup: "SC Roastery HQ", dropoff: "Noosa Cafe Strip", date: new Date().toISOString().slice(0, 10) },
+            { bookingId: "ORD-2026-0202", customer: "Mooloolaba Espresso Bar", pickup: "SC Roastery HQ", dropoff: "Mooloolaba Esplanade", date: new Date().toISOString().slice(0, 10) },
+            { bookingId: "ORD-2026-0203", customer: "Caloundra Bakehouse", pickup: "SC Roastery HQ", dropoff: "Caloundra Main St", date: new Date().toISOString().slice(0, 10) },
+            { bookingId: "ORD-2026-0204", customer: "Coolum Beach Cafe", pickup: "SC Roastery HQ", dropoff: "Coolum Beach", date: new Date().toISOString().slice(0, 10) },
+            { bookingId: "ORD-2026-0205", customer: "Peregian Beach Kiosk", pickup: "SC Roastery HQ", dropoff: "Peregian Beach Kiosk", date: new Date().toISOString().slice(0, 10) },
+            { bookingId: "ORD-2026-0206", customer: "Alexandra Headland Brew", pickup: "SC Roastery HQ", dropoff: "Alexandra Headland", date: new Date().toISOString().slice(0, 10) },
           ] as AssignChoice[]
         )}
         onAssign={(bookingId) => {

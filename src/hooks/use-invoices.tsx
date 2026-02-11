@@ -45,15 +45,62 @@ type InvoicesState = {
 
 const LS_KEY = "smh.invoices";
 
+function seedInvoices(): Invoice[] {
+  const id = (prefix = "inv") => `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const today = new Date().toISOString().slice(0, 10);
+  const lastWeek = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10);
+  const twoWeeksAgo = new Date(Date.now() - 14 * 86400000).toISOString().slice(0, 10);
+
+  return [
+    {
+      id: id(), invoiceNo: "INV-2026-0001", customer: "Noosa Heads Cafe", date: twoWeeksAgo,
+      lines: [
+        { id: id("ln"), description: "Delivery SC Roastery HQ → Noosa Cafe Strip (5 pallets)", quantity: 5, unitPrice: 55, total: 275 },
+      ],
+      subtotal: 275, tax: 27.50, total: 302.50, taxInclusive: false, status: "Paid" as InvoiceStatus, archivedAt: lastWeek,
+    },
+    {
+      id: id(), invoiceNo: "INV-2026-0002", customer: "Mooloolaba Espresso Bar", date: lastWeek,
+      lines: [
+        { id: id("ln"), description: "Delivery SC Roastery HQ → Mooloolaba Esplanade (8 pallets)", quantity: 8, unitPrice: 45, total: 360 },
+      ],
+      subtotal: 360, tax: 36.00, total: 396.00, taxInclusive: false, status: "Delivered" as InvoiceStatus, deliveredAt: lastWeek,
+    },
+    {
+      id: id(), invoiceNo: "INV-2026-0003", customer: "Coolum Beach Cafe", date: lastWeek,
+      lines: [
+        { id: id("ln"), description: "Delivery SC Roastery HQ → Coolum Beach (3 pallets)", quantity: 3, unitPrice: 50, total: 150 },
+      ],
+      subtotal: 150, tax: 15.00, total: 165.00, taxInclusive: false, status: "Confirmed" as InvoiceStatus,
+    },
+    {
+      id: id(), invoiceNo: "INV-2026-0004", customer: "Caloundra Bakehouse", date: today,
+      lines: [
+        { id: id("ln"), description: "Delivery SC Roastery HQ → Caloundra Main St (4 pallets)", quantity: 4, unitPrice: 40, total: 160 },
+        { id: id("ln"), description: "Extra handling - fragile single origin beans", quantity: 1, unitPrice: 25, total: 25 },
+      ],
+      subtotal: 185, tax: 18.50, total: 203.50, taxInclusive: false, status: "Draft" as InvoiceStatus,
+    },
+    {
+      id: id(), invoiceNo: "INV-2026-0005", customer: "Peregian Beach Kiosk", date: today,
+      lines: [
+        { id: id("ln"), description: "Delivery SC Roastery HQ → Peregian Beach Kiosk (2 pallets)", quantity: 2, unitPrice: 50, total: 100 },
+      ],
+      subtotal: 100, tax: 10.00, total: 110.00, taxInclusive: false, status: "Draft" as InvoiceStatus,
+    },
+  ];
+}
+
 function loadFromStorage(): Invoice[] {
   try {
     const raw = localStorage.getItem(LS_KEY);
-    if (!raw) return [];
+    if (!raw) return seedInvoices();
     const arr = JSON.parse(raw);
-    if (!Array.isArray(arr)) return [];
+    if (!Array.isArray(arr)) return seedInvoices();
+    if (arr.length === 0) return seedInvoices();
     return arr;
   } catch {
-    return [];
+    return seedInvoices();
   }
 }
 

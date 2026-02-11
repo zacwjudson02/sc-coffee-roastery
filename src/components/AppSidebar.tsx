@@ -9,7 +9,7 @@ import {
   Users, 
   Receipt, 
   Building2,
-  Truck,
+  Coffee,
   RotateCcw,
   ArrowLeft,
   ChevronDown,
@@ -71,18 +71,18 @@ export function AppSidebar() {
     }
     const today = new Date().toISOString().slice(0,10);
     const samplePairs = [
-      ["Melbourne Warehouse", "Sydney CBD"],
-      ["Brisbane Port", "Gold Coast"],
-      ["Adelaide Depot", "Melbourne"],
-      ["Perth Hub", "Fremantle"],
-      ["Canberra DC", "Newcastle"],
+      ["SC Roastery HQ", "Noosa Cafe Strip"],
+      ["SC Roastery HQ", "Mooloolaba Espresso Bar"],
+      ["SC Roastery HQ", "Caloundra Main St"],
+      ["SC Roastery HQ", "Maroochydore Markets"],
+      ["SC Roastery HQ", "Coolum Beach Cafe"],
     ];
-    const drivers = ["John Smith", "Sarah Jones", "Mike Brown", "Priya Patel"];
+    const drivers = ["Jake Brennan", "Lily Tran", "Sam Keogh", "Reece Murray"];
     for (let i = 0; i < count; i++) {
       const customer = customers[i % customers.length];
       const pair = samplePairs[i % samplePairs.length];
       const driver = drivers[i % drivers.length];
-      const bookingId = `BK-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 9000) + 1000)}`;
+      const bookingId = `ORD-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 9000) + 1000)}`;
       const pallets = (i % 6) + 2;
       const spaces = pallets;
       const id = addBooking({
@@ -123,11 +123,11 @@ export function AppSidebar() {
   async function handleInjectInvoicedHistory() {
     if (!customers || customers.length === 0) { alert("No customers available"); return; }
     const samplePairs = [
-      ["Melbourne Warehouse", "Sydney CBD"],
-      ["Brisbane Port", "Gold Coast"],
-      ["Adelaide Depot", "Melbourne"],
-      ["Perth Hub", "Fremantle"],
-      ["Canberra DC", "Newcastle"],
+      ["SC Roastery HQ", "Noosa Cafe Strip"],
+      ["SC Roastery HQ", "Mooloolaba Espresso Bar"],
+      ["SC Roastery HQ", "Caloundra Main St"],
+      ["SC Roastery HQ", "Maroochydore Markets"],
+      ["SC Roastery HQ", "Coolum Beach Cafe"],
     ];
     const today = new Date();
     let created = 0;
@@ -141,7 +141,7 @@ export function AppSidebar() {
         const pallets = ((i + 2) % 8) + 2;
         const unitPrice = 40 + ((i % 5) * 5);
         const total = pallets * unitPrice;
-        const bookingId = `BK-${today.getFullYear()}-${String(Math.floor(Math.random() * 9000) + 1000)}`;
+        const bookingId = `ORD-${today.getFullYear()}-${String(Math.floor(Math.random() * 9000) + 1000)}`;
         const id = addBooking({
           bookingId,
           customerId: customer.id,
@@ -168,7 +168,7 @@ export function AppSidebar() {
         });
         // Pool into per-customer draft invoice by date
         const { id: invoiceId } = findOrCreateDraftByCustomer(customer.id, customer.company, iso);
-        addLine(invoiceId, { description: `Transport ${pair[0]} → ${pair[1]}`, quantity: pallets, unitPrice });
+        addLine(invoiceId, { description: `Delivery ${pair[0]} → ${pair[1]}`, quantity: pallets, unitPrice });
         const existing = invoices.find((x) => x.id === invoiceId);
         updateInvoice(invoiceId, { source: [ ...(existing?.source ?? []), { type: "booking", id, bookingId } ] });
         created++;
@@ -178,28 +178,28 @@ export function AppSidebar() {
   }
 
   return (
-    <Sidebar collapsible="icon" className="border-r-2 border-slate-300 bg-slate-50 shadow-md top-12">
-      <SidebarHeader className="border-b-2 border-slate-300 p-4 bg-white">
+    <Sidebar collapsible="icon" className="border-r border-border shadow-md top-12">
+      <SidebarHeader className="border-b border-border p-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-700 to-emerald-800 shadow-md">
-            <Truck className="h-6 w-6 text-white" />
+          <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-gradient-to-br from-amber-800 to-amber-900 shadow-md">
+            <Coffee className="h-6 w-6 text-amber-100" />
           </div>
           {open && (
             <div className="flex flex-col">
-              <span className="text-base font-bold text-slate-800 tracking-tight">Menz Transport</span>
-              <span className="text-xs text-emerald-700 font-semibold uppercase tracking-wide">Software Proposal</span>
+              <span className="text-base font-bold tracking-tight text-sidebar-foreground">SC Coffee Roastery</span>
+              <span className="text-xs font-semibold uppercase tracking-wide text-sidebar-primary">Software Proposal</span>
             </div>
           )}
         </div>
       </SidebarHeader>
       
-      <SidebarContent className="bg-slate-50">
-        {/* Back to Proposal - Industrial Button */}
+      <SidebarContent>
+        {/* Back to Proposal */}
         {open && (
-          <div className="px-3 py-4 border-b-2 border-slate-300 bg-white">
+          <div className="px-3 py-4 border-b border-sidebar-border">
             <Button
               onClick={() => navigate("/")}
-              className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold shadow-md transition-all duration-200 flex items-center justify-center gap-2 h-10 uppercase tracking-wide text-xs"
+              className="w-full bg-sidebar-primary hover:bg-sidebar-primary/90 text-sidebar-primary-foreground font-bold shadow-md transition-all duration-200 flex items-center justify-center gap-2 h-10 uppercase tracking-wide text-xs"
             >
               <ArrowLeft className="h-4 w-4" />
               Back to Proposal
@@ -208,7 +208,7 @@ export function AppSidebar() {
         )}
         
         <SidebarGroup className="pt-4">
-          <SidebarGroupLabel className="text-xs font-bold uppercase tracking-widest text-slate-500 px-3 mb-2">
+          <SidebarGroupLabel className="text-xs font-bold uppercase tracking-widest text-sidebar-foreground/50 px-3 mb-2">
             Navigation
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -221,8 +221,8 @@ export function AppSidebar() {
                       end={item.url === "/demo"}
                       className={({ isActive }) =>
                         isActive
-                          ? "flex items-center gap-3 px-3 py-2.5 rounded-md bg-white text-emerald-700 font-bold shadow-sm border-l-4 border-emerald-700 transition-all duration-200"
-                          : "flex items-center gap-3 px-3 py-2.5 rounded-md text-slate-700 hover:text-emerald-700 hover:bg-white hover:border-l-4 hover:border-slate-400 transition-all duration-200 font-semibold"
+                          ? "flex items-center gap-3 px-3 py-2.5 rounded-md bg-sidebar-accent text-sidebar-primary font-bold shadow-sm border-l-4 border-sidebar-primary transition-all duration-200"
+                          : "flex items-center gap-3 px-3 py-2.5 rounded-md text-sidebar-foreground/80 hover:text-sidebar-primary hover:bg-sidebar-accent hover:border-l-4 hover:border-sidebar-foreground/30 transition-all duration-200 font-semibold"
                       }
                     >
                       <item.icon className="h-5 w-5 flex-shrink-0" />
@@ -236,10 +236,10 @@ export function AppSidebar() {
         </SidebarGroup>
         
         {/* Collapsible Utilities */}
-        <SidebarGroup className="border-t-2 border-slate-300 mt-2 pt-2">
+        <SidebarGroup className="border-t border-sidebar-border mt-2 pt-2">
           <Collapsible open={utilitiesOpen} onOpenChange={setUtilitiesOpen}>
             <CollapsibleTrigger asChild>
-              <button className="flex items-center justify-between w-full px-5 py-2 text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-slate-700 transition-colors hover:bg-white rounded-md mx-2">
+              <button className="flex items-center justify-between w-full px-5 py-2 text-xs font-bold uppercase tracking-widest text-sidebar-foreground/50 hover:text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent rounded-md mx-2">
                 <span className="flex items-center gap-2">
                   <Settings className="h-3.5 w-3.5" />
                   Demo Utilities
@@ -254,7 +254,7 @@ export function AppSidebar() {
                     <SidebarMenuButton asChild>
                       <button 
                         onClick={handleResetDemo}
-                        className="flex items-center gap-2 px-3 py-1.5 text-xs text-slate-600 hover:text-emerald-700 hover:bg-white rounded-md transition-all font-medium"
+                        className="flex items-center gap-2 px-3 py-1.5 text-xs text-sidebar-foreground/60 hover:text-sidebar-primary hover:bg-sidebar-accent rounded-md transition-all font-medium"
                       >
                         <RotateCcw className="h-3.5 w-3.5" />
                         <span>Reset Demo Data</span>
@@ -265,7 +265,7 @@ export function AppSidebar() {
                     <SidebarMenuButton asChild>
                       <button 
                         onClick={handleInjectInvoicedHistory}
-                        className="flex items-center gap-2 px-3 py-1.5 text-xs text-slate-600 hover:text-emerald-700 hover:bg-white rounded-md transition-all font-medium"
+                        className="flex items-center gap-2 px-3 py-1.5 text-xs text-sidebar-foreground/60 hover:text-sidebar-primary hover:bg-sidebar-accent rounded-md transition-all font-medium"
                       >
                         <FileText className="h-3.5 w-3.5" />
                         <span>Inject 15 Invoiced/Customer</span>
@@ -291,7 +291,7 @@ export function AppSidebar() {
                           }
                           alert("Demo invoice(s) injected");
                         }}
-                        className="flex items-center gap-2 px-3 py-1.5 text-xs text-slate-600 hover:text-emerald-700 hover:bg-white rounded-md transition-all font-medium"
+                        className="flex items-center gap-2 px-3 py-1.5 text-xs text-sidebar-foreground/60 hover:text-sidebar-primary hover:bg-sidebar-accent rounded-md transition-all font-medium"
                       >
                         <FileText className="h-3.5 w-3.5" />
                         <span>Inject Invoice (custom date)</span>
@@ -302,7 +302,7 @@ export function AppSidebar() {
                     <SidebarMenuButton asChild>
                       <button 
                         onClick={() => handleInject(1)}
-                        className="flex items-center gap-2 px-3 py-1.5 text-xs text-slate-600 hover:text-emerald-700 hover:bg-white rounded-md transition-all font-medium"
+                        className="flex items-center gap-2 px-3 py-1.5 text-xs text-sidebar-foreground/60 hover:text-sidebar-primary hover:bg-sidebar-accent rounded-md transition-all font-medium"
                       >
                         <FileText className="h-3.5 w-3.5" />
                         <span>Inject 1 Booking</span>
@@ -313,7 +313,7 @@ export function AppSidebar() {
                     <SidebarMenuButton asChild>
                       <button 
                         onClick={() => handleInject(3)}
-                        className="flex items-center gap-2 px-3 py-1.5 text-xs text-slate-600 hover:text-emerald-700 hover:bg-white rounded-md transition-all font-medium"
+                        className="flex items-center gap-2 px-3 py-1.5 text-xs text-sidebar-foreground/60 hover:text-sidebar-primary hover:bg-sidebar-accent rounded-md transition-all font-medium"
                       >
                         <FileText className="h-3.5 w-3.5" />
                         <span>Inject 3 Bookings</span>
@@ -324,7 +324,7 @@ export function AppSidebar() {
                     <SidebarMenuButton asChild>
                       <button 
                         onClick={() => handleInject(5)}
-                        className="flex items-center gap-2 px-3 py-1.5 text-xs text-slate-600 hover:text-emerald-700 hover:bg-white rounded-md transition-all font-medium"
+                        className="flex items-center gap-2 px-3 py-1.5 text-xs text-sidebar-foreground/60 hover:text-sidebar-primary hover:bg-sidebar-accent rounded-md transition-all font-medium"
                       >
                         <FileText className="h-3.5 w-3.5" />
                         <span>Inject 5 Bookings</span>
@@ -335,7 +335,7 @@ export function AppSidebar() {
                     <SidebarMenuButton asChild>
                       <button 
                         onClick={() => handleInject(15)}
-                        className="flex items-center gap-2 px-3 py-1.5 text-xs text-slate-600 hover:text-emerald-700 hover:bg-white rounded-md transition-all font-medium"
+                        className="flex items-center gap-2 px-3 py-1.5 text-xs text-sidebar-foreground/60 hover:text-sidebar-primary hover:bg-sidebar-accent rounded-md transition-all font-medium"
                       >
                         <FileText className="h-3.5 w-3.5" />
                         <span>Inject 15 Allocated (today)</span>
@@ -348,29 +348,17 @@ export function AppSidebar() {
           </Collapsible>
         </SidebarGroup>
         
-        {/* Industrial Footer Badge */}
+        {/* Footer Badge */}
         {open && (
-          <div className="mt-auto px-3 py-4 border-t-2 border-slate-300 bg-white">
-            <div className="relative bg-slate-100 rounded-lg p-3 border-2 border-slate-300">
-              {/* Diagonal stripes pattern - industrial look */}
-              <div className="absolute inset-0 opacity-5 overflow-hidden rounded-lg">
-                <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-                  <defs>
-                    <pattern id="stripes" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(45)">
-                      <line x1="0" y1="0" x2="0" y2="10" stroke="#1e293b" strokeWidth="2"/>
-                    </pattern>
-                  </defs>
-                  <rect width="100%" height="100%" fill="url(#stripes)"/>
-                </svg>
-              </div>
-              
+          <div className="mt-auto px-3 py-4 border-t border-sidebar-border">
+            <div className="relative rounded-lg p-3 border border-sidebar-border bg-sidebar-accent">
               <div className="relative flex items-center gap-3">
-                <div className="h-9 w-9 rounded-md bg-emerald-700 flex items-center justify-center shadow-sm">
-                  <Truck className="h-5 w-5 text-white" />
+                <div className="h-9 w-9 rounded-md bg-sidebar-primary flex items-center justify-center shadow-sm">
+                  <Coffee className="h-5 w-5 text-sidebar-primary-foreground" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-xs font-bold text-slate-800 uppercase tracking-wide">Interactive Demo</p>
-                  <p className="text-[10px] text-slate-600 font-semibold">Transport Management</p>
+                  <p className="text-xs font-bold text-sidebar-foreground uppercase tracking-wide">Interactive Demo</p>
+                  <p className="text-[10px] text-sidebar-foreground/60 font-semibold">Roastery Operations</p>
                 </div>
               </div>
             </div>

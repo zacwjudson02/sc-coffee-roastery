@@ -87,7 +87,7 @@ export const WelcomeOverlay = () => {
                   }}
                  >
                    <h1 className="text-3xl md:text-5xl font-mono font-bold tracking-tight text-white/90 leading-tight">
-                     MENZ Transport
+                     Sunshine Coast Coffee Roastery
                    </h1>
                  </motion.div>
               </div>
@@ -100,7 +100,7 @@ export const WelcomeOverlay = () => {
                 className="space-y-2"
               >
                 <h2 className="text-xl md:text-2xl text-white/70 font-light">
-                  Custom Operations Software Proposal
+                  Custom Delivery Management Software Proposal
                 </h2>
               </motion.div>
 
@@ -127,7 +127,7 @@ export const WelcomeOverlay = () => {
                   transition={{ delay: 1, duration: 1 }}
                   className="text-white/60 text-sm md:text-base max-w-lg mt-6 font-light"
                 >
-                  For transport businesses that want fewer admin hours, cleaner data, and tighter control.
+                  For specialty coffee businesses that want fewer admin hours, cleaner data, and complete delivery visibility.
                 </motion.p>
               </motion.div>
             </div>

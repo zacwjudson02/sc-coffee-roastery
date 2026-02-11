@@ -7,11 +7,11 @@ export type DemoOcrResult = {
 };
 
 export function inferBookingIdFromName(name: string): string | undefined {
-  const m = name.match(/BK[-_]?(\d{4})[-_]?(\d{3,})/i);
+  const m = name.match(/ORD[-_]?(\d{4})[-_]?(\d{3,})/i);
   if (!m) return undefined;
   const year = m[1];
   const seq = m[2];
-  return `BK-${year}-${seq}`.toUpperCase();
+  return `ORD-${year}-${seq}`.toUpperCase();
 }
 
 export async function demoOcr(file: File): Promise<DemoOcrResult> {
@@ -19,9 +19,9 @@ export async function demoOcr(file: File): Promise<DemoOcrResult> {
   await new Promise((r) => setTimeout(r, 250));
   const inferred = inferBookingIdFromName(file.name);
   const samples = {
-    customers: ["ABC Logistics", "XYZ Freight", "Global Shipping Co", "Fast Track Transport", "Prime Logistics"],
-    pickups: ["Melbourne Warehouse", "Brisbane Port", "Adelaide Depot", "Perth Hub", "Sydney DC"],
-    dropoffs: ["Sydney CBD", "Gold Coast", "Melbourne", "Fremantle", "Newcastle"],
+    customers: ["Noosa Heads Cafe", "Mooloolaba Esplanade", "Caloundra Bakehouse", "Maroochydore Brew Bar", "Coolum Beach Cafe"],
+    pickups: ["SC Roastery HQ", "SC Roastery Warehouse", "Roastery Dispatch", "SC Roastery HQ", "SC Coffee HQ"],
+    dropoffs: ["Noosa Cafe Strip", "Mooloolaba Esplanade", "Caloundra Main St", "Maroochydore CBD", "Coolum Beach"],
   };
   const seed = Array.from(file.name).reduce((a, c) => (a + c.charCodeAt(0)) % 97, 0);
   const pick = (arr: string[]) => arr[seed % arr.length];

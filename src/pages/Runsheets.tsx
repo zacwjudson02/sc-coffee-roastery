@@ -1,26 +1,22 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { Calendar as CalendarIcon, Filter, ClipboardList } from "lucide-react";
+import { Calendar as CalendarIcon, Filter, ClipboardList, Coffee } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ChevronDown, ChevronUp, GripVertical, Plus, Printer, Send } from "lucide-react";
+import { GripVertical, Plus } from "lucide-react";
 import { CreateRunsheetDialog } from "@/components/runsheets/CreateRunsheetDialog";
 import { AllocateBookingsDialog } from "@/components/runsheets/AllocateBookingsDialog";
 import { BookingViewDialog } from "@/components/bookings/BookingViewDialog";
-import { ShiftViewDialog } from "@/components/shifts/ShiftViewDialog";
 import { useResources } from "@/hooks/use-resources";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { PreviewRunsheetDialog } from "@/components/runsheets/PreviewRunsheetDialog";
-import { useEvents } from "@/hooks/use-events";
-import { useAppData } from "@/hooks/use-appdata";
+
+// ── Types ──────────────────────────────────────────────────────────────────────
 
 type Job = {
   id: string;
   bookingId: string;
-  type: "Pickup" | "Dropoff";
-  address: string;
   pickup: string;
   dropoff: string;
   pickupSuburb?: string;
@@ -34,199 +30,94 @@ type Job = {
 
 type DriverRunsheet = {
   driver: string;
-  routeSummary: string;
-  start: string;
-  finish: string;
   jobs: Job[];
-  open?: boolean;
 };
 
-// No hardcoded demo runsheets; the page derives from the backing store
+// ── Helpers ────────────────────────────────────────────────────────────────────
+
+function formatLocalDate(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+function parseLocalDate(s: string): Date {
+  const [y, m, d] = s.split("-").map(Number);
+  return new Date(y, (m || 1) - 1, d || 1);
+}
+
+const TODAY = formatLocalDate(new Date());
+
+// ── Seed demo runsheets (always available, no store dependency) ────────────────
+
+function buildDemoRunsheets(): DriverRunsheet[] {
+  return [
+    {
+      driver: "Jake Brennan",
+      jobs: [
+        { id: "demo-j1", bookingId: "ORD-2026-0201", pickup: "SC Roastery HQ", dropoff: "Noosa Cafe Strip", pickupSuburb: "Warana", dropoffSuburb: "Noosa Heads", pallets: 6, spaces: 6, palletType: "Standard", transferMethod: "Hand", suburb: "Noosa Heads" },
+        { id: "demo-j2", bookingId: "ORD-2026-0205", pickup: "SC Roastery HQ", dropoff: "Peregian Beach Kiosk", pickupSuburb: "Warana", dropoffSuburb: "Peregian Beach", pallets: 2, spaces: 2, palletType: "Standard", transferMethod: "Hand", suburb: "Peregian Beach" },
+      ],
+    },
+    {
+      driver: "Lily Tran",
+      jobs: [
+        { id: "demo-j3", bookingId: "ORD-2026-0202", pickup: "SC Roastery HQ", dropoff: "Mooloolaba Esplanade", pickupSuburb: "Warana", dropoffSuburb: "Mooloolaba", pallets: 10, spaces: 10, palletType: "Standard", transferMethod: "Hand", suburb: "Mooloolaba" },
+        { id: "demo-j4", bookingId: "ORD-2026-0206", pickup: "SC Roastery HQ", dropoff: "Alexandra Headland", pickupSuburb: "Warana", dropoffSuburb: "Alexandra Headland", pallets: 3, spaces: 3, palletType: "Standard", transferMethod: "Hand", suburb: "Alexandra Headland" },
+      ],
+    },
+    {
+      driver: "Sam Keogh",
+      jobs: [
+        { id: "demo-j5", bookingId: "ORD-2026-0203", pickup: "SC Roastery HQ", dropoff: "Caloundra Main St", pickupSuburb: "Warana", dropoffSuburb: "Caloundra", pallets: 4, spaces: 4, palletType: "Standard", transferMethod: "Hand", suburb: "Caloundra" },
+        { id: "demo-j6", bookingId: "ORD-2026-0207", pickup: "SC Roastery HQ", dropoff: "Kawana Waters", pickupSuburb: "Warana", dropoffSuburb: "Kawana", pallets: 5, spaces: 5, palletType: "Standard", transferMethod: "Hand", suburb: "Kawana" },
+      ],
+    },
+  ];
+}
+
+// ── Component ──────────────────────────────────────────────────────────────────
 
 export default function Runsheets() {
-  const [date, setDate] = useState("");
+  // State
+  const [date, setDate] = useState(TODAY);
   const [driverFilter, setDriverFilter] = useState("all");
-  const { drivers: storeDrivers, shifts, ensureShift, ensureRunsheet, addJobsToRunsheet, runsheets: storeRunsheets, deleteRunsheet, removeShift, getRunsheetBy } = useResources();
-  const [runsheets, setRunsheets] = useState<DriverRunsheet[]>([]);
-  const events = useEvents();
-  const app = useAppData();
+  const [runsheets, setRunsheets] = useState<DriverRunsheet[]>(buildDemoRunsheets);
+  const { drivers: storeDrivers } = useResources();
+
+  // Dialogs
   const [openCreate, setOpenCreate] = useState(false);
   const [openAllocate, setOpenAllocate] = useState(false);
   const [viewFor, setViewFor] = useState<any | null>(null);
-  const [viewShift, setViewShift] = useState<{ driver: string } | null>(null);
-  const [confirmDelete, setConfirmDelete] = useState<{ shiftId: string; driver: string } | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<{ driver: string } | null>(null);
   const [preview, setPreview] = useState<{ driver: string } | null>(null);
+
+  // Derived driver list (merge store + UI)
   const drivers = useMemo(() => {
     const fromStore = storeDrivers.map((d) => d.name);
-    const fromUi = Array.from(new Set(runsheets.map((r) => r.driver)));
+    const fromUi = runsheets.map((r) => r.driver);
     return Array.from(new Set([...fromStore, ...fromUi]));
   }, [storeDrivers, runsheets]);
 
-  // Helper to format/parse dates in local time to avoid timezone shifts
-  function formatLocalDate(d: Date): string {
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, "0");
-    const da = String(d.getDate()).padStart(2, "0");
-    return `${y}-${m}-${da}`;
-  }
-  function parseLocalDate(s: string): Date {
-    const [y, m, d] = s.split("-").map((n) => Number(n));
-    return new Date(y, (m || 1) - 1, d || 1);
-  }
+  // Filtered view
+  const visible = useMemo(() => {
+    return runsheets.filter((r) => driverFilter === "all" || r.driver === driverFilter);
+  }, [runsheets, driverFilter]);
 
-  // Derive what to display based on selected date. If a date is set, prefer runsheets from the store for that date.
-  const displayRunsheets = useMemo(() => {
-    if (!date) return runsheets;
-    const forDateShiftIds = shifts.filter((s) => s.date === date).map((s) => s.id);
-    if (forDateShiftIds.length === 0) return [] as DriverRunsheet[];
-    const rsForDate = storeRunsheets.filter((r) => forDateShiftIds.includes(r.shiftId));
-    const built: DriverRunsheet[] = rsForDate.map((r) => {
-      const drv = storeDrivers.find((d) => d.id === r.driverId)?.name || "";
-      return {
-        driver: drv,
-        routeSummary: r.jobs.length > 0 ? `${r.jobs[0].pickup ?? "Start"} → ${r.jobs[r.jobs.length - 1].dropoff ?? "End"}` : "",
-        start: "08:00",
-        finish: "16:00",
-        jobs: r.jobs.map((j) => ({
-          id: j.id,
-          bookingId: j.bookingId,
-          type: "Pickup" as const,
-          address: j.pickup,
-          pickup: j.pickup,
-          dropoff: j.dropoff,
-          pickupSuburb: j.pickupSuburb,
-          dropoffSuburb: j.dropoffSuburb,
-          pallets: j.pallets ?? 1,
-          spaces: j.spaces ?? 1,
-          palletType: j.palletType || "Standard",
-          transferMethod: j.transferMethod || "Fork",
-          suburb: j.suburb || j.dropoff,
-        })),
-        open: true,
-      };
-    }).filter((r) => r.driver);
-    return built;
-  }, [date, runsheets, storeRunsheets, shifts, storeDrivers]);
+  // Total job count
+  const totalJobs = runsheets.reduce((sum, r) => sum + r.jobs.length, 0);
 
-  // Auto-generate runsheets for the selected date from allocated bookings if none exist yet (demo helper)
-  useEffect(() => {
-    if (!date) return;
-    const flag = `smh.autogen.runsheets.${date}`;
-    try { if (localStorage.getItem(flag)) return; } catch {}
-    const anyForDate = storeRunsheets.some((r) => {
-      const s = shifts.find((x) => x.id === r.shiftId);
-      return s?.date === date;
-    });
-    if (anyForDate) return;
-    // Build from bookings with a driver on this date
-    const byDriver: Record<string, typeof app.bookings> = {} as any;
-    app.bookings.forEach((b) => {
-      if (b.date !== date) return;
-      if (!b.driver) return;
-      if (!byDriver[b.driver]) byDriver[b.driver] = [] as any[];
-      byDriver[b.driver].push(b);
-    });
-    const driverNames = Object.keys(byDriver);
-    if (driverNames.length === 0) return;
-    driverNames.forEach((name) => {
-      const drv = storeDrivers.find((d) => d.name === name);
-      if (!drv) return;
-      const shiftId = ensureShift(date, drv.id);
-      ensureRunsheet(shiftId);
-      const jobs = byDriver[name].map((b, i) => ({
-        id: `${b.bookingId}-${Date.now()}-${i}`,
-        bookingId: b.bookingId,
-        pickup: b.pickup,
-        dropoff: b.dropoff,
-        pickupSuburb: b.pickupSuburb,
-        dropoffSuburb: b.dropoffSuburb,
-        pallets: b.pallets ?? 1,
-        spaces: b.spaces ?? 1,
-        palletType: b.palletType || "Standard",
-        transferMethod: "Fork",
-        suburb: b.dropoffSuburb || b.dropoff,
-      }));
-      addJobsToRunsheet(shiftId, jobs);
-    });
-    try { localStorage.setItem(flag, "1"); } catch {}
-  }, [date, app.bookings, storeDrivers, shifts, storeRunsheets, ensureShift, ensureRunsheet, addJobsToRunsheet]);
+  // ── Drag & Drop ──────────────────────────────────────────────────────────────
 
-  // Remove previous sync effect; displayRunsheets builds directly from store
-
-  // Listen for booking allocations from the Bookings page and reflect them here
-  useEffect(() => {
-    const unsubscribe = events.subscribe((evt) => {
-      if (evt.type !== "booking.allocated") return;
-      const bookingId = String(evt.payload?.id || "");
-      const driverName = String(evt.payload?.driver || "");
-      if (!bookingId || !driverName) return;
-      const b = app.bookings.find((x) => x.id === bookingId);
-      const d = storeDrivers.find((x) => x.name === driverName);
-      if (!b || !d) return;
-      const runDate = date || b.date || new Date().toISOString().slice(0,10);
-      const shiftId = ensureShift(runDate, d.id);
-      ensureRunsheet(shiftId);
-      const job = {
-        id: `${b.bookingId}-${Date.now()}`,
-        bookingId: b.bookingId,
-        pickup: b.pickup,
-        dropoff: b.dropoff,
-        pickupSuburb: b.pickupSuburb,
-        dropoffSuburb: b.dropoffSuburb,
-        pallets: b.pallets ?? 1,
-        spaces: b.spaces ?? 1,
-        palletType: b.palletType || "Standard",
-        transferMethod: "Fork",
-        suburb: b.dropoffSuburb || b.dropoff,
-      };
-      addJobsToRunsheet(shiftId, [job]);
-      // Update local UI panel so it appears instantly
-      setRunsheets((prev) => {
-        const next = prev.map((r) => ({ ...r, jobs: [...r.jobs] }));
-        let target = next.find((r) => r.driver === driverName);
-        if (!target) {
-          target = {
-            driver: driverName,
-            routeSummary: `${b.pickup} → ${b.dropoff}`,
-            start: "08:00",
-            finish: "16:00",
-            jobs: [],
-            open: true,
-          };
-          next.unshift(target);
-        }
-        target.jobs.push({
-          id: job.id,
-          bookingId: job.bookingId,
-          type: "Pickup",
-          address: b.pickup,
-          pickup: b.pickup,
-          dropoff: b.dropoff,
-          pickupSuburb: b.pickupSuburb,
-          dropoffSuburb: b.dropoffSuburb,
-          pallets: job.pallets!,
-          spaces: job.spaces!,
-          palletType: job.palletType!,
-          transferMethod: job.transferMethod!,
-          suburb: job.suburb!,
-        });
-        return next;
-      });
-    });
-    return unsubscribe;
-  }, [events, app.bookings, storeDrivers, date, ensureShift, ensureRunsheet, addJobsToRunsheet]);
-
-  function onDragStart(e: React.DragEvent<HTMLDivElement>, fromDriver: string, jobId: string) {
+  function onDragStart(e: React.DragEvent, fromDriver: string, jobId: string) {
     e.dataTransfer.setData("text/plain", JSON.stringify({ fromDriver, jobId }));
   }
-  function onDrop(e: React.DragEvent<HTMLDivElement>, toDriver: string, toIndex: number) {
+
+  function onDrop(e: React.DragEvent, toDriver: string, toIndex: number) {
     e.preventDefault();
-    const data = JSON.parse(e.dataTransfer.getData("text/plain"));
-    const { fromDriver, jobId } = data as { fromDriver: string; jobId: string };
+    const { fromDriver, jobId } = JSON.parse(e.dataTransfer.getData("text/plain"));
     setRunsheets((prev) => {
       const copy = prev.map((r) => ({ ...r, jobs: [...r.jobs] }));
-      const from = copy.find((r) => r.driver === fromDriver)!;
-      const to = copy.find((r) => r.driver === toDriver)!;
+      const from = copy.find((r) => r.driver === fromDriver);
+      const to = copy.find((r) => r.driver === toDriver);
+      if (!from || !to) return prev;
       const idx = from.jobs.findIndex((j) => j.id === jobId);
       if (idx === -1) return prev;
       const [job] = from.jobs.splice(idx, 1);
@@ -235,12 +126,64 @@ export default function Runsheets() {
     });
   }
 
+  // ── Create / Allocate handlers ───────────────────────────────────────────────
+
+  function handleCreate({ driver, bookings }: { driver: string; bookings: any[] }) {
+    const newSheet: DriverRunsheet = {
+      driver,
+      jobs: bookings.map((b, i) => ({
+        id: `${b.bookingId}-${Date.now()}-${i}`,
+        bookingId: b.bookingId,
+        pickup: b.pickup,
+        dropoff: b.dropoff,
+        pickupSuburb: b.pickup,
+        dropoffSuburb: b.dropoff,
+        pallets: b.pallets ?? 1,
+        spaces: b.spaces ?? 1,
+        palletType: b.palletType || "Standard",
+        transferMethod: "Hand",
+        suburb: b.dropoff,
+      })),
+    };
+    setRunsheets((prev) => [newSheet, ...prev]);
+  }
+
+  function handleAllocate({ driver, bookings }: { driver: string; bookings: any[] }) {
+    setRunsheets((prev) => {
+      const copy = prev.map((r) => ({ ...r, jobs: [...r.jobs] }));
+      let target = copy.find((r) => r.driver === driver);
+      if (!target) {
+        target = { driver, jobs: [] };
+        copy.unshift(target);
+      }
+      bookings.forEach((b, i) => {
+        target!.jobs.push({
+          id: `${b.bookingId}-${Date.now()}-${i}`,
+          bookingId: b.bookingId,
+          pickup: b.pickup,
+          dropoff: b.dropoff,
+          pickupSuburb: b.pickup,
+          dropoffSuburb: b.dropoff,
+          pallets: b.pallets ?? 1,
+          spaces: b.spaces ?? 1,
+          palletType: b.palletType || "Standard",
+          transferMethod: "Hand",
+          suburb: b.dropoff,
+        });
+      });
+      return copy;
+    });
+  }
+
+  // ── Render ───────────────────────────────────────────────────────────────────
+
   return (
     <div className="space-y-6 pb-24">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Runsheets</h1>
-          <p className="text-muted-foreground">Assemble and dispatch driver runs</p>
+          <p className="text-muted-foreground">Assemble and dispatch delivery runs</p>
         </div>
         <div className="flex items-center gap-2">
           <Button onClick={() => setOpenAllocate(true)} className="bg-accent hover:bg-accent/90">
@@ -249,21 +192,24 @@ export default function Runsheets() {
         </div>
       </div>
 
+      {/* Filters */}
       <div className="rounded-lg border bg-card">
         <div className="px-4 py-3 border-b text-sm flex items-center justify-between">
           <div className="text-muted-foreground flex items-center gap-2"><Filter className="h-4 w-4" /> Filters</div>
-          <div className="text-xs text-muted-foreground">{date || "No date selected"}</div>
+          <div className="text-xs text-muted-foreground">{date} &middot; {totalJobs} job{totalJobs !== 1 ? "s" : ""} across {runsheets.length} driver{runsheets.length !== 1 ? "s" : ""}</div>
         </div>
         <div className="p-4 flex flex-wrap items-center gap-2">
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="justify-start"><CalendarIcon className="h-4 w-4 mr-2" /> {date || "Select date"}</Button>
+              <Button variant="outline" className="justify-start">
+                <CalendarIcon className="h-4 w-4 mr-2" /> {date || "Select date"}
+              </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-              <Calendar mode="single" selected={date ? parseLocalDate(date) : undefined} onSelect={(d) => setDate(d ? formatLocalDate(d) : "")} initialFocus />
+              <Calendar mode="single" selected={date ? parseLocalDate(date) : undefined} onSelect={(d) => setDate(d ? formatLocalDate(d) : TODAY)} initialFocus />
             </PopoverContent>
           </Popover>
-          <Button variant="outline" size="sm" onClick={() => setDate(formatLocalDate(new Date()))}>Today</Button>
+          <Button variant="outline" size="sm" onClick={() => setDate(TODAY)}>Today</Button>
 
           <Select value={driverFilter} onValueChange={setDriverFilter}>
             <SelectTrigger className="w-[200px]">
@@ -277,23 +223,31 @@ export default function Runsheets() {
             </SelectContent>
           </Select>
 
-          <Button variant="outline" size="sm" onClick={() => { setDate(""); setDriverFilter("all"); }}>Clear</Button>
+          <Button variant="outline" size="sm" onClick={() => { setDate(TODAY); setDriverFilter("all"); }}>Clear</Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {displayRunsheets
-          .filter((r) => driverFilter === "all" || r.driver === driverFilter)
-          .map((r) => (
+      {/* Runsheet cards */}
+      {visible.length === 0 ? (
+        <div className="rounded-lg border bg-card p-12 text-center">
+          <Coffee className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
+          <p className="text-muted-foreground">No runsheets for this date.</p>
+          <p className="text-sm text-muted-foreground mt-1">Select a different date or create a new runsheet.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {visible.map((r) => (
             <div key={r.driver} className="rounded-lg border bg-card">
-              <div className="px-3 py-2 border-b flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <div className="space-y-0.5">
-                  <div className="font-medium">{r.driver}</div>
-                </div>
-                <div className="flex flex-wrap gap-2 sm:flex-nowrap">
+              {/* Driver header */}
+              <div className="px-3 py-2 border-b flex items-center justify-between">
+                <div className="font-medium">{r.driver} <span className="text-xs text-muted-foreground ml-1">({r.jobs.length} stop{r.jobs.length !== 1 ? "s" : ""})</span></div>
+                <div className="flex gap-2">
                   <Button variant="outline" size="sm" onClick={() => setPreview({ driver: r.driver })}>Preview</Button>
+                  <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => setConfirmDelete({ driver: r.driver })}>Delete</Button>
                 </div>
               </div>
+
+              {/* Jobs */}
               <div className="px-2 py-2">
                 {r.jobs.map((j, idx) => (
                   <div
@@ -302,9 +256,9 @@ export default function Runsheets() {
                     onDragStart={(e) => onDragStart(e, r.driver, j.id)}
                     onDragOver={(e) => e.preventDefault()}
                     onDrop={(e) => onDrop(e, r.driver, idx)}
-                    className="flex items-start gap-2 rounded-md border p-2 mb-1.5 bg-background"
+                    className="flex items-start gap-2 rounded-md border p-2 mb-1.5 bg-background hover:shadow-sm transition-shadow"
                   >
-                    <GripVertical className="h-4 w-4 text-muted-foreground" />
+                    <GripVertical className="h-4 w-4 text-muted-foreground mt-1 cursor-grab" />
                     <div className="flex-1 space-y-1.5">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                         <div>
@@ -319,30 +273,30 @@ export default function Runsheets() {
                         </div>
                       </div>
                       <div className="text-[11px] text-muted-foreground">{j.bookingId}</div>
-                      <div className="grid grid-cols-2 md:grid-cols-5 gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
                         <div><span className="uppercase">Pallets</span>: <span className="font-medium text-foreground">{j.pallets}</span></div>
                         <div><span className="uppercase">Spaces</span>: <span className="font-medium text-foreground">{j.spaces}</span></div>
-                        <div><span className="uppercase">Pallet</span>: <span className="font-medium text-foreground">{j.palletType}</span></div>
-                        <div><span className="uppercase">Transfer</span>: <span className="font-medium text-foreground">{j.transferMethod}</span></div>
+                        <div><span className="uppercase">Type</span>: <span className="font-medium text-foreground">{j.palletType}</span></div>
                         <div><span className="uppercase">Suburb</span>: <span className="font-medium text-foreground">{j.suburb}</span></div>
                       </div>
                       <div className="flex justify-end pt-0.5">
                         <Button size="sm" variant="outline" onClick={() => setViewFor({
                           id: j.bookingId,
                           bookingId: j.bookingId,
-                          customer: "Demo Customer",
+                          customer: j.suburb,
                           pickup: j.pickup,
                           dropoff: j.dropoff,
-                          date: date || new Date().toISOString().slice(0,10),
+                          date: date || TODAY,
                           status: "Allocated",
                           createdAt: "",
                           updatedAt: "",
-                        })}>View Booking</Button>
+                        })}>View Order</Button>
                       </div>
                     </div>
                   </div>
                 ))}
-                {/* drop at end */}
+
+                {/* Drop zone at end */}
                 <div
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => onDrop(e, r.driver, r.jobs.length)}
@@ -353,127 +307,29 @@ export default function Runsheets() {
               </div>
             </div>
           ))}
-      </div>
+        </div>
+      )}
 
+      {/* FAB */}
       <div className="fixed bottom-6 right-6 z-40">
         <Button className="shadow-xl rounded-full h-12 px-6" onClick={() => setOpenCreate(true)}>
           <Plus className="h-5 w-5 mr-2" /> Add Run Sheet
         </Button>
       </div>
 
+      {/* ── Dialogs ─────────────────────────────────────────────────────────────── */}
+
       <CreateRunsheetDialog
         open={openCreate}
         onOpenChange={setOpenCreate}
-        onCreate={({ driver, bookings }) => {
-          setRunsheets((prev) => [
-            {
-              driver,
-              routeSummary: `${bookings[0]?.pickup ?? "Start"} → ${bookings[bookings.length - 1]?.dropoff ?? "End"}`,
-              start: "08:00",
-              finish: "16:00",
-              jobs: bookings.map((b, i) => ({
-                id: `${b.bookingId}-${i}`,
-                bookingId: b.bookingId,
-                type: i === 0 ? "Pickup" : "Dropoff",
-                address: i === 0 ? b.pickup : b.dropoff,
-                pickup: b.pickup,
-                dropoff: b.dropoff,
-                pickupSuburb: b.pickup,
-                dropoffSuburb: b.dropoff,
-                pallets: 1,
-                spaces: 1,
-                palletType: "Standard",
-                transferMethod: "Fork",
-                suburb: (i === 0 ? b.pickup : b.dropoff).split(" ").slice(-1)[0] || "",
-              })),
-              open: true,
-            },
-            ...prev,
-          ]);
-          // Ensure underlying shift+runsheet in store for persistence and View Shift linkage
-          const d = storeDrivers.find((x) => x.name === driver);
-          if (d) {
-            const runDate = date || new Date().toISOString().slice(0,10);
-            const shiftId = ensureShift(runDate, d.id);
-            ensureRunsheet(shiftId);
-            const jobs = bookings.map((b, i) => ({
-              id: `${b.bookingId}-${Date.now()}-${i}`,
-              bookingId: b.bookingId,
-              pickup: b.pickup,
-              dropoff: b.dropoff,
-              pickupSuburb: b.pickup,
-              dropoffSuburb: b.dropoff,
-              pallets: 1,
-              spaces: 1,
-              palletType: "Standard",
-              transferMethod: "Fork",
-              suburb: b.dropoff,
-            }));
-            addJobsToRunsheet(shiftId, jobs);
-          }
-        }}
+        onCreate={handleCreate}
       />
 
       <AllocateBookingsDialog
         open={openAllocate}
         onOpenChange={setOpenAllocate}
         drivers={drivers}
-        onAllocate={({ driver, bookings }) => {
-          setRunsheets((prev) => {
-            // ensure driver runsheet exists
-            const next = prev.map((r) => ({ ...r, jobs: [...r.jobs] }));
-            let target = next.find((r) => r.driver === driver);
-            if (!target) {
-              target = {
-                driver,
-                routeSummary: `${bookings[0]?.pickup ?? "Start"} → ${bookings[bookings.length - 1]?.dropoff ?? "End"}`,
-                start: "08:00",
-                finish: "16:00",
-                jobs: [],
-                open: true,
-              };
-              next.unshift(target);
-            }
-            const toAppend: Job[] = bookings.map((b, i) => ({
-              id: `${b.bookingId}-${Date.now()}-${i}`,
-              bookingId: b.bookingId,
-              type: "Pickup" as const,
-              address: b.pickup,
-              pickup: b.pickup,
-              dropoff: b.dropoff,
-              pickupSuburb: b.pickup,
-              dropoffSuburb: b.dropoff,
-              pallets: 1,
-              spaces: 1,
-              palletType: "Standard",
-              transferMethod: "Fork",
-              suburb: b.dropoff,
-            }));
-            target.jobs.push(...toAppend);
-            return next;
-          });
-          // Also ensure underlying store-level shift+runsheet so View Shift works
-          const d = storeDrivers.find((x) => x.name === driver);
-          if (d && bookings.length > 0) {
-            const runDate = date || bookings[0].date || new Date().toISOString().slice(0,10);
-            const shiftId = ensureShift(runDate, d.id);
-            ensureRunsheet(shiftId);
-            const toJobs = bookings.map((b, i) => ({
-              id: `${b.bookingId}-${Date.now()}-${i}`,
-              bookingId: b.bookingId,
-              pickup: b.pickup,
-              dropoff: b.dropoff,
-              pickupSuburb: b.pickup,
-              dropoffSuburb: b.dropoff,
-              pallets: 1,
-              spaces: 1,
-              palletType: "Standard",
-              transferMethod: "Fork",
-              suburb: b.dropoff,
-            }));
-            addJobsToRunsheet(shiftId, toJobs);
-          }
-        }}
+        onAllocate={handleAllocate}
       />
 
       <BookingViewDialog
@@ -485,93 +341,55 @@ export default function Runsheets() {
         onUploadPod={(id, file) => setViewFor((prev: any) => (prev && prev.id === id ? { ...prev, podFile: file, podReceived: true } : prev))}
       />
 
-      <ShiftViewDialog
-        open={!!viewShift}
-        onOpenChange={(o) => !o && setViewShift(null)}
-        shift={(() => {
-          if (!viewShift) return null;
-          const d = storeDrivers.find((x) => x.name === viewShift.driver);
-          if (!d) return null;
-          const s = shifts.find((x) => (!date || x.date === date) && x.driverId === d.id);
-          return s ?? null;
-        })()}
-        suggest={(() => {
-          if (!viewShift) return null;
-          const d = storeDrivers.find((x) => x.name === viewShift.driver);
-          if (!d) return null;
-          const s = shifts.find((x) => (!date || x.date === date) && x.driverId === d.id);
-          if (s) return null;
-          const runDate = date || new Date().toISOString().slice(0,10);
-          return { date: runDate, driverId: d.id };
-        })()}
-      />
-
       <PreviewRunsheetDialog
         open={!!preview}
         onOpenChange={(o) => !o && setPreview(null)}
-        date={date || new Date().toISOString().slice(0,10)}
+        date={date || TODAY}
         driverName={preview?.driver || ""}
         jobs={(() => {
-          if (!preview) return [] as any[];
-          // Prefer the UI runsheet jobs for immediate preview
-          const ui = displayRunsheets.find((r) => r.driver === preview.driver);
-          if (ui && ui.jobs && ui.jobs.length > 0) {
-            return ui.jobs.map((j) => ({ id: j.id, bookingId: j.bookingId, pickup: j.pickup, dropoff: j.dropoff, pallets: j.pallets, spaces: j.spaces, palletType: j.palletType, transferMethod: j.transferMethod }));
-          }
-          // Fallback to backing store runsheet if created via ensureRunsheet/addJobsToRunsheet
-          const d = storeDrivers.find((x) => x.name === preview.driver);
-          const s = d ? shifts.find((x) => (!date || x.date === date) && x.driverId === d.id) : null;
-          const rs = s ? storeRunsheets.find((r) => r.shiftId === s.id) : null;
-          if (rs && rs.jobs) {
-            return rs.jobs.map((j) => ({ id: j.id, bookingId: j.bookingId, pickup: j.pickup, dropoff: j.dropoff, pallets: j.pallets, spaces: j.spaces, palletType: j.palletType, transferMethod: j.transferMethod }));
-          }
-          return [] as any[];
+          if (!preview) return [];
+          const rs = runsheets.find((r) => r.driver === preview.driver);
+          if (!rs) return [];
+          return rs.jobs.map((j) => ({
+            id: j.id,
+            bookingId: j.bookingId,
+            pickup: j.pickup,
+            dropoff: j.dropoff,
+            pallets: j.pallets,
+            spaces: j.spaces,
+            palletType: j.palletType,
+            transferMethod: j.transferMethod,
+          }));
         })()}
         onPrint={() => window.print()}
         onDelete={() => {
           if (!preview) return;
-          const d = storeDrivers.find((x) => x.name === preview.driver);
-          if (!d) return;
-          const s = shifts.find((x) => (!date || x.date === date) && x.driverId === d.id);
-          if (s) setConfirmDelete({ shiftId: s.id, driver: preview.driver });
+          setConfirmDelete({ driver: preview.driver });
           setPreview(null);
         }}
       />
 
-      {/* Confirm delete run sheet dialog */}
+      {/* Confirm delete */}
       <Dialog open={!!confirmDelete} onOpenChange={(o) => !o && setConfirmDelete(null)}>
         <DialogContent className="sm:max-w-[520px]">
           <DialogHeader>
             <DialogTitle>Delete Run Sheet</DialogTitle>
-            <DialogDescription>All jobs on this run sheet will be unassigned. You can also delete the underlying shift.</DialogDescription>
+            <DialogDescription>All jobs on this run sheet will be unassigned.</DialogDescription>
           </DialogHeader>
           <div className="space-y-3 text-sm">
-            <div>Driver: {confirmDelete ? confirmDelete.driver : ""}</div>
-            <div className="text-muted-foreground">This action affects only today’s selection unless a date is set.</div>
+            <div>Driver: <span className="font-medium">{confirmDelete?.driver}</span></div>
+            <div className="text-muted-foreground">Jobs: {confirmDelete ? (runsheets.find((r) => r.driver === confirmDelete.driver)?.jobs.length ?? 0) : 0}</div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setConfirmDelete(null)}>Cancel</Button>
-            <Button variant="secondary" onClick={() => {
-              if (!confirmDelete) return;
-              const shiftId = confirmDelete.shiftId;
-              // Remove jobs from UI mock and delete underlying store runsheet
-              setRunsheets((prev) => prev.filter((r) => r.driver !== confirmDelete.driver));
-              deleteRunsheet(shiftId);
-              setConfirmDelete(null);
-            }}>Delete Run Sheet</Button>
             <Button variant="destructive" onClick={() => {
               if (!confirmDelete) return;
-              const shiftId = confirmDelete.shiftId;
               setRunsheets((prev) => prev.filter((r) => r.driver !== confirmDelete.driver));
-              deleteRunsheet(shiftId);
-              removeShift(shiftId);
               setConfirmDelete(null);
-            }}>Delete Run Sheet & Shift</Button>
+            }}>Delete Run Sheet</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
   );
 }
-
-

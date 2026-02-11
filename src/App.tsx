@@ -19,7 +19,8 @@ import Resources from "./pages/Resources";
 import CustomersVendors from "./pages/CustomersVendors";
 import Invoices from "./pages/Invoices";
 import Proposal from "./pages/Proposal";
-import Landing from "./pages/Landing";
+import DriverApp from "./pages/DriverApp";
+
 import Login from "./pages/Login";
 import BookingPortal from "./pages/BookingPortal";
 import NotFound from "./pages/NotFound";
@@ -34,19 +35,19 @@ const AppRoutes = () => {
   return (
     <>
       {showGlobalNav && <GlobalNav />}
-      <div className={showGlobalNav ? "pt-12" : ""}>
+      <div className={showGlobalNav ? "pt-12 w-full" : "w-full"}>
         <Routes>
           {/* Proposal page - Homepage */}
           <Route path="/" element={<Proposal />} />
-          
-          {/* Landing page - Public-facing clone from cold-chain-command */}
-          <Route path="/landing" element={<Landing />} />
           
           {/* Login page - Exact clone from cold-chain-command */}
           <Route path="/login" element={<Login />} />
           
           {/* Booking Portal - Client access demo */}
           <Route path="/booking-portal" element={<BookingPortal />} />
+          
+          {/* Driver App - Field app demo */}
+          <Route path="/driver-app" element={<DriverApp />} />
           
           {/* Main app routes nested under /demo */}
           <Route path="/demo/*" element={

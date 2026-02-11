@@ -77,10 +77,10 @@ const slides = [
     content: (
       <motion.div variants={containerVariants} initial="hidden" animate="visible">
         <motion.p variants={itemSlideIn} className="text-xl md:text-2xl text-white/80 mb-8 font-light leading-relaxed">
-          Most transport businesses don't fail because of lack of work — they get slowed down by admin chaos. Bookings in one place, PODs in another, invoices always catching up.
+          Most specialty coffee roasters don't fail because of lack of customers — they get slowed down by admin chaos. Orders in one place, delivery tracking in another, invoices always catching up.
         </motion.p>
         <motion.p variants={itemSlideIn} className="text-lg text-white/60 mb-12">
-          This system consolidates bookings, job tracking, PODs, and invoicing into one controlled workflow that mirrors how MENZ already operates.
+          This system consolidates orders, delivery tracking, PODs, and invoicing into one controlled workflow with a customer portal and driver app that mirrors how Sunshine Coast Coffee Roastery already operates.
         </motion.p>
       </motion.div>
     )
@@ -125,7 +125,7 @@ const slides = [
     content: (
       <motion.div variants={containerVariants} initial="hidden" animate="visible">
         <motion.p variants={itemFadeIn} className="text-xl md:text-2xl text-white/80 mb-8 font-light leading-relaxed">
-          Based on our experience in transport operations, most businesses at this scale face similar pressure points that don't show up as one big failure — they show up as constant friction.
+          Based on our experience in specialty food distribution, most businesses at this scale face similar pressure points that don't show up as one big failure — they show up as constant friction.
         </motion.p>
       </motion.div>
     )
@@ -143,9 +143,9 @@ const slides = [
       >
         {[
             "Manual data entry across spreadsheets and emails",
-            "Missing or delayed PODs holding up invoices",
-            "Duplicate handling of the same job data",
-            "Limited visibility once trucks are on the road",
+            "Missing or delayed delivery confirmations holding up invoices",
+            "Duplicate handling of the same order data",
+            "Limited visibility once deliveries are in progress",
             "Admin dependency concentrated on one or two people"
         ].map((point, i) => (
             <motion.div 
@@ -171,10 +171,10 @@ const slides = [
         </motion.p>
         <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left mb-8">
             {[
-              "Jobs entered once, tracked to completion",
-              "PODs captured and stored against the job",
-              "Invoices generated directly from completed work",
-              "Management visibility without chasing paperwork"
+              "Orders entered once, tracked to completion via driver app",
+              "Delivery confirmations captured and stored against the order",
+              "Invoices generated directly from completed deliveries",
+              "Customer portal access for order tracking and visibility"
             ].map((item, i) => (
              <motion.li 
                key={i} 
@@ -202,11 +202,11 @@ const slides = [
           className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left mb-8"
         >
             {[
-                { t: "Booking & Job Management", d: "Log once. Flow through." },
-                { t: "POD Capture & Storage", d: "Digitally captured & tagged." },
-                { t: "Invoicing Logic", d: "Generated from jobs." },
-                { t: "Customer Records", d: "Centralised rates & data." },
-                { t: "Basic Reporting", d: "Operational visibility." }
+                { t: "Order & Delivery Management", d: "Log once. Flow through." },
+                { t: "Driver App with POD Capture", d: "Real-time updates & digital signatures." },
+                { t: "Customer Portal", d: "Self-service tracking & history." },
+                { t: "Invoicing Logic", d: "Generated from completed deliveries." },
+                { t: "Customer Records", d: "Centralised rates & preferences." }
             ].map((box, i) => (
                 <motion.div 
                   key={i} 
@@ -233,10 +233,10 @@ const slides = [
             className="grid grid-cols-2 gap-4 text-left"
           >
               {[
-                  { t: "Admin Hours Saved", d: "Manual entry reduced." },
-                  { t: "Faster Invoicing", d: "Cash hits faster." },
-                  { t: "Reduced Errors", d: "One set of numbers." },
-                  { t: "Management Clarity", d: "Decisions on facts." }
+                  { t: "Admin Hours Saved", d: "Manual order entry reduced." },
+                  { t: "Faster Invoicing", d: "Cash flow improved." },
+                  { t: "Customer Satisfaction", d: "Real-time portal access." },
+                  { t: "Delivery Efficiency", d: "Driver app streamlines routes." }
               ].map((box, i) => (
                 <motion.div 
                   key={i} 
@@ -276,7 +276,7 @@ const slides = [
                 transition={{ delay: 0.4, duration: 0.5 }}
                 className="text-white/70 mb-4 text-sm"
               >
-                  We run old and new systems side-by-side. No switch is flipped until figures match and the team is confident.
+                  We run old and new systems side-by-side. No switch is flipped until figures match, drivers are comfortable with the app, and customers are accessing the portal.
               </motion.p>
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
@@ -285,8 +285,8 @@ const slides = [
                 className="flex flex-wrap gap-2"
               >
                   <span className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs border border-green-500/30">✓ Team Trained</span>
-                  <span className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs border border-green-500/30">✓ Jobs Flowing</span>
-                  <span className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs border border-green-500/30">✓ Invoices Correct</span>
+                  <span className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs border border-green-500/30">✓ Driver App Active</span>
+                  <span className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs border border-green-500/30">✓ Customer Portal Live</span>
               </motion.div>
           </motion.div>
       )
@@ -310,11 +310,11 @@ const slides = [
                 variants={itemBounceIn}
                 className="bg-white/5 p-8 rounded-2xl border border-white/10 w-full max-w-lg"
               >
-                  <h3 className="text-2xl font-bold text-white mb-2">Ready to move forward?</h3>
-                  <p className="text-white/60 mb-8">No pressure. No lock-in. Just clarity.</p>
+                  <h3 className="text-2xl font-bold text-white mb-2">Want to find out more?</h3>
+                  <p className="text-white/60 mb-8">Reach out</p>
                   
                   <div className="space-y-4">
-                     <p className="text-sm text-white/50">Contact us at <span className="text-white">contact@factoryfreightconnections.com</span></p>
+                     <p className="text-sm text-white/50">Get in contact at <span className="text-white">zacwjudson02@gmail.com</span></p>
                   </div>
               </motion.div>
           </motion.div>

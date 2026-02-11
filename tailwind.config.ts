@@ -90,10 +90,18 @@ export default {
         },
         frost: "hsl(var(--frost))",
         charcoal: "hsl(var(--charcoal))",
+        /* Roastery Flow brand colors */
+        espresso: "hsl(var(--espresso))",
+        cream: "hsl(var(--cream))",
+        bronze: {
+          DEFAULT: "hsl(var(--bronze))",
+          light: "hsl(var(--bronze-light))",
+        },
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         display: ['Space Grotesk', 'system-ui', 'sans-serif'],
+        serif: ["'Playfair Display'", 'serif'],
       },
       borderRadius: {
         lg: "var(--radius)",

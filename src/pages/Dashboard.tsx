@@ -1,7 +1,7 @@
 import { KpiCard } from "@/components/dashboard/KpiCard";
 import { StatusWidget } from "@/components/dashboard/StatusWidget";
 import { 
-  TruckIcon, 
+  Coffee, 
   Package, 
   AlertCircle, 
   Receipt, 
@@ -20,15 +20,15 @@ export default function Dashboard() {
   
   const kpiData = [
     {
-      title: "Today's Bookings",
+      title: "Today's Orders",
       value: 14,
       icon: Package,
       trend: { value: "+2 from yesterday", positive: true },
     },
     {
-      title: "Jobs in Progress",
+      title: "Deliveries in Progress",
       value: 8,
-      icon: TruckIcon,
+      icon: Coffee,
       variant: "warning" as const,
     },
     {
@@ -38,13 +38,13 @@ export default function Dashboard() {
       variant: "urgent" as const,
     },
     {
-      title: "Uninvoiced Jobs",
+      title: "Uninvoiced Orders",
       value: 5,
       icon: Receipt,
       variant: "warning" as const,
     },
     {
-      title: "Active Drivers",
+      title: "Active Team",
       value: 12,
       icon: Users,
       variant: "success" as const,
@@ -61,19 +61,19 @@ export default function Dashboard() {
   const urgentPods = [
     {
       id: "1",
-      label: "BK-2024-0143",
+      label: "ORD-2026-0195",
       status: "urgent" as const,
-      detail: "Due 2 hours ago - Melbourne CBD",
+      detail: "Due 2 hours ago - Noosa",
     },
     {
       id: "2",
-      label: "BK-2024-0138",
+      label: "ORD-2026-0196",
       status: "urgent" as const,
-      detail: "Due 4 hours ago - Sydney",
+      detail: "Due 4 hours ago - Mooloolaba",
     },
     {
       id: "3",
-      label: "BK-2024-0135",
+      label: "ORD-2026-0197",
       status: "progress" as const,
       detail: "Uploaded - Awaiting review",
     },
@@ -82,38 +82,38 @@ export default function Dashboard() {
   const todayBookings = [
     {
       id: "1",
-      label: "BK-2024-0150",
+      label: "ORD-2026-0201",
       status: "progress" as const,
-      detail: "En route - ETA 2:30 PM",
+      detail: "En route to Noosa - ETA 2:30 PM",
     },
     {
       id: "2",
-      label: "BK-2024-0149",
-      status: "complete" as const,
-      detail: "Delivered - 11:45 AM",
+      label: "ORD-2026-0202",
+      status: "progress" as const,
+      detail: "En route to Mooloolaba - ETA 3:00 PM",
     },
     {
       id: "3",
-      label: "BK-2024-0148",
+      label: "ORD-2026-0203",
       status: "progress" as const,
-      detail: "Dispatched - ETA 4:00 PM",
+      detail: "Dispatched to Caloundra - ETA 4:00 PM",
     },
     {
       id: "4",
-      label: "BK-2024-0147",
+      label: "ORD-2026-0208",
       status: "inactive" as const,
-      detail: "Awaiting allocation",
+      detail: "Awaiting allocation - Buderim",
     },
   ];
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-800 uppercase">
-          Menz Transport Operations
+        <h1 className="text-3xl font-bold tracking-tight">
+          SC Coffee Roastery Operations
         </h1>
-        <p className="text-slate-600 font-semibold text-sm uppercase tracking-wide">
-          Real-time overview of logistics operations
+        <p className="text-muted-foreground font-semibold text-sm uppercase tracking-wide">
+          Real-time overview of roastery & delivery operations
         </p>
       </div>
 
@@ -129,12 +129,12 @@ export default function Dashboard() {
         <StatusWidget
           title="Urgent PODs Missing"
           items={urgentPods}
-          onViewAll={() => navigate("/pods")}
+          onViewAll={() => navigate("/demo/pods")}
         />
         <StatusWidget
-          title="Today's Bookings"
+          title="Today's Orders"
           items={todayBookings}
-          onViewAll={() => navigate("/bookings")}
+          onViewAll={() => navigate("/demo/bookings")}
         />
         
         {/* Quick Actions Card */}
@@ -158,7 +158,7 @@ export default function Dashboard() {
                 </div>
               </div>
               <PingingButton
-                onClick={() => navigate("/pods")}
+                onClick={() => navigate("/demo/pods")}
                 icon={PlayCircle}
                 isPinging={true}
                 className="w-full"

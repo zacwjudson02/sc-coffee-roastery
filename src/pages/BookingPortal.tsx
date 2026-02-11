@@ -8,7 +8,7 @@ import {
   Plus,
   MapPin,
   CheckCircle2,
-  Truck,
+  Coffee,
   Calendar,
   ArrowRight,
   AlertCircle,
@@ -84,12 +84,12 @@ type DemoBookingWithTracking = {
 const DEMO_BOOKINGS: DemoBookingWithTracking[] = [
   {
     id: "demo-1",
-    bookingId: "BK-2026-0201",
-    customer: "ABC Logistics",
-    pickup: "123 Factory St, Brisbane",
-    dropoff: "456 Retail Rd, Gold Coast",
-    pickupSuburb: "Brisbane",
-    dropoffSuburb: "Gold Coast",
+    bookingId: "ORD-2026-0201",
+    customer: "Noosa Heads Cafe",
+    pickup: "SC Roastery HQ, Warana",
+    dropoff: "12 Hastings St, Noosa",
+    pickupSuburb: "Warana",
+    dropoffSuburb: "Noosa",
     date: "2026-02-05",
     status: "In Transit",
     pallets: 12,
@@ -97,20 +97,20 @@ const DEMO_BOOKINGS: DemoBookingWithTracking[] = [
     customerRef: "PO-4501",
     estimatedDelivery: "2026-02-05 14:30",
     trackingEvents: [
-      { timestamp: "2026-02-05 06:00", location: "Brisbane Depot", message: "Booking created", status: "pending" },
-      { timestamp: "2026-02-05 07:30", location: "Brisbane Depot", message: "Loaded onto vehicle", status: "in_transit" },
-      { timestamp: "2026-02-05 09:15", location: "Beenleigh", message: "In transit - checkpoint", status: "in_transit" },
-      { timestamp: "2026-02-05 11:45", location: "Gold Coast", message: "Arrived at delivery zone", status: "in_transit" },
+      { timestamp: "2026-02-05 06:00", location: "SC Roastery HQ", message: "Order created", status: "pending" },
+      { timestamp: "2026-02-05 07:30", location: "SC Roastery HQ", message: "Loaded onto vehicle", status: "in_transit" },
+      { timestamp: "2026-02-05 09:15", location: "Maroochydore", message: "In transit - checkpoint", status: "in_transit" },
+      { timestamp: "2026-02-05 11:45", location: "Noosa", message: "Arrived at delivery zone", status: "in_transit" },
     ],
   },
   {
     id: "demo-2",
-    bookingId: "BK-2026-0200",
-    customer: "XYZ Freight",
-    pickup: "789 Warehouse Ave, Brisbane",
-    dropoff: "321 Commerce St, Sunshine Coast",
-    pickupSuburb: "Brisbane",
-    dropoffSuburb: "Sunshine Coast",
+    bookingId: "ORD-2026-0200",
+    customer: "Mooloolaba Espresso Bar",
+    pickup: "SC Roastery HQ, Warana",
+    dropoff: "88 The Esplanade, Mooloolaba",
+    pickupSuburb: "Warana",
+    dropoffSuburb: "Mooloolaba",
     date: "2026-02-04",
     status: "Delivered",
     pallets: 8,
@@ -118,21 +118,21 @@ const DEMO_BOOKINGS: DemoBookingWithTracking[] = [
     customerRef: "PO-4502",
     estimatedDelivery: "2026-02-04 16:00",
     trackingEvents: [
-      { timestamp: "2026-02-04 05:30", location: "Brisbane Depot", message: "Booking created", status: "pending" },
-      { timestamp: "2026-02-04 08:00", location: "Brisbane Depot", message: "Loaded onto vehicle", status: "in_transit" },
-      { timestamp: "2026-02-04 11:30", location: "Caboolture", message: "In transit - checkpoint", status: "in_transit" },
-      { timestamp: "2026-02-04 14:15", location: "Sunshine Coast", message: "Arrived at destination", status: "in_transit" },
-      { timestamp: "2026-02-04 14:45", location: "Sunshine Coast", message: "Delivered successfully", status: "delivered" },
+      { timestamp: "2026-02-04 05:30", location: "SC Roastery HQ", message: "Order created", status: "pending" },
+      { timestamp: "2026-02-04 08:00", location: "SC Roastery HQ", message: "Loaded onto vehicle", status: "in_transit" },
+      { timestamp: "2026-02-04 09:30", location: "Warana", message: "In transit", status: "in_transit" },
+      { timestamp: "2026-02-04 10:15", location: "Mooloolaba", message: "Arrived at destination", status: "in_transit" },
+      { timestamp: "2026-02-04 10:45", location: "Mooloolaba", message: "Delivered successfully", status: "delivered" },
     ],
   },
   {
     id: "demo-3",
-    bookingId: "BK-2026-0199",
-    customer: "Global Shipping Co",
-    pickup: "555 Export Blvd, Brisbane",
-    dropoff: "777 Import Way, Toowoomba",
-    pickupSuburb: "Brisbane",
-    dropoffSuburb: "Toowoomba",
+    bookingId: "ORD-2026-0199",
+    customer: "Caloundra Coffee House",
+    pickup: "SC Roastery HQ, Warana",
+    dropoff: "34 Bulcock St, Caloundra",
+    pickupSuburb: "Warana",
+    dropoffSuburb: "Caloundra",
     date: "2026-02-06",
     status: "Confirmed",
     pallets: 15,
@@ -140,17 +140,17 @@ const DEMO_BOOKINGS: DemoBookingWithTracking[] = [
     customerRef: "PO-4503",
     estimatedDelivery: "2026-02-06 12:00",
     trackingEvents: [
-      { timestamp: "2026-02-05 16:30", location: "Brisbane Depot", message: "Booking confirmed", status: "pending" },
+      { timestamp: "2026-02-05 16:30", location: "SC Roastery HQ", message: "Order confirmed", status: "pending" },
     ],
   },
   {
     id: "demo-4",
-    bookingId: "BK-2026-0198",
-    customer: "Fast Track Transport",
-    pickup: "222 Factory Rd, Brisbane",
-    dropoff: "888 Store St, Ipswich",
-    pickupSuburb: "Brisbane",
-    dropoffSuburb: "Ipswich",
+    bookingId: "ORD-2026-0198",
+    customer: "Coolum Beach Cafe",
+    pickup: "SC Roastery HQ, Warana",
+    dropoff: "5 David Low Way, Coolum",
+    pickupSuburb: "Warana",
+    dropoffSuburb: "Coolum",
     date: "2026-02-03",
     status: "Delivered",
     pallets: 6,
@@ -158,26 +158,26 @@ const DEMO_BOOKINGS: DemoBookingWithTracking[] = [
     customerRef: "PO-4504",
     estimatedDelivery: "2026-02-03 10:30",
     trackingEvents: [
-      { timestamp: "2026-02-03 06:00", location: "Brisbane Depot", message: "Booking created", status: "pending" },
-      { timestamp: "2026-02-03 07:00", location: "Brisbane Depot", message: "Loaded onto vehicle", status: "in_transit" },
-      { timestamp: "2026-02-03 09:00", location: "Ipswich", message: "Delivered successfully", status: "delivered" },
+      { timestamp: "2026-02-03 06:00", location: "SC Roastery HQ", message: "Order created", status: "pending" },
+      { timestamp: "2026-02-03 07:00", location: "SC Roastery HQ", message: "Loaded onto vehicle", status: "in_transit" },
+      { timestamp: "2026-02-03 09:00", location: "Coolum", message: "Delivered successfully", status: "delivered" },
     ],
   },
   {
     id: "demo-5",
-    bookingId: "BK-2026-0197",
-    customer: "ABC Logistics",
-    pickup: "111 Dock Rd, Brisbane",
-    dropoff: "999 Retail Ave, Redlands",
-    pickupSuburb: "Brisbane",
-    dropoffSuburb: "Redlands",
+    bookingId: "ORD-2026-0197",
+    customer: "Noosa Heads Cafe",
+    pickup: "SC Roastery HQ, Warana",
+    dropoff: "12 Hastings St, Noosa",
+    pickupSuburb: "Warana",
+    dropoffSuburb: "Noosa",
     date: "2026-02-07",
     status: "Draft",
     pallets: 10,
     spaces: 10,
     customerRef: "PO-4505",
     trackingEvents: [
-      { timestamp: "2026-02-05 15:00", location: "Brisbane Depot", message: "Booking draft created", status: "pending" },
+      { timestamp: "2026-02-05 15:00", location: "SC Roastery HQ", message: "Order draft created", status: "pending" },
     ],
   },
 ];
@@ -338,7 +338,7 @@ export default function BookingPortal() {
       case "delivered":
         return <CheckCircle2 className="h-4 w-4 text-green-600" />;
       case "in_transit":
-        return <Truck className="h-4 w-4 text-blue-600" />;
+        return <Coffee className="h-4 w-4 text-blue-600" />;
       case "exception":
         return <AlertCircle className="h-4 w-4 text-red-600" />;
       default:
@@ -357,10 +357,10 @@ export default function BookingPortal() {
             </div>
             <div>
               <h1 className="text-xl font-display font-bold text-foreground">
-                MENZ Client Portal
+                SC Coffee Client Portal
               </h1>
               <p className="text-xs text-muted-foreground">
-                Refrigerated Transport Booking
+                Roastery Order Management
               </p>
             </div>
           </div>
@@ -368,7 +368,7 @@ export default function BookingPortal() {
             <Badge variant="outline" className="hidden sm:flex">
               Demo Environment
             </Badge>
-            <Link to="/landing">
+            <Link to="/">
               <Button variant="outline" size="sm">
                 Back to Home
               </Button>
@@ -392,15 +392,15 @@ export default function BookingPortal() {
                 Welcome to Your Booking Portal
               </h2>
               <p className="text-muted-foreground text-sm sm:text-base max-w-2xl">
-                Manage your refrigerated freight bookings, track shipments in
-                real-time, and access your complete delivery history.
+                Manage your coffee delivery orders, track deliveries in
+                real-time, and access your complete order history.
               </p>
             </div>
           </div>
 
           {/* Action Cards */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Track Shipment Card */}
+            {/* Track Delivery Card */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -412,7 +412,7 @@ export default function BookingPortal() {
                     <Search className="h-7 w-7 text-blue-600" />
                   </div>
                   <div>
-                    <CardTitle className="text-xl mb-2">Track Shipment</CardTitle>
+                    <CardTitle className="text-xl mb-2">Track Delivery</CardTitle>
                     <CardDescription className="text-sm">
                       Monitor your deliveries in real-time with live updates
                     </CardDescription>
@@ -474,7 +474,7 @@ export default function BookingPortal() {
                   <div>
                     <CardTitle className="text-xl mb-2">New Booking</CardTitle>
                     <CardDescription className="text-sm">
-                      Schedule a new refrigerated freight delivery
+                      Schedule a new coffee delivery order
                     </CardDescription>
                   </div>
                 </CardHeader>
@@ -504,7 +504,7 @@ export default function BookingPortal() {
                   <div>
                     <CardTitle className="text-xl mb-2">Tracking Board</CardTitle>
                     <CardDescription className="text-sm">
-                      View comprehensive tracking for all active shipments
+                      View comprehensive tracking for all active deliveries
                     </CardDescription>
                   </div>
                 </CardHeader>
@@ -523,13 +523,13 @@ export default function BookingPortal() {
         </motion.div>
       </div>
 
-      {/* Track Shipment Dialog */}
+      {/* Track Delivery Dialog */}
       <Dialog open={trackDialogOpen} onOpenChange={setTrackDialogOpen}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
-            <DialogTitle className="text-2xl">Track Shipment</DialogTitle>
+            <DialogTitle className="text-2xl">Track Delivery</DialogTitle>
             <DialogDescription>
-              Enter your booking reference to track your shipment
+              Enter your order reference to track your delivery
             </DialogDescription>
           </DialogHeader>
           
@@ -541,7 +541,7 @@ export default function BookingPortal() {
               <div className="flex gap-2">
                 <Input
                   id="tracking-ref"
-                  placeholder="e.g. BK-2026-0201"
+                  placeholder="e.g. ORD-2026-0201"
                   value={trackingRef}
                   onChange={(e) => setTrackingRef(e.target.value)}
                   onKeyDown={(e) => {
@@ -555,7 +555,7 @@ export default function BookingPortal() {
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                Try: BK-2026-0201, BK-2026-0200, BK-2026-0199
+                Try: ORD-2026-0201, ORD-2026-0200, ORD-2026-0199
               </p>
             </div>
 
@@ -764,17 +764,17 @@ export default function BookingPortal() {
       <Dialog open={trackingBoardOpen} onOpenChange={setTrackingBoardOpen}>
         <DialogContent className="sm:max-w-[1000px] max-h-[85vh]">
           <DialogHeader>
-            <DialogTitle className="text-2xl">Active Shipments Tracking Board</DialogTitle>
+            <DialogTitle className="text-2xl">Active Deliveries Tracking Board</DialogTitle>
             <DialogDescription>
-              Monitor all confirmed and in-transit shipments
+              Monitor all confirmed and in-transit deliveries
             </DialogDescription>
           </DialogHeader>
 
           <div className="py-2">
             {activeBookings.length === 0 ? (
               <div className="py-12 text-center">
-                <Truck className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground mb-2">No active shipments</p>
+                <Coffee className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground mb-2">No active deliveries</p>
                 <p className="text-sm text-muted-foreground">
                   Create a booking to start tracking
                 </p>
@@ -955,7 +955,7 @@ export default function BookingPortal() {
                 {/* Tracking Timeline */}
                 <div>
                   <h3 className="font-semibold mb-4 flex items-center gap-2">
-                    <Truck className="h-4 w-4" />
+                    <Coffee className="h-4 w-4" />
                     Tracking Timeline
                   </h3>
                   <div className="space-y-3 relative">
@@ -1015,7 +1015,7 @@ export default function BookingPortal() {
             <div className="py-12 text-center">
               <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <p className="text-muted-foreground">
-                No booking selected. Pick a booking from History or Track Shipment.
+                No order selected. Pick an order from History or Track Delivery.
               </p>
             </div>
           )}

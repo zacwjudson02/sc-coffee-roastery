@@ -166,7 +166,7 @@ export default function CustomersVendors() {
   }
 
   function deleteCustomer(id: string) {
-    if (!confirm("Delete this customer? Linked bookings will be orphaned.")) return;
+    if (!confirm("Delete this customer? Linked orders will be orphaned.")) return;
     removeCustomer(id);
     if (profileId === id) setProfileId(null);
   }
@@ -231,7 +231,7 @@ export default function CustomersVendors() {
                       const ok = confirm("Archive this customer? They will be hidden from selection but not deleted.");
                       if (!ok) return;
                       updateCustomer(c.id, { archivedAt: new Date().toISOString() });
-                      const next = confirm("Archived. Would you like to reassign their bookings and invoices now?");
+                      const next = confirm("Archived. Would you like to reassign their orders and invoices now?");
                       if (next) setReassignForId(c.id);
                     }}>Archive</Button>
                   )}
@@ -336,8 +336,8 @@ export default function CustomersVendors() {
                           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                             <KpiCard title="Last Month Revenue" value={formatCurrency(lastMonthRevenue)} icon={CalendarDays} variant="success" />
                             <KpiCard title="Lifetime Revenue" value={formatCurrency(lifetimeRevenue)} icon={TrendingUp} />
-                            <KpiCard title="Bookings Last Month" value={lastMonthBookings} icon={CalendarDays} />
-                            <KpiCard title="Avg Bookings / Week" value={avgPerWeek.toFixed(2)} icon={BarChart2} />
+                            <KpiCard title="Orders Last Month" value={lastMonthBookings} icon={CalendarDays} />
+                            <KpiCard title="Avg Orders / Week" value={avgPerWeek.toFixed(2)} icon={BarChart2} />
                             <KpiCard title="Average Invoice" value={formatCurrency(avgInvoice)} icon={Receipt} />
                             <KpiCard title="Outstanding Balance" value={formatCurrency(outstandingBalance)} icon={Wallet} variant="warning" />
                           </div>
@@ -350,9 +350,9 @@ export default function CustomersVendors() {
               <div className="text-sm text-muted-foreground">ID: {c.id}</div>
                   <div className="rounded-md border p-3 space-y-2">
                     <div className="flex items-center justify-between">
-                      <div className="font-medium">Recent Bookings</div>
+                      <div className="font-medium">Recent Orders</div>
                       <div className="space-x-2">
-                        <Button size="sm" onClick={() => navigate(`/demo/bookings?customer=${encodeURIComponent(c.company)}`)}>Open in Bookings</Button>
+                        <Button size="sm" onClick={() => navigate(`/demo/bookings?customer=${encodeURIComponent(c.company)}`)}>Open in Orders</Button>
                         {c.archivedAt && (
                           <Button size="sm" variant="outline" onClick={() => setReassignForId(c.id)}>Reassign Records</Button>
                         )}
@@ -363,13 +363,13 @@ export default function CustomersVendors() {
                         .filter((b) => b.customerId === c.id)
                         .sort((a, b) => (b.date || "").localeCompare(a.date || ""))
                         .slice(0, 10);
-                      if (rows.length === 0) return <div className="text-sm text-muted-foreground">No bookings linked yet.</div>;
+                      if (rows.length === 0) return <div className="text-sm text-muted-foreground">No orders linked yet.</div>;
                       return (
                         <div className="rounded border">
                           <Table>
                             <TableHeader>
                               <TableRow>
-                                <TableHead className="px-2 py-1">Booking</TableHead>
+                                <TableHead className="px-2 py-1">Order</TableHead>
                                 <TableHead className="px-2 py-1">Date</TableHead>
                                 <TableHead className="px-2 py-1">Pickup</TableHead>
                                 <TableHead className="px-2 py-1">Dropoff</TableHead>
@@ -584,7 +584,7 @@ export default function CustomersVendors() {
                           <div className="font-medium mb-2">Relationship</div>
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
                             <div className="rounded border p-3"><div className="text-xs text-muted-foreground">Customer Since</div><div className="text-lg font-semibold">{firstBookingDate ? formatDateAU(firstBookingDate) : "-"} ({membership})</div></div>
-                            <div className="rounded border p-3"><div className="text-xs text-muted-foreground">Lifetime Bookings</div><div className="text-lg font-semibold">{lifetimeBookings}</div></div>
+                            <div className="rounded border p-3"><div className="text-xs text-muted-foreground">Lifetime Orders</div><div className="text-lg font-semibold">{lifetimeBookings}</div></div>
                             <div className="rounded border p-3"><div className="text-xs text-muted-foreground">Lifetime Revenue</div><div className="text-lg font-semibold">{formatCurrency(invs.reduce((s, inv) => s + (inv.total || 0), 0))}</div></div>
                           </div>
                         </div>
@@ -654,7 +654,7 @@ export default function CustomersVendors() {
               </div>
               <div className="rounded-md border p-3 text-sm">
                 <div className="font-medium mb-1">Summary</div>
-                <div className="text-muted-foreground">Bookings: {bCount} • Invoices: {invCount}</div>
+                <div className="text-muted-foreground">Orders: {bCount} • Invoices: {invCount}</div>
                 <div className="text-[11px] text-muted-foreground mt-1">Invoices matched by customer ID or exact name will be reassigned.</div>
               </div>
             </div>

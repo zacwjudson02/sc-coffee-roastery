@@ -284,7 +284,7 @@ export default function Invoices() {
             const quantity = rateBasis === "per_space" ? (b.spaces ?? 0) : (b.pallets ?? 0);
             const unitPrice = b.unitPrice ?? 0;
             const total = quantity * unitPrice;
-            const description = `Transport ${b.pickup} → ${b.dropoff}`;
+            const description = `Delivery ${b.pickup} → ${b.dropoff}`;
             return { key: b.id, description, quantity, unitPrice, total };
           }).filter(Boolean) as { key: string; description: string; quantity: number; unitPrice: number; total: number }[];
 
@@ -326,9 +326,9 @@ export default function Invoices() {
               </div>
 
               <div className="rounded-md border p-3">
-                <div className="font-medium mb-2">Booking Lines (read-only)</div>
+                <div className="font-medium mb-2">Order Lines (read-only)</div>
                 {bookingLines.length === 0 ? (
-                  <div className="text-muted-foreground">No booking lines.</div>
+                  <div className="text-muted-foreground">No order lines.</div>
                 ) : (
                   <table className="w-full text-sm">
                     <thead>
@@ -426,7 +426,7 @@ export default function Invoices() {
 
               <div className="flex items-center justify-between">
                 {inv.status === "Draft" ? (
-                  <Button variant="destructive" onClick={() => { if (view) { if (!confirm("Delete draft invoice? This will revert linked bookings.")) return; const invRef = invoices.find((x) => x.id === view); if (invRef?.source) { invRef.source.forEach((s) => { if (s.type === "booking" && s.id) { updateBooking(s.id, { status: "Confirmed", invoiceTotal: undefined }); } }); } removeInvoice(view); toast({ title: "Invoice deleted" }); setView(null); } }}>Delete</Button>
+                  <Button variant="destructive" onClick={() => { if (view) { if (!confirm("Delete draft invoice? This will revert linked orders.")) return; const invRef = invoices.find((x) => x.id === view); if (invRef?.source) { invRef.source.forEach((s) => { if (s.type === "booking" && s.id) { updateBooking(s.id, { status: "Confirmed", invoiceTotal: undefined }); } }); } removeInvoice(view); toast({ title: "Invoice deleted" }); setView(null); } }}>Delete</Button>
                 ) : (
                   <Button variant="outline" onClick={() => { if (!view) return; if (!confirm("Archive this invoice?")) return; updateInvoice(view, { archivedAt: new Date().toISOString() }); toast({ title: "Invoice archived" }); setView(null); }}>Archive</Button>
                 )}

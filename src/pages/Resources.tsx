@@ -84,7 +84,7 @@ export default function Resources() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Staff & Resources</h1>
-        <p className="text-muted-foreground">Manage your drivers, vehicles, and shifts</p>
+        <p className="text-muted-foreground">Manage your team, vehicles, and shifts</p>
       </div>
       <Tabs defaultValue="staff">
         <TabsList>

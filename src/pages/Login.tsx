@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Snowflake, ArrowLeft, User, Lock, Mail, Truck, Shield } from "lucide-react";
+import { Coffee, ArrowLeft, User, Lock, Mail, Package, Shield } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,17 +34,17 @@ export default function Login() {
         {/* Content */}
         <div className="relative z-10 flex flex-col justify-between p-12 text-primary-foreground w-full">
           {/* Logo */}
-          <Link to="/landing" className="flex items-center gap-3 group">
+          <Link to="/" className="flex items-center gap-3 group">
             <div className="relative">
-              <Snowflake className="h-12 w-12 text-accent" />
+              <Coffee className="h-12 w-12 text-accent" />
               <div className="absolute inset-0 blur-lg bg-accent/30 animate-glow-pulse" />
             </div>
             <div className="flex flex-col">
               <span className="text-2xl font-display font-bold tracking-tight">
-                MENZ
+                SC COFFEE
               </span>
               <span className="text-xs font-medium text-accent uppercase tracking-[0.2em]">
-                Refrigerated Transport
+                Roastery
               </span>
             </div>
           </Link>
@@ -58,11 +58,11 @@ export default function Login() {
             >
               <h1 className="text-5xl font-display font-bold mb-6 leading-tight">
                 Welcome to Your{" "}
-                <span className="gradient-text-ice">Cold Chain</span> Portal
+                <span className="gradient-text-ice">Roastery</span> Portal
               </h1>
               <p className="text-xl text-primary-foreground/70 leading-relaxed max-w-md">
-                Access your freight management dashboard, track shipments in real-time, 
-                and manage your cold chain logistics with precision.
+                Access your operations dashboard, track orders in real-time, 
+                and manage your roastery deliveries with precision.
               </p>
             </motion.div>
 
@@ -74,8 +74,8 @@ export default function Login() {
               className="grid gap-4"
             >
               {[
-                { icon: Truck, text: "Real-time shipment tracking" },
-                { icon: Shield, text: "Secure temperature monitoring" },
+                { icon: Package, text: "Real-time order tracking" },
+                { icon: Shield, text: "Quality & freshness assurance" },
                 { icon: User, text: "Personalized dashboard" },
               ].map((feature, index) => (
                 <div key={index} className="flex items-center gap-4">
@@ -95,7 +95,7 @@ export default function Login() {
             transition={{ delay: 0.6 }}
             className="text-sm text-primary-foreground/50"
           >
-            © {new Date().getFullYear()} Menz Refrigerated Transport. All rights reserved.
+            © {new Date().getFullYear()} Sunshine Coast Coffee Roastery. All rights reserved.
           </motion.div>
         </div>
       </div>
@@ -103,14 +103,14 @@ export default function Login() {
       {/* Right Side - Login Form */}
       <div className="flex-1 flex items-center justify-center p-8 bg-background relative">
         {/* Mobile Logo */}
-        <Link to="/landing" className="lg:hidden absolute top-8 left-8 flex items-center gap-2">
-          <Snowflake className="h-8 w-8 text-accent" />
-          <span className="text-lg font-display font-bold text-foreground">MENZ</span>
+        <Link to="/" className="lg:hidden absolute top-8 left-8 flex items-center gap-2">
+          <Coffee className="h-8 w-8 text-accent" />
+          <span className="text-lg font-display font-bold text-foreground">SC Coffee</span>
         </Link>
 
         {/* Back Button */}
         <Link
-          to="/landing"
+          to="/"
           className="absolute top-8 right-8 flex items-center gap-2 text-sm text-muted-foreground hover:text-accent transition-colors group"
         >
           <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
@@ -131,7 +131,7 @@ export default function Login() {
                 Sign In
               </h2>
               <p className="text-muted-foreground">
-                Access your portal to manage your freight
+                Access your portal to manage your orders
               </p>
             </div>
 
@@ -206,7 +206,7 @@ export default function Login() {
                       <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                         type="email"
-                        placeholder="staff@menz.com.au"
+                        placeholder="staff@sccoffee.com.au"
                         className="pl-10"
                       />
                     </div>
@@ -240,7 +240,7 @@ export default function Login() {
 
                 <div className="p-4 rounded-lg bg-accent/5 border border-accent/10">
                   <p className="text-xs text-muted-foreground text-center">
-                    Staff access is restricted to authorized Menz Transport personnel only.
+                    Staff access is restricted to authorized SC Coffee Roastery personnel only.
                   </p>
                 </div>
               </TabsContent>

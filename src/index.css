@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -10,166 +11,180 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Industrial Transport Theme - Professional Menz Transport */
+    /* Sunshine Coast Coffee Roastery - Warm Espresso/Cream/Bronze Theme */
     
-    /* Cool Light Gray Background */
-    --background: 210 20% 98%;
-    /* Deep Slate for text */
-    --foreground: 215 25% 20%;
+    /* Warm Cream Background */
+    --background: 36 30% 97%;
+    /* Deep Espresso for text */
+    --foreground: 25 24% 15%;
 
-    /* White Cards with subtle shadow */
-    --card: 0 0% 100%;
-    --card-foreground: 215 25% 20%;
+    /* Warm White Cards */
+    --card: 36 20% 99%;
+    --card-foreground: 25 24% 15%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 20%;
+    --popover: 36 20% 99%;
+    --popover-foreground: 25 24% 15%;
 
-    /* Professional Green Primary - MATCHED TO COLD-CHAIN-COMMAND */
-    --primary: 142 70% 25%;
-    --primary-foreground: 0 0% 100%;
+    /* Espresso Primary - rich and warm */
+    --primary: 25 30% 18%;
+    --primary-foreground: 36 38% 94%;
 
-    /* Light Grey Secondary */
-    --secondary: 0 0% 95%;
-    --secondary-foreground: 142 70% 20%;
+    /* Light Cream Secondary */
+    --secondary: 36 15% 93%;
+    --secondary-foreground: 25 24% 20%;
 
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
+    --muted: 36 10% 94%;
+    --muted-foreground: 25 10% 45%;
 
-    /* Professional Green Accent - MATCHED TO COLD-CHAIN-COMMAND */
-    --accent: 142 70% 35%;
-    --accent-foreground: 0 0% 100%;
+    /* Bronze Accent - warm metallic tone */
+    --accent: 27 29% 42%;
+    --accent-foreground: 36 38% 94%;
 
-    /* Status Colors - Professional and Clear */
+    /* Status Colors */
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 215 25% 88%;
-    --input: 215 25% 88%;
-    --ring: 199 89% 48%;
+    --border: 30 15% 85%;
+    --input: 30 15% 85%;
+    --ring: 27 29% 42%;
 
     /* Subtle rounded corners */
     --radius: 0.5rem;
 
-    /* Industrial Sidebar - Light Gray & Green */
-    --sidebar-background: 210 20% 98%;
-    --sidebar-foreground: 215 25% 20%;
-    --sidebar-primary: 142 70% 25%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 95%;
-    --sidebar-accent-foreground: 142 70% 20%;
-    --sidebar-border: 215 25% 88%;
-    --sidebar-ring: 142 70% 35%;
+    /* Warm Sidebar - Espresso & Bronze */
+    --sidebar-background: 25 24% 13%;
+    --sidebar-foreground: 36 38% 94%;
+    --sidebar-primary: 27 29% 42%;
+    --sidebar-primary-foreground: 36 38% 94%;
+    --sidebar-accent: 25 20% 20%;
+    --sidebar-accent-foreground: 36 38% 94%;
+    --sidebar-border: 25 15% 25%;
+    --sidebar-ring: 27 29% 42%;
 
-    /* Proposal specific tokens (mapped to new system where possible) */
-    --section-divider: 140 25% 88%;
-    --highlight-bar: 142 76% 36%;
-    --placeholder-bg: 140 30% 95%;
-    --placeholder-border: 140 25% 85%;
-    --text-subtle: 210 10% 46%;
+    /* Proposal specific tokens (mapped to roastery palette) */
+    --section-divider: 30 15% 82%;
+    --highlight-bar: 27 29% 42%;
+    --placeholder-bg: 36 30% 96%;
+    --placeholder-border: 30 15% 82%;
+    --text-subtle: 25 10% 46%;
 
-    /* Landing page specific tokens from cold-chain-command */
-    --navy: 142 70% 20%;
-    --navy-light: 142 60% 30%;
-    --ice-blue: 142 70% 35%;
-    --ice-blue-glow: 142 80% 45%;
-    --steel: 0 0% 45%;
-    --steel-light: 0 0% 75%;
-    --frost: 0 0% 98%;
-    --charcoal: 0 0% 15%;
+    /* Brand tokens */
+    --navy: 25 24% 15%;
+    --navy-light: 25 20% 25%;
+    --ice-blue: 27 29% 42%;
+    --ice-blue-glow: 27 35% 55%;
+    --steel: 25 10% 45%;
+    --steel-light: 25 5% 75%;
+    --frost: 36 30% 97%;
+    --charcoal: 25 15% 12%;
 
-    /* Gradients for landing page */
-    --gradient-hero: linear-gradient(135deg, hsl(142 70% 15%) 0%, hsl(142 60% 22%) 50%, hsl(142 50% 28%) 100%);
-    --gradient-frost: linear-gradient(180deg, hsl(0 0% 95% / 0.8) 0%, hsl(0 0% 98% / 0.4) 100%);
-    --gradient-ice: linear-gradient(135deg, hsl(142 70% 35%) 0%, hsl(142 80% 45%) 100%);
-    --gradient-steel: linear-gradient(180deg, hsl(0 0% 92%) 0%, hsl(0 0% 85%) 100%);
+    /* Roastery Flow tokens */
+    --espresso: 25 24% 13%;
+    --cream: 36 38% 94%;
+    --bronze: 27 29% 42%;
+    --bronze-light: 27 29% 62%;
+
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(25 24% 10%) 0%, hsl(25 20% 16%) 50%, hsl(27 22% 22%) 100%);
+    --gradient-frost: linear-gradient(180deg, hsl(36 30% 95% / 0.8) 0%, hsl(36 38% 97% / 0.4) 100%);
+    --gradient-ice: linear-gradient(135deg, hsl(27 29% 42%) 0%, hsl(27 35% 55%) 100%);
+    --gradient-steel: linear-gradient(180deg, hsl(36 15% 92%) 0%, hsl(30 10% 85%) 100%);
     
-    /* Shadows for landing page */
-    --shadow-card: 0 4px 24px -4px hsl(0 0% 10% / 0.08);
-    --shadow-card-hover: 0 12px 40px -8px hsl(0 0% 10% / 0.15);
-    --shadow-ice: 0 0 40px -10px hsl(142 70% 35% / 0.4);
-    --shadow-frost: 0 8px 32px -8px hsl(142 70% 35% / 0.2);
+    /* Shadows */
+    --shadow-card: 0 4px 24px -4px hsl(25 15% 10% / 0.08);
+    --shadow-card-hover: 0 12px 40px -8px hsl(25 15% 10% / 0.15);
+    --shadow-ice: 0 0 40px -10px hsl(27 29% 42% / 0.4);
+    --shadow-frost: 0 8px 32px -8px hsl(27 29% 42% / 0.2);
   }
 
   .dark {
-    /* Dark Mode with Green Accents */
-    --background: 0 0% 10%;
-    --foreground: 0 0% 98%;
+    /* Dark Mode with Warm Coffee Accents */
+    --background: 25 10% 10%;
+    --foreground: 36 15% 92%;
 
-    --card: 0 0% 15%;
-    --card-foreground: 0 0% 98%;
+    --card: 25 10% 14%;
+    --card-foreground: 36 15% 92%;
 
-    --popover: 0 0% 15%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 25 10% 14%;
+    --popover-foreground: 36 15% 92%;
 
-    /* Lighter Green for dark mode visibility */
-    --primary: 142 70% 35%;
-    --primary-foreground: 0 0% 100%;
+    /* Bronze for dark mode visibility */
+    --primary: 27 29% 50%;
+    --primary-foreground: 25 24% 10%;
 
-    --secondary: 0 0% 20%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 25 8% 20%;
+    --secondary-foreground: 36 15% 88%;
 
-    --muted: 0 0% 22%;
-    --muted-foreground: 0 0% 65%;
+    --muted: 25 8% 22%;
+    --muted-foreground: 36 10% 60%;
 
-    --accent: 142 70% 45%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 27 29% 55%;
+    --accent-foreground: 25 24% 10%;
 
     --destructive: 0 62% 30%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 25%;
-    --input: 0 0% 25%;
-    --ring: 142 70% 35%;
+    --border: 25 8% 25%;
+    --input: 25 8% 25%;
+    --ring: 27 29% 42%;
   }
 
-  /* Proposal Theme - Preserved but updated to match quality */
+  /* Proposal Theme - Roastery Flow: warm espresso/cream/bronze palette */
   .proposal-theme {
-    /* Core palette - warm neutrals with muted green accent */
-    --background: 40 20% 97%;           /* Warm off-white */
-    --foreground: 0 0% 18%;             /* Deep charcoal */
+    /* Core palette - warm cream background, espresso text */
+    --background: 36 38% 94%;           /* Warm cream */
+    --foreground: 25 24% 13%;           /* Deep espresso */
 
-    --card: 40 15% 95%;
-    --card-foreground: 0 0% 18%;
+    --card: 36 30% 96%;
+    --card-foreground: 25 24% 13%;
 
-    --popover: 40 20% 97%;
-    --popover-foreground: 0 0% 18%;
+    --popover: 36 38% 94%;
+    --popover-foreground: 25 24% 13%;
 
-    /* Muted sage green - functional, not decorative */
-    --primary: 150 18% 35%;
-    --primary-foreground: 40 20% 97%;
+    /* Espresso primary - dark, warm, grounded */
+    --primary: 25 24% 13%;
+    --primary-foreground: 36 38% 94%;
 
-    --secondary: 40 10% 92%;
-    --secondary-foreground: 0 0% 25%;
+    --secondary: 36 20% 88%;
+    --secondary-foreground: 25 24% 13%;
 
-    --muted: 40 10% 90%;
-    --muted-foreground: 0 0% 45%;
+    --muted: 36 15% 90%;
+    --muted-foreground: 0 0% 40%;
 
-    --accent: 150 12% 88%;
-    --accent-foreground: 150 18% 25%;
+    /* Bronze accent - warm metallic tone */
+    --accent: 27 29% 42%;
+    --accent-foreground: 36 38% 94%;
 
-    --destructive: 0 65% 50%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 40 10% 88%;
-    --input: 40 10% 88%;
-    --ring: 150 18% 35%;
+    --border: 30 15% 82%;
+    --input: 30 15% 82%;
+    --ring: 27 29% 42%;
 
-    /* Proposal-specific tokens */
-    --section-divider: 40 8% 85%;
-    --highlight-bar: 150 18% 35%;
-    --placeholder-bg: 40 8% 92%;
-    --placeholder-border: 40 8% 82%;
+    /* Roastery custom tokens */
+    --espresso: 25 24% 13%;
+    --cream: 36 38% 94%;
+    --charcoal: 0 0% 18%;
+    --bronze: 27 29% 42%;
+    --bronze-light: 27 29% 62%;
+
+    /* Proposal-specific tokens (mapped to roastery palette) */
+    --section-divider: 30 15% 82%;
+    --highlight-bar: 27 29% 42%;
+    --placeholder-bg: 36 30% 96%;
+    --placeholder-border: 30 15% 82%;
     --text-subtle: 0 0% 55%;
 
     /* Sidebar defaults for proposal */
-    --sidebar-background: 40 15% 95%;
-    --sidebar-foreground: 0 0% 25%;
-    --sidebar-primary: 150 18% 35%;
-    --sidebar-primary-foreground: 40 20% 97%;
-    --sidebar-accent: 40 10% 90%;
-    --sidebar-accent-foreground: 0 0% 25%;
-    --sidebar-border: 40 10% 88%;
-    --sidebar-ring: 150 18% 35%;
+    --sidebar-background: 25 24% 13%;
+    --sidebar-foreground: 36 38% 94%;
+    --sidebar-primary: 27 29% 42%;
+    --sidebar-primary-foreground: 36 38% 94%;
+    --sidebar-accent: 25 20% 20%;
+    --sidebar-accent-foreground: 36 38% 94%;
+    --sidebar-border: 25 15% 25%;
+    --sidebar-ring: 27 29% 42%;
   }
 
   .proposal-theme.dark {
@@ -229,43 +244,25 @@ All colors MUST be HSL.
 }
 
 @layer base {
-  /* Proposal-specific typography overrides when in proposal-theme */
+  /* Proposal-specific typography overrides - Roastery Flow fonts */
   .proposal-theme html {
     scroll-behavior: smooth;
     scroll-padding-top: 100px;
   }
 
-  .proposal-theme body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  .proposal-theme body,
+  .proposal-theme {
+    font-family: 'DM Sans', sans-serif;
     overflow-x: hidden;
   }
 
-  .proposal-theme img {
-    @apply transition-all duration-500;
-  }
-
-  .proposal-theme img:hover {
-    @apply scale-[1.02];
-  }
-
-  .proposal-theme h1 {
-    @apply text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight leading-tight;
-  }
-
-  .proposal-theme h2 {
-    @apply text-2xl md:text-3xl lg:text-4xl font-semibold tracking-tight leading-snug;
-  }
-
-  .proposal-theme h3 {
-    @apply text-xl md:text-2xl font-medium tracking-tight;
-  }
-
-  .proposal-theme h4 {
-    @apply text-lg font-medium;
-  }
-
-  .proposal-theme p {
-    @apply text-base md:text-lg leading-relaxed;
+  .proposal-theme h1,
+  .proposal-theme h2,
+  .proposal-theme h3,
+  .proposal-theme h4,
+  .proposal-theme h5,
+  .proposal-theme h6 {
+    font-family: 'Playfair Display', serif;
   }
 }
 
@@ -274,6 +271,11 @@ All colors MUST be HSL.
   .proposal-section {
     @apply w-full flex flex-col justify-center px-6 md:px-12 lg:px-24 py-20 md:py-32;
     min-height: max(600px, 60vh);
+  }
+
+  .bronze-line {
+    @apply h-px;
+    background-color: hsl(var(--bronze) / 0.3);
   }
 
   .section-accent {
@@ -399,22 +401,21 @@ All colors MUST be HSL.
     box-shadow: 0 0 20px rgba(var(--primary) / 0.3);
   }
 
-  /* Landing page color overrides - force cold-chain-command colors */
+  /* Landing page color overrides - coffee roastery brand */
   .landing-page {
-    /* Override root colors with exact cold-chain-command colors */
-    --background: 210 25% 97%;
-    --foreground: 220 50% 10%;
-    --primary: 142 70% 25%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 95%;
-    --secondary-foreground: 142 70% 20%;
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
-    --accent: 142 70% 35%;
-    --accent-foreground: 0 0% 100%;
-    --border: 215 25% 88%;
-    --card: 0 0% 100%;
-    --card-foreground: 220 50% 10%;
+    --background: 36 30% 97%;
+    --foreground: 25 24% 15%;
+    --primary: 25 30% 18%;
+    --primary-foreground: 36 38% 94%;
+    --secondary: 36 15% 93%;
+    --secondary-foreground: 25 24% 20%;
+    --muted: 36 10% 94%;
+    --muted-foreground: 25 10% 45%;
+    --accent: 27 29% 42%;
+    --accent-foreground: 36 38% 94%;
+    --border: 30 15% 85%;
+    --card: 36 20% 99%;
+    --card-foreground: 25 24% 15%;
   }
 
   /* Landing page specific utilities from cold-chain-command */

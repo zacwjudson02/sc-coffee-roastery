@@ -84,17 +84,46 @@ const LS_KEY = "smh.resources";
 
 function seedDefaults() {
   const drivers: Driver[] = [
-    { id: uuid(), name: "John Smith", phone: "0400 111 222", status: "Active", licenseExpiry: "2025-12-01", color: "#FF6B6B" },
-    { id: uuid(), name: "Sarah Jones", phone: "0400 333 444", status: "Active", licenseExpiry: "2026-03-15", color: "#7C3AED" },
-    { id: uuid(), name: "Mike Brown", phone: "0400 555 666", status: "License Expired", licenseExpiry: "2024-07-01", color: "#4ECDC4" },
-    { id: uuid(), name: "Priya Patel", phone: "0400 777 888", status: "Active", licenseExpiry: "2026-08-20", color: "#3B82F6" },
+    { id: uuid(), name: "Jake Brennan", phone: "0400 111 222", status: "Active", licenseExpiry: "2026-12-01", color: "#FF6B6B" },
+    { id: uuid(), name: "Lily Tran", phone: "0400 333 444", status: "Active", licenseExpiry: "2027-03-15", color: "#7C3AED" },
+    { id: uuid(), name: "Sam Keogh", phone: "0400 555 666", status: "Active", licenseExpiry: "2026-09-01", color: "#4ECDC4" },
+    { id: uuid(), name: "Reece Murray", phone: "0400 777 888", status: "Active", licenseExpiry: "2027-08-20", color: "#3B82F6" },
   ];
   const vehicles: Vehicle[] = [
-    { id: uuid(), rego: "ABC-123", type: "Rigid", capacity: "6T", status: "Available", nextService: "2025-10-05" },
-    { id: uuid(), rego: "XYZ-789", type: "Prime Mover", capacity: "24T", status: "In Service", nextService: "2025-10-10" },
+    { id: uuid(), rego: "SCR-101", type: "Delivery Van", capacity: "1.5T", status: "Available", nextService: "2026-04-05" },
+    { id: uuid(), rego: "SCR-202", type: "Delivery Van", capacity: "1.5T", status: "Available", nextService: "2026-05-10" },
+    { id: uuid(), rego: "SCR-303", type: "Box Truck", capacity: "4T", status: "In Service", nextService: "2026-03-20" },
   ];
-  const shifts: Shift[] = [];
-  const runsheets: RunSheet[] = [];
+  // Pre-seed shifts and runsheets for today so they show immediately
+  const today = new Date().toISOString().slice(0, 10);
+  const shifts: Shift[] = [
+    { id: "seed-shift-1", date: today, driverId: drivers[0].id, status: "planned", start: "06:00", end: "14:00" },
+    { id: "seed-shift-2", date: today, driverId: drivers[1].id, status: "planned", start: "06:00", end: "14:00" },
+    { id: "seed-shift-3", date: today, driverId: drivers[2].id, status: "planned", start: "07:00", end: "15:00" },
+  ];
+  const runsheets: RunSheet[] = [
+    {
+      id: uuid(), shiftId: "seed-shift-1", date: today, driverId: drivers[0].id,
+      jobs: [
+        { id: uuid(), bookingId: "ORD-2026-0201", pickup: "SC Roastery HQ", dropoff: "Noosa Cafe Strip", pickupSuburb: "Warana", dropoffSuburb: "Noosa Heads", pallets: 6, spaces: 6, palletType: "Standard", transferMethod: "Hand", suburb: "Noosa Heads" },
+        { id: uuid(), bookingId: "ORD-2026-0205", pickup: "SC Roastery HQ", dropoff: "Peregian Beach Kiosk", pickupSuburb: "Warana", dropoffSuburb: "Peregian Beach", pallets: 2, spaces: 2, palletType: "Standard", transferMethod: "Hand", suburb: "Peregian Beach" },
+      ],
+    },
+    {
+      id: uuid(), shiftId: "seed-shift-2", date: today, driverId: drivers[1].id,
+      jobs: [
+        { id: uuid(), bookingId: "ORD-2026-0202", pickup: "SC Roastery HQ", dropoff: "Mooloolaba Esplanade", pickupSuburb: "Warana", dropoffSuburb: "Mooloolaba", pallets: 10, spaces: 10, palletType: "Standard", transferMethod: "Hand", suburb: "Mooloolaba" },
+        { id: uuid(), bookingId: "ORD-2026-0206", pickup: "SC Roastery HQ", dropoff: "Alexandra Headland", pickupSuburb: "Warana", dropoffSuburb: "Alexandra Headland", pallets: 3, spaces: 3, palletType: "Standard", transferMethod: "Hand", suburb: "Alexandra Headland" },
+      ],
+    },
+    {
+      id: uuid(), shiftId: "seed-shift-3", date: today, driverId: drivers[2].id,
+      jobs: [
+        { id: uuid(), bookingId: "ORD-2026-0203", pickup: "SC Roastery HQ", dropoff: "Caloundra Main St", pickupSuburb: "Warana", dropoffSuburb: "Caloundra", pallets: 4, spaces: 4, palletType: "Standard", transferMethod: "Hand", suburb: "Caloundra" },
+        { id: uuid(), bookingId: "ORD-2026-0207", pickup: "SC Roastery HQ", dropoff: "Kawana Waters", pickupSuburb: "Warana", dropoffSuburb: "Kawana", pallets: 5, spaces: 5, palletType: "Standard", transferMethod: "Hand", suburb: "Kawana" },
+      ],
+    },
+  ];
   return { drivers, vehicles, shifts, runsheets };
 }
 
@@ -130,14 +159,14 @@ export function ResourceProvider({ children }: { children: React.ReactNode }) {
     } catch {}
   }, [drivers, vehicles, shifts, runsheets]);
 
-  // One-time dev helper: coerce all shift and runsheet dates to 2025-10-11 for Runsheets testing
+  // One-time dev helper: coerce all shift and runsheet dates to today for demo testing
   useEffect(() => {
-    const FLAG = "smh.resources.dateCoerced.2025-10-11";
+    const today = new Date().toISOString().slice(0, 10);
+    const FLAG = `smh.resources.dateCoerced.${today}`;
     try {
       if (localStorage.getItem(FLAG)) return;
-      const target = "2025-10-11";
-      setShifts((prev) => prev.map((s) => ({ ...s, date: target })));
-      setRunsheets((prev) => prev.map((r) => ({ ...r, date: target })));
+      setShifts((prev) => prev.map((s) => ({ ...s, date: today })));
+      setRunsheets((prev) => prev.map((r) => ({ ...r, date: today })));
       localStorage.setItem(FLAG, "1");
     } catch {}
     // eslint-disable-next-line react-hooks/exhaustive-deps
