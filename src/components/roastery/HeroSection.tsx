@@ -76,7 +76,7 @@ const HeroSection = ({ onWalkThrough }: HeroSectionProps) => {
                 <div className="flex items-start gap-2">
                   <Coffee className="w-4 h-4 md:w-5 md:h-5 text-accent/60 shrink-0 mt-0.5" />
                   <p className="text-xs md:text-sm text-primary/80 leading-tight italic">
-                    "Went to Re-Fuelled to test out, actually was a beautiful coffee"
+                    "Went to Re-Fuelled, actually was a beautiful coffee"
                   </p>
                 </div>
               </motion.div>
