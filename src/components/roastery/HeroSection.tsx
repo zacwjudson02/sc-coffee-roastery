@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import heroImage from "@/assets/hero-roastery.jpg";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,7 @@ const HeroSection = ({ onWalkThrough }: HeroSectionProps) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowBubble(false);
-    }, 10000);
+    }, 15000);
     
     return () => clearTimeout(timer);
   }, []);
@@ -64,22 +64,24 @@ const HeroSection = ({ onWalkThrough }: HeroSectionProps) => {
           </motion.p>
 
           {/* Personal testimonial bubble */}
-          {showBubble && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, x: 20 }}
-              animate={{ opacity: 1, scale: 1, x: 0 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.8, delay: 1.8, type: "spring", stiffness: 100 }}
-              className="absolute right-0 md:-right-24 lg:-right-32 -bottom-12 md:-bottom-8 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl p-3 md:p-4 max-w-[200px] md:max-w-[240px] border border-primary/10"
-            >
-              <div className="flex items-start gap-2">
-                <Coffee className="w-4 h-4 md:w-5 md:h-5 text-accent/60 shrink-0 mt-0.5" />
-                <p className="text-xs md:text-sm text-primary/80 leading-tight italic">
-                  "Went to Re-Fuelled to test out, actually was a beautiful coffee"
-                </p>
-              </div>
-            </motion.div>
-          )}
+          <AnimatePresence>
+            {showBubble && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, x: 20 }}
+                animate={{ opacity: 1, scale: 1, x: 0 }}
+                exit={{ opacity: 0, scale: 0.9, transition: { duration: 1 } }}
+                transition={{ duration: 0.8, delay: 1.8, type: "spring", stiffness: 100 }}
+                className="absolute right-0 md:-right-24 lg:-right-32 -bottom-12 md:-bottom-8 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl p-3 md:p-4 max-w-[200px] md:max-w-[240px] border border-primary/10"
+              >
+                <div className="flex items-start gap-2">
+                  <Coffee className="w-4 h-4 md:w-5 md:h-5 text-accent/60 shrink-0 mt-0.5" />
+                  <p className="text-xs md:text-sm text-primary/80 leading-tight italic">
+                    "Went to Re-Fuelled to test out, actually was a beautiful coffee"
+                  </p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Action Buttons */}
@@ -87,7 +89,7 @@ const HeroSection = ({ onWalkThrough }: HeroSectionProps) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 1.2 }}
-          className="mt-10 flex flex-col sm:flex-row gap-4 justify-center"
+          className="mt-10 flex flex-col sm:flex-row gap-4 justify-center items-center"
         >
           <Button
             size="lg"
