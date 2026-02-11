@@ -30,7 +30,7 @@ const Proposal = () => {
         <TransportStory />
         <CoffeeTranslation />
         <WhatThisIsNot />
-        <ClosingSection />
+        <ClosingSection onWalkThrough={() => setShowStory(true)} />
       </main>
     </div>
   );

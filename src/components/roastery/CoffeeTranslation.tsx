@@ -34,7 +34,7 @@ const CoffeeTranslation = () => {
 
         <FadeIn delay={0.15}>
           <p className="font-sans text-lg text-muted-foreground leading-relaxed mb-6 max-w-2xl">
-            Your world is different — but the pressure points are similar:
+            Your world is different - but the pressure points are similar:
           </p>
         </FadeIn>
 

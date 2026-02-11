@@ -45,7 +45,7 @@ const RealitySection = () => {
 
         <FadeIn delay={0.3}>
           <p className="font-serif text-xl md:text-2xl italic text-muted-foreground mt-16 text-center">
-            It works — until it doesn't.
+            It works - until it doesn't.
           </p>
         </FadeIn>
       </div>
