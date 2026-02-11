@@ -1,14 +1,24 @@
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
 import heroImage from "@/assets/hero-roastery.jpg";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Play, Monitor, Smartphone } from "lucide-react";
+import { Play, Monitor, Smartphone, Coffee } from "lucide-react";
 
 interface HeroSectionProps {
   onWalkThrough?: () => void;
 }
 
 const HeroSection = ({ onWalkThrough }: HeroSectionProps) => {
+  const [showBubble, setShowBubble] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowBubble(false);
+    }, 10000);
+    
+    return () => clearTimeout(timer);
+  }, []);
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background image with parallax-like overlay */}
@@ -54,21 +64,22 @@ const HeroSection = ({ onWalkThrough }: HeroSectionProps) => {
           </motion.p>
 
           {/* Personal testimonial bubble */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9, x: 20 }}
-            animate={{ opacity: 1, scale: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 1.8, type: "spring", stiffness: 100 }}
-            className="absolute -right-4 md:-right-16 -bottom-8 md:-bottom-4 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl p-3 md:p-4 max-w-[200px] md:max-w-[240px] border border-primary/10"
-          >
-            <div className="flex items-start gap-2">
-              <svg className="w-4 h-4 md:w-5 md:h-5 text-accent/60 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
-              </svg>
-              <p className="text-xs md:text-sm text-primary/80 leading-tight italic">
-                "Went to Re-Fuelled to test out, really was a beautiful coffee"
-              </p>
-            </div>
-          </motion.div>
+          {showBubble && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, x: 20 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.8, delay: 1.8, type: "spring", stiffness: 100 }}
+              className="absolute right-0 md:-right-24 lg:-right-32 -bottom-12 md:-bottom-8 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl p-3 md:p-4 max-w-[200px] md:max-w-[240px] border border-primary/10"
+            >
+              <div className="flex items-start gap-2">
+                <Coffee className="w-4 h-4 md:w-5 md:h-5 text-accent/60 shrink-0 mt-0.5" />
+                <p className="text-xs md:text-sm text-primary/80 leading-tight italic">
+                  "Went to Re-Fuelled to test out, actually was a beautiful coffee"
+                </p>
+              </div>
+            </motion.div>
+          )}
         </div>
 
         {/* Action Buttons */}
