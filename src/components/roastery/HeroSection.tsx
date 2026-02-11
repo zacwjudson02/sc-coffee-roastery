@@ -41,34 +41,38 @@ const HeroSection = ({ onWalkThrough }: HeroSectionProps) => {
           <span className="italic">One System.</span>
         </motion.h1>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.9 }}
-          className="font-sans text-lg md:text-xl text-primary-foreground/70 max-w-xl mx-auto mb-12 leading-relaxed relative"
-        >
-          <p>
+        <div className="relative max-w-xl mx-auto mb-12">
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.9 }}
+            className="font-sans text-lg md:text-xl text-primary-foreground/70 leading-relaxed"
+          >
             You roast great coffee.
             <br />
             Your job isn't to chase paperwork.
-          </p>
-          
+          </motion.p>
+
           {/* Personal testimonial bubble */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 2 }}
-            className="absolute -top-12 -right-4 md:-right-12 lg:-right-24 hidden sm:block"
+            initial={{ opacity: 0, scale: 0.9, x: 20 }}
+            animate={{ opacity: 1, scale: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 1.8, type: "spring", stiffness: 100 }}
+            className="absolute -right-4 md:-right-16 -bottom-8 md:-bottom-4 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl p-3 md:p-4 max-w-[180px] md:max-w-[220px] border border-primary/10"
           >
-            <div className="relative bg-amber-50/95 backdrop-blur-sm text-primary text-xs md:text-sm px-3 py-2 rounded-lg shadow-lg border border-amber-200/50 max-w-[180px] md:max-w-[220px]">
-              <p className="font-sans italic leading-snug">
-                "I got a long black from re-fuelled, can confirm great coffee, no bs"
+            <div className="flex items-start gap-2">
+              <svg className="w-4 h-4 md:w-5 md:h-5 text-accent/60 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+              </svg>
+              <p className="text-xs md:text-sm text-primary/80 leading-tight italic">
+                "Went to Re-Fuelled to try it, beautiful coffee"
               </p>
-              {/* Little arrow pointer */}
-              <div className="absolute -bottom-2 left-8 w-3 h-3 bg-amber-50/95 border-r border-b border-amber-200/50 transform rotate-45" />
+            </div>
+            <div className="mt-1 ml-6">
+              <p className="text-[10px] md:text-xs text-primary/50 font-medium">— Personal experience</p>
             </div>
           </motion.div>
-        </motion.div>
+        </div>
 
         {/* Action Buttons */}
         <motion.div
