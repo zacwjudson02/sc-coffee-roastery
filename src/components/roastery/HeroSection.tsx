@@ -41,16 +41,34 @@ const HeroSection = ({ onWalkThrough }: HeroSectionProps) => {
           <span className="italic">One System.</span>
         </motion.h1>
 
-        <motion.p
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.9 }}
-          className="font-sans text-lg md:text-xl text-primary-foreground/70 max-w-xl mx-auto mb-12 leading-relaxed"
+          className="font-sans text-lg md:text-xl text-primary-foreground/70 max-w-xl mx-auto mb-12 leading-relaxed relative"
         >
-          You roast great coffee.
-          <br />
-          Your job isn't to chase paperwork.
-        </motion.p>
+          <p>
+            You roast great coffee.
+            <br />
+            Your job isn't to chase paperwork.
+          </p>
+          
+          {/* Personal testimonial bubble */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 2 }}
+            className="absolute -top-12 -right-4 md:-right-12 lg:-right-24 hidden sm:block"
+          >
+            <div className="relative bg-amber-50/95 backdrop-blur-sm text-primary text-xs md:text-sm px-3 py-2 rounded-lg shadow-lg border border-amber-200/50 max-w-[180px] md:max-w-[220px]">
+              <p className="font-sans italic leading-snug">
+                "I got a long black from re-fuelled, can confirm great coffee, no bs"
+              </p>
+              {/* Little arrow pointer */}
+              <div className="absolute -bottom-2 left-8 w-3 h-3 bg-amber-50/95 border-r border-b border-amber-200/50 transform rotate-45" />
+            </div>
+          </motion.div>
+        </motion.div>
 
         {/* Action Buttons */}
         <motion.div
