@@ -76,7 +76,7 @@ export const WelcomeOverlay = () => {
           <div className="flex-1 flex items-center justify-center min-h-0 overflow-y-auto overscroll-contain">
             <div className="max-w-4xl px-4 sm:px-6 py-6 sm:py-8 text-center w-full">
               {/* Main Welcome Text - typewriter on desktop, fade on mobile */}
-              <div className="mb-5 sm:mb-8 relative inline-block text-center md:text-left max-w-full">
+              <div className="mb-5 sm:mb-8 relative inline-block text-center md:text-left max-w-full pb-2">
                  {/* Mobile: Simple fade-in (below md) */}
                  <motion.h1
                   initial={{ opacity: 0 }}
@@ -92,9 +92,9 @@ export const WelcomeOverlay = () => {
                   initial={{ width: 0 }}
                   animate={{ width: "100%" }}
                   transition={{ duration: 2.5, ease: "steps(30)" }}
-                  className="hidden md:block overflow-x-hidden overflow-y-visible border-r-4 border-white/50 pr-2 whitespace-nowrap"
+                  className="hidden md:block overflow-hidden border-r-4 border-white/50 pr-2 pb-2 whitespace-nowrap"
                  >
-                   <h1 className="text-4xl lg:text-5xl font-mono font-bold tracking-tight text-white/90 leading-relaxed pb-1">
+                   <h1 className="text-4xl lg:text-5xl font-mono font-bold tracking-tight text-white/90 leading-normal">
                      Sunshine Coast Coffee Roastery
                    </h1>
                  </motion.div>
