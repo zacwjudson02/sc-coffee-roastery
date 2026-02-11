@@ -68,25 +68,23 @@ export const WelcomeOverlay = () => {
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          className="fixed inset-0 z-50 flex flex-col bg-black text-white"
+          className="fixed inset-0 z-50 flex flex-col bg-black text-white min-h-[100dvh] min-h-screen"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, transition: { duration: 1.5, ease: "easeInOut" } }}
         >
-          {/* Main Content Area - Centered */}
-          <div className="flex-1 flex items-center justify-center">
-            <div className="max-w-4xl px-6 text-center w-full">
-              {/* Main Welcome Text */}
-              <div className="mb-8 relative overflow-hidden inline-block text-left">
+          {/* Main Content Area - Centered, scrollable on small screens */}
+          <div className="flex-1 flex items-center justify-center min-h-0 overflow-y-auto overscroll-contain">
+            <div className="max-w-4xl px-4 sm:px-6 py-6 sm:py-8 text-center w-full">
+              {/* Main Welcome Text - responsive typewriter */}
+              <div className="mb-5 sm:mb-8 relative overflow-hidden inline-block text-left max-w-full">
                  <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: "100%" }}
-                  transition={{ duration: 3, ease: "steps(40)" }}
-                  className="overflow-hidden whitespace-nowrap border-r-4 border-white/50 pr-2"
-                  style={{
-                      wordBreak: "keep-all"
-                  }}
+                  transition={{ duration: 2.5, ease: "steps(30)" }}
+                  className="overflow-hidden border-r-4 border-white/50 pr-1 sm:pr-2 md:whitespace-nowrap"
+                  style={{ wordBreak: "keep-all" }}
                  >
-                   <h1 className="text-3xl md:text-5xl font-mono font-bold tracking-tight text-white/90 leading-tight">
+                   <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-mono font-bold tracking-tight text-white/90 leading-tight">
                      Sunshine Coast Coffee Roastery
                    </h1>
                  </motion.div>
@@ -97,25 +95,25 @@ export const WelcomeOverlay = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 3.2, duration: 0.8 }}
-                className="space-y-2"
+                className="space-y-1 sm:space-y-2"
               >
-                <h2 className="text-xl md:text-2xl text-white/70 font-light">
+                <h2 className="text-base sm:text-lg md:text-2xl text-white/70 font-light px-1">
                   Custom Delivery Management Software Proposal
                 </h2>
               </motion.div>
 
-              {/* Logo appearing */}
+              {/* Logo appearing - stacks on mobile */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: showLogo ? 1 : 0, scale: showLogo ? 1 : 0.9 }}
                 transition={{ duration: 1 }}
-                className="mt-12 flex flex-col items-center justify-center gap-4"
+                className="mt-8 sm:mt-12 flex flex-col items-center justify-center gap-3 sm:gap-4"
               >
-                <p className="text-sm uppercase tracking-[0.2em] text-white/40">Proudly Built Locally By</p>
+                <p className="text-xs sm:text-sm uppercase tracking-[0.15em] sm:tracking-[0.2em] text-white/40">Proudly Built Locally By</p>
                 
-                <div className="flex items-center gap-4">
-                  <Link className="h-12 w-12 md:h-16 md:w-16 text-blue-500" strokeWidth={1.5} />
-                  <div className="flex flex-col items-start font-bold text-2xl md:text-4xl leading-tight text-blue-500 tracking-tight">
+                <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
+                  <Link className="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 text-blue-500 shrink-0" strokeWidth={1.5} />
+                  <div className="flex flex-col items-center sm:items-start font-bold text-lg sm:text-2xl md:text-4xl leading-tight text-blue-500 tracking-tight text-center sm:text-left">
                     <span>FACTORY FREIGHT</span>
                     <span>CONNECTIONS</span>
                   </div>
@@ -125,7 +123,7 @@ export const WelcomeOverlay = () => {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: showLogo ? 1 : 0 }}
                   transition={{ delay: 1, duration: 1 }}
-                  className="text-white/60 text-sm md:text-base max-w-lg mt-6 font-light"
+                  className="text-white/60 text-xs sm:text-sm md:text-base max-w-lg mt-4 sm:mt-6 font-light px-2"
                 >
                   For specialty coffee businesses that want fewer admin hours, cleaner data, and complete delivery visibility.
                 </motion.p>
@@ -133,14 +131,14 @@ export const WelcomeOverlay = () => {
             </div>
           </div>
 
-          {/* Skip Button Container - Bottom Center using Flexbox */}
-          <div className="pb-8 flex justify-center items-center">
+          {/* Skip Button - safe area padding, touch-friendly */}
+          <div className="pt-4 flex justify-center items-center shrink-0 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
             <motion.button
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: showButton ? 1 : 0, y: showButton ? 0 : 20 }}
               transition={{ duration: 0.6 }}
               onClick={handleClose}
-              className="w-14 h-14 rounded-full bg-red-600 border-2 border-white/30 hover:border-white hover:bg-red-700 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group hover:scale-110"
+              className="w-14 h-14 min-w-[3.5rem] min-h-[3.5rem] rounded-full bg-red-600 border-2 border-white/30 hover:border-white active:scale-95 hover:bg-red-700 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group hover:scale-110 touch-manipulation"
             >
               <X className="w-6 h-6 text-white group-hover:rotate-90 transition-transform duration-300" />
               <span className="sr-only">Skip intro</span>
