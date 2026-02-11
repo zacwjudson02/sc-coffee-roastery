@@ -92,9 +92,9 @@ export const WelcomeOverlay = () => {
                   initial={{ width: 0 }}
                   animate={{ width: "100%" }}
                   transition={{ duration: 2.5, ease: "steps(30)" }}
-                  className="hidden md:block overflow-hidden border-r-4 border-white/50 pr-2 whitespace-nowrap"
+                  className="hidden md:block overflow-x-hidden overflow-y-visible border-r-4 border-white/50 pr-2 whitespace-nowrap"
                  >
-                   <h1 className="text-4xl lg:text-5xl font-mono font-bold tracking-tight text-white/90 leading-tight">
+                   <h1 className="text-4xl lg:text-5xl font-mono font-bold tracking-tight text-white/90 leading-relaxed pb-1">
                      Sunshine Coast Coffee Roastery
                    </h1>
                  </motion.div>
