@@ -75,17 +75,19 @@ export const WelcomeOverlay = () => {
           {/* Main Content Area - Centered, scrollable on small screens */}
           <div className="flex-1 flex items-center justify-center min-h-0 overflow-y-auto overscroll-contain">
             <div className="max-w-4xl px-4 sm:px-6 py-6 sm:py-8 text-center w-full">
-              {/* Main Welcome Text - typewriter on desktop, fade on mobile */}
-              <div className="mb-5 sm:mb-8 relative inline-block text-center md:text-left max-w-full pb-2">
-                 {/* Mobile: Fade and slide-up (below md) */}
-                 <motion.h1
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 1.5, delay: 0.3, ease: "easeOut" }}
-                  className="md:hidden text-xl sm:text-2xl font-mono font-bold tracking-tight text-white/90 leading-tight px-2"
+              {/* Main Welcome Text - typewriter effect */}
+              <div className="mb-5 sm:mb-8 relative flex justify-center md:justify-start max-w-full pb-2">
+                 {/* Mobile: Horizontal reveal typewriter (below md) */}
+                 <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 2.2, ease: "steps(25)" }}
+                  className="md:hidden overflow-hidden border-r-4 border-white/50 pr-2 pb-2 whitespace-nowrap max-w-full"
                  >
-                   Sunshine Coast Coffee Roastery
-                 </motion.h1>
+                   <h1 className="text-xl sm:text-2xl font-mono font-bold tracking-tight text-white/90 leading-tight">
+                     Sunshine Coast Coffee Roastery
+                   </h1>
+                 </motion.div>
 
                  {/* Desktop: Typewriter effect (md and up) */}
                  <motion.div
@@ -142,7 +144,7 @@ export const WelcomeOverlay = () => {
           </div>
 
           {/* Skip Button - safe area padding, touch-friendly */}
-          <div className="pt-4 flex justify-center items-center shrink-0 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+          <div className="pt-8 pb-12 sm:pt-4 sm:pb-8 flex justify-center items-center shrink-0">
             <motion.button
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: showButton ? 1 : 0, y: showButton ? 0 : 20 }}
