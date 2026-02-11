@@ -77,11 +77,11 @@ export const WelcomeOverlay = () => {
             <div className="max-w-4xl px-4 sm:px-6 py-6 sm:py-8 text-center w-full">
               {/* Main Welcome Text - typewriter on desktop, fade on mobile */}
               <div className="mb-5 sm:mb-8 relative inline-block text-center md:text-left max-w-full pb-2">
-                 {/* Mobile: Simple fade-in (below md) */}
+                 {/* Mobile: Fade and slide-up (below md) */}
                  <motion.h1
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 2, ease: "easeIn" }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 1.5, delay: 0.3, ease: "easeOut" }}
                   className="md:hidden text-xl sm:text-2xl font-mono font-bold tracking-tight text-white/90 leading-tight px-2"
                  >
                    Sunshine Coast Coffee Roastery
